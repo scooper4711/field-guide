@@ -96,7 +96,9 @@ func summary(_ name: String, level: Int? = 1, facets: [Facet: [String]] = [:]) -
         #expect(EntryCategory.feats.facets == [.featCategory]
             && EntryCategory.campaignFeatures.facets == [.featCategory])
         #expect(EntryCategory.equipment.facets == [.itemType] && EntryCategory.hazards.facets == [.complexity])
-        #expect(EntryCategory.deities.facets.isEmpty)
+        #expect(EntryCategory.deities.facets.isEmpty && EntryCategory.gmScreen.facets == [.section])
+        #expect(EntryCategory.gmScreen.title == "GM Screen" && EntryCategory.gmScreen.singularTitle == "GM Screen")
+        #expect(!EntryCategory.gmScreen.hasLevels)
         #expect(Facet.allCases.allSatisfy { !$0.title.isEmpty } && Facet.traits.matchesAll && !Facet.rarity.matchesAll)
         #expect(GameSystem.pathfinder.title == "Pathfinder" && GameSystem.starfinder.title == "Starfinder")
     }

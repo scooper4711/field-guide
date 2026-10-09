@@ -4,7 +4,7 @@ import Foundation
 /// particular categories (`EntryCategory.facets`).
 public enum Facet: String, CaseIterable, Codable, Sendable, Identifiable {
     case rarity, traits, source
-    case actionType, size, featCategory, itemType, complexity, rank, spellKind, tradition, castingTime
+    case actionType, size, featCategory, itemType, complexity, rank, spellKind, tradition, castingTime, section
 
     public var id: String { rawValue }
 
@@ -22,6 +22,7 @@ public enum Facet: String, CaseIterable, Codable, Sendable, Identifiable {
         case .spellKind: "Kind"
         case .tradition: "Tradition"
         case .castingTime: "Casting Time"
+        case .section: "Section"
         }
     }
 

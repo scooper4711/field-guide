@@ -1,7 +1,9 @@
 import Foundation
 
-/// The kinds of entry the app browses: Foundry's compendium browser tabs, then character options.
+/// The kinds of entry the app browses: the GM Screen, Foundry's compendium browser tabs, then character
+/// options.
 public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable {
+    case gmScreen
     case actions, bestiary, campaignFeatures, equipment, feats, hazards, spells
     case conditions, ancestries, heritages, backgrounds, classes, deities
 
@@ -10,6 +12,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     public var title: String {
         switch self {
         case .campaignFeatures: "Campaign Features"
+        case .gmScreen: "GM Screen"
         default: rawValue.prefix(1).uppercased() + rawValue.dropFirst()
         }
     }
@@ -21,6 +24,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .classes: "Class"
         case .deities: "Deity"
         case .bestiary: "Creature"
+        case .gmScreen: "GM Screen"
         default: String(title.dropLast())
         }
     }
@@ -28,6 +32,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     /// An SF Symbol for the sidebar.
     public var symbol: String {
         switch self {
+        case .gmScreen: "tablecells"
         case .actions: "figure.run"
         case .bestiary: "pawprint"
         case .campaignFeatures: "flag"
@@ -47,7 +52,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     /// Whether entries have levels worth filtering and sorting by.
     public var hasLevels: Bool {
         switch self {
-        case .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities: false
+        case .gmScreen, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities: false
         default: true
         }
     }
@@ -55,6 +60,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     /// The category's own filters, after level, rarity, traits and source.
     public var facets: [Facet] {
         switch self {
+        case .gmScreen: [.section]
         case .actions: [.actionType]
         case .bestiary: [.size]
         case .campaignFeatures, .feats: [.featCategory]

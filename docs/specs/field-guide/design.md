@@ -30,7 +30,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   absolute before enriching, and `LinkIndex` resolves page links (ignoring `#anchors`).
 - `AreaDiagrams` renders a region of a Player Core page with PDFKit (the PDF is the largest one in
   Scrollkeeper's `Files/<Pathfinder|Starfinder> Player Core` folder; the page is found by its label) at
-  twice the page's resolution and stores it as WebP in `Images/gm-screen/`.
+  three times the page's resolution and stores it as WebP in `Images/gm-screen/`.
 - `LinkIndex` maps every imported document's `Compendium.<system>.<pack>.Item|Actor.<id or name>` to its
   ID, so links can be checked and rewritten.
 - `Enricher` replaces `@UUID`, `@Check`, `@Damage`, `@Template`, `@Localize`, `@Embed` and `[[/r …]]` in

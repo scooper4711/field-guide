@@ -6,11 +6,14 @@ public struct ImportOptions: Sendable {
     public var paths: FoundryPaths
     /// Combat Pad's `Generated` folder, for creature art; nil to use only the Foundry modules.
     public var combatPadGenerated: URL?
+    /// Scrollkeeper's `Files` folder, for the area diagrams in the Player Core PDFs; nil to leave them out.
+    public var scrollkeeperFiles: URL?
     public var output: URL
 
-    public init(paths: FoundryPaths, combatPadGenerated: URL?, output: URL) {
+    public init(paths: FoundryPaths, combatPadGenerated: URL?, scrollkeeperFiles: URL? = nil, output: URL) {
         self.paths = paths
         self.combatPadGenerated = combatPadGenerated
+        self.scrollkeeperFiles = scrollkeeperFiles
         self.output = output
     }
 }
@@ -29,13 +32,18 @@ public struct CompendiumImporter {
         let documents = try documents(scanner: scanner)
         let localizer = try Localizer(languageDirectory: repository.appendingPathComponent("static/lang"))
         let glossary = TraitGlossary(repository: repository, localizer: localizer)
-        let links = LinkIndex(documents: documents)
+        let journalPages = GameSystem.allCases.flatMap { GMScreen.pages(repository: repository, system: $0) }
+        var links = LinkIndex(documents: documents)
+        journalPages.forEach { links.add($0) }
         let enricher = Enricher(localizer: localizer, links: links)
         let images = ImageCollector(paths: options.paths, output: options.output.appendingPathComponent("Images"))
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
         let art = ArtSource(combatPadGenerated: options.combatPadGenerated, foundryData: options.paths.data)
         let builder = PageBuilder(context: context, art: art)
-        let rows = documents.map(builder.row(for:))
+        let diagrams = options.scrollkeeperFiles.map {
+            AreaDiagrams(scrollkeeperFiles: $0, images: options.output.appendingPathComponent("Images")).rows()
+        } ?? []
+        let rows = documents.map(builder.row(for:)) + journalPages.map { GMScreen.row($0, context: context) } + diagrams
         let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
