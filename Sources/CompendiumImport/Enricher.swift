@@ -50,11 +50,22 @@ public final class Enricher {
     private func link(_ match: EnricherMatch) -> String {
         let name = Self.linkedName(match.argument)
         let label = match.label ?? name
-        guard let target = links.entryID(forLink: match.argument) else {
+        let macroAction = Self.macroAction(match.argument)
+        guard let target = links.entryID(forLink: match.argument) ?? links.entryID(forLink: macroAction) else {
             if !match.argument.contains("-effects.") { unresolvedLinks[match.argument, default: 0] += 1 }
             return HTML.escape(label)
         }
         return HTML.link(match.label ?? links.name(of: target) ?? name, to: "entry:\(target)")
+    }
+
+    /// The action a skill-action macro runs: `….action-macros.Macro.Demoralize: Intimidation` → the Demoralize
+    /// action of the system's actions pack.
+    static func macroAction(_ argument: String) -> String {
+        let parts = argument.split(separator: ".", maxSplits: 4).map(String.init)
+        guard parts.count == 5, parts[2] == "action-macros" else { return "" }
+        let action = parts[4].split(separator: ":").first.map(String.init) ?? parts[4]
+        let pack = parts[1] == "pf2e" ? "actionspf2e" : "actions"
+        return "Compendium.\(parts[1]).\(pack).Item.\(action)"
     }
 
     /// The last part of a link, without the "Effect: " Foundry gives effect items.

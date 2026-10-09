@@ -31,6 +31,9 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 - R3.5 GM Screen also has an Areas entry per system: the area diagrams (emanation, burst, cone, line) from
   page 429 of the Pathfinder Player Core and page 421 of the Starfinder Player Core, taken from the PDFs
   Scrollkeeper downloaded. Without the PDF, the entry is left out.
+- R3.6 Journals: the pages of the system's other rules journals (Archetypes, Classes, Ancestries, Domains,
+  Hero Point Deck, Remaster Changes), filterable by journal, so links into them work. Links to skill-action
+  macros open the action they run.
 
 ## R4 Browsing
 - R4.1 Each category lists its entries with a small image, name, level (where it has one) and type.
