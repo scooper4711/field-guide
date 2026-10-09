@@ -31,6 +31,13 @@ struct EntryListView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         @Bindable var store = store
+        ToolbarItem(placement: .navigation) {
+            // The sidebar is hidden in portrait, so the system switch is here too.
+            Picker("System", selection: $store.system) {
+                ForEach(GameSystem.allCases) { Text($0.title).tag($0) }
+            }
+            .pickerStyle(.menu)
+        }
         ToolbarItemGroup {
             Menu {
                 Toggle("Search Text Too", isOn: $store.query.searchesText)
