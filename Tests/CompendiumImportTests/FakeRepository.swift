@@ -113,3 +113,38 @@ struct FakeRepository {
         CGImageDestinationFinalize(destination)
     }
 }
+
+extension FakeRepository {
+    /// A GM Screen journal: a heading page, two pages with text linking each other, and an empty page.
+    func writeGMScreen() throws {
+        let filler = String(repeating: "Some rules text. ", count: 10)
+        // swiftlint:disable:next function_parameter_count - a fixture row reads best with every field named
+        func page(_ id: String, _ name: String, level: Int, sort: Int, text: String) -> [String: Any] {
+            ["_id": id, "name": name, "sort": sort, "title": ["level": level], "text": ["content": text]]
+        }
+        try writeJSON("packs/pf2e/journals/gm-screen.json", in: repository, ["_id": "gm1", "pages": [
+            page("p3", "DCs by Level", level: 2, sort: 30, text: "<p>\(filler)See @UUID[.p2]{Simple DCs}.</p>"),
+            page("p1", "Running the Game", level: 1, sort: 10, text: "<p>Sources</p>"),
+            page("p2", "Simple DCs", level: 2, sort: 20,
+                 text: "<table><tr><td>Trained</td><td>15</td></tr></table><p>\(filler)</p>"),
+            page("p4", "Empty", level: 2, sort: 40, text: "")
+        ]])
+    }
+
+    /// A two-page PDF in Scrollkeeper's layout; the second page is labeled "2".
+    func writePlayerCore(folder: String) throws -> URL {
+        let url = root.appendingPathComponent("Files/\(folder)/Book.pdf")
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        var box = CGRect(x: 0, y: 0, width: 200, height: 300)
+        let context = CGContext(url as CFURL, mediaBox: &box, nil)!
+        for gray in [0.2, 0.6] {
+            context.beginPDFPage(nil)
+            context.setFillColor(CGColor(gray: gray, alpha: 1))
+            context.fill(box)
+            context.endPDFPage()
+        }
+        context.closePDF()
+        try write("Files/\(folder)/Extract.pdf", in: root, text: "small")
+        return url
+    }
+}

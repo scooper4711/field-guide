@@ -77,4 +77,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .description h3 { font-size: 18px; }
 .description ul, .description ol { padding-left: 1.4em; }
 
+.diagram { width: 100%; height: auto; border-radius: 6px; }
+.journal table { width: 100%; }
+
 .source { margin-top: 18px; color: var(--muted); font-style: italic; font-size: 14px; }

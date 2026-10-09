@@ -24,6 +24,13 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   and Spells.
 - R3.2 Also: Conditions, Ancestries, Heritages, Backgrounds, Classes and Deities.
 - R3.3 A category with no entries in a system, such as Campaign Features in Starfinder, is not shown.
+- R3.4 GM Screen, first in the list: each page of the system's GM Screen journal (such as DCs by Level,
+  Simple DCs and Encounter Budget) is an entry, filterable by its section (Playing the Game, Running the
+  Game, Subsystems and Variant Rules). Section headings with no content of their own are left out, and links
+  between pages work.
+- R3.5 GM Screen also has an Areas entry per system: the area diagrams (emanation, burst, cone, line) from
+  page 429 of the Pathfinder Player Core and page 421 of the Starfinder Player Core, taken from the PDFs
+  Scrollkeeper downloaded. Without the PDF, the entry is left out.
 
 ## R4 Browsing
 - R4.1 Each category lists its entries with a small image, name, level (where it has one) and type.
