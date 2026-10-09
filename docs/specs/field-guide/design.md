@@ -4,7 +4,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
 
 ## Targets
 - `FieldGuideKit` (iOS, macOS): the catalog model and its SQLite store. `GameSystem` (pf2e, sf2e),
-  `Category`, `EntrySummary` (what lists and filters need), `Catalog` (reads the database), `EntryQuery`
+  `EntryCategory` (not `Category`, which clashes with an Objective-C type), `EntrySummary` (what lists and filters need), `Catalog` (reads the database), `EntryQuery`
   (search text, filters and sort, applied in memory), `FacetValues` (the filter options of a list).
 - `CompendiumImport` (macOS): reads the pf2e repository and writes the database and images. Code that
   Combat Pad's `FoundryImport` already proved (JSON access, pack manifests, enricher scanning, the
@@ -17,6 +17,9 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
 ## Import
 - `PackScanner` reads `system.pf2e.json` and `system.sf2e.json` for each Item and Actor pack's folder and
   link name (`spells` is linked as `spells-srd`). Every document is read once.
+- `StarfinderDuplicates` adds the Pathfinder documents that `build/duplicates.json` tells the Starfinder build
+  to copy into its packs (conditions, basic actions, many spells and feats), with the listed Starfinder
+  publication, so Starfinder links to them resolve.
 - `CategoryMapper` assigns a category by document type: `action`; `npc` (Bestiary); `campaignFeature`;
   the physical item types (Equipment); `feat`; `hazard`; `spell`; `condition` and everything in a
   `conditions` pack; `ancestry`, `heritage`, `background`, `class`, `deity`. Effects, macros, journals,
@@ -35,7 +38,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
 - `ImageCollector` resolves Foundry paths (`systems/<system>/…` → the repository's `static/`, `icons/…` →
   the Foundry app's `public/icons`, `modules/…` → the Foundry data folder) and copies each image once into
   `Generated/Images`. Creature art comes from Combat Pad's `Generated/Bestiary/index.json` (portrait, else
-  card back) and, where Combat Pad is missing, from the token modules' `compendiumArtMappings`. Art wider
+  card back) and, where Combat Pad is missing, from the token modules' `compendiumArtMappings` (keyed by
+  pack link name, so both the folder and the link name are tried). Art wider
   or taller than 512 px is scaled with `cwebp`.
 - `CatalogWriter` writes `Generated/catalog.sqlite`: table `entries` (id, system, category, name, level,
   rarity, traits, source, image, subtitle, facets JSON, html) and an FTS5 table over name and text.
@@ -49,7 +53,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
 - `EntryView` shows an entry's HTML in a `WKWebView` with the app's stylesheet. A `WKURLSchemeHandler` for
   `fieldguide:` serves images from `Generated/Images`; `entry:` and `trait:` links are intercepted and
   pushed onto the entry's navigation stack.
-- The chosen system and the last category are kept in `@AppStorage`.
+- `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
+  category in user defaults. Prices follow the Mac's number format at import, as the import runs there.
+- `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
+  folder, for trying pages out from a script.
 
 ## Updating
 - `scripts/update.sh`: fetches the pf2e repository's `upstream` remote and fast-forwards the checked-out
