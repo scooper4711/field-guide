@@ -47,16 +47,26 @@ enum GMScreen {
         return pages
     }
 
+    /// Adds a row linking the area diagrams to the end of the first table (Playing the Game).
+    static func linkingAreas(_ html: String, entry: String) -> String {
+        guard let end = html.range(of: "</tbody></table>") else { return html }
+        let row = "<tr><td><p>\(HTML.link("Areas", to: "entry:\(entry)"))</p></td><td></td><td></td></tr>"
+        return html.replacingCharacters(in: end.lowerBound..<end.lowerBound, with: row)
+    }
+
     /// `@UUID[.<page>]` links a page of the same journal; spelled out, the link index can follow it.
     static func absoluteLinks(_ html: String, system: GameSystem, journalID: String) -> String {
         let journal = "Compendium.\(system.rawValue).journals.JournalEntry.\(journalID)"
         return html.replacingOccurrences(of: "@UUID[.", with: "@UUID[\(journal).JournalEntryPage.")
     }
 
-    static func row(_ page: JournalPage, context: PageContext) -> EntryRow {
+    /// `areasEntry`, when given, is linked from the GM Screen's index page, in its first table.
+    static func row(_ page: JournalPage, context: PageContext, areasEntry: String? = nil) -> EntryRow {
+        var body = context.enrich(page.html)
+        if let areasEntry, page.name == "GM Screen" { body = linkingAreas(body, entry: areasEntry) }
         let html = "<header class=\"entry-header\"><div><h1>\(HTML.escape(page.name))</h1>"
             + "<p class=\"subtitle\">\(HTML.escape(page.section))</p></div></header>"
-            + "<section class=\"description journal\">\(context.enrich(page.html))</section>"
+            + "<section class=\"description journal\">\(body)</section>"
         return EntryRow(
             id: page.uuid, system: page.system, category: page.category, name: page.name, level: nil,
             subtitle: page.section, image: "", facets: page.section.isEmpty ? [:] : [.section: [page.section]],

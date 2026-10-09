@@ -43,7 +43,9 @@ public struct CompendiumImporter {
         let diagrams = options.scrollkeeperFiles.map {
             AreaDiagrams(scrollkeeperFiles: $0, images: options.output.appendingPathComponent("Images")).rows()
         } ?? []
-        let rows = documents.map(builder.row(for:)) + journalPages.map { GMScreen.row($0, context: context) } + diagrams
+        let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
+        let journalRows = journalPages.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
+        let rows = documents.map(builder.row(for:)) + journalRows + diagrams
         let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
