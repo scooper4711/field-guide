@@ -5,7 +5,7 @@ import Foundation
 public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable {
     case gmScreen
     case actions, bestiary, campaignFeatures, equipment, feats, hazards, spells
-    case conditions, ancestries, heritages, backgrounds, classes, deities
+    case conditions, ancestries, heritages, backgrounds, classes, deities, journals
 
     public var id: String { rawValue }
 
@@ -46,13 +46,15 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .backgrounds: "book.closed"
         case .classes: "graduationcap"
         case .deities: "sun.max"
+        case .journals: "books.vertical"
         }
     }
 
     /// Whether entries have levels worth filtering and sorting by.
     public var hasLevels: Bool {
         switch self {
-        case .gmScreen, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities: false
+        case .gmScreen, .journals, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities:
+            false
         default: true
         }
     }
@@ -60,7 +62,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     /// The category's own filters, after level, rarity, traits and source.
     public var facets: [Facet] {
         switch self {
-        case .gmScreen: [.section]
+        case .gmScreen, .journals: [.section]
         case .actions: [.actionType]
         case .bestiary: [.size]
         case .campaignFeatures, .feats: [.featCategory]
