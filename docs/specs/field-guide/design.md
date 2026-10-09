@@ -24,6 +24,13 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   the physical item types (Equipment); `feat`; `hazard`; `spell`; `condition` and everything in a
   `conditions` pack; `ancestry`, `heritage`, `background`, `class`, `deity`. Effects, macros, journals,
   tables, vehicles and characters are skipped.
+- `GMScreen` reads `packs/<system>/journals/gm-screen.json`: each page with more than a line of text becomes
+  an entry with ID `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`, and its
+  section is the last level-1 page before it in sort order. Relative links (`@UUID[.<page>]`) are made
+  absolute before enriching, and `LinkIndex` resolves page links (ignoring `#anchors`).
+- `AreaDiagrams` renders a region of a Player Core page with PDFKit (the PDF is the largest one in
+  Scrollkeeper's `Files/<Pathfinder|Starfinder> Player Core` folder; the page is found by its label) at
+  twice the page's resolution and stores it as WebP in `Images/gm-screen/`.
 - `LinkIndex` maps every imported document's `Compendium.<system>.<pack>.Item|Actor.<id or name>` to its
   ID, so links can be checked and rewritten.
 - `Enricher` replaces `@UUID`, `@Check`, `@Damage`, `@Template`, `@Localize`, `@Embed` and `[[/r …]]` in
