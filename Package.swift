@@ -9,6 +9,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "FieldGuideKit"),
-        .testTarget(name: "FieldGuideKitTests", dependencies: ["FieldGuideKit"])
+        .target(name: "CompendiumImport", dependencies: ["FieldGuideKit"]),
+        .testTarget(name: "FieldGuideKitTests", dependencies: ["FieldGuideKit"]),
+        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"])
     ]
 )
