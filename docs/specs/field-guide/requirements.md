@@ -60,9 +60,19 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 
 ## R6 Images
 - R6.1 Items, spells, feats and actions show their Foundry icons.
-- R6.2 Creatures show their art: from the Foundry token-art modules, else the art Combat Pad extracted
-  from the Paizo PDFs, else the creature's icon.
-- R6.3 Large art is scaled down so the app stays a reasonable size.
+- R6.2 Creatures and hazards show their art, read on the device from the user's own Paizo pawn, token and
+  Battle Cards PDFs (Tabletop Kit's `CreatureArt`); without art the page shows none and the list shows the
+  category's symbol. No Paizo or Foundry module art is imported or bundled.
+- R6.3 Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, without copying them,
+  and picks up new downloads at launch; Add PDFs copies other PDFs into the app.
+- R6.4 PDFs deleted or moved since they were read are listed as missing in Creature Art, and a creature's
+  card says which missing PDF its art needs.
+
+## R8 Battle cards
+- R8.1 A creature's page switches between its stat block and its battle card (Tabletop Kit's `BattleCards`,
+  in the Rexard style); the choice is remembered.
+- R8.2 Turn Over shows the card's back: the creature's art in a backdrop chosen by its traits, with its name.
+- R8.3 Links on the card open their glossary entries in popovers.
 
 ## R7 The app
 - R7.1 iPadOS 18 or later, in every orientation, with a Mac build for development.
