@@ -9,10 +9,8 @@ struct FakeRepository {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent("FieldGuideTests-\(UUID().uuidString)")
     var repository: URL { root.appendingPathComponent("pf2e") }
     var appPublic: URL { root.appendingPathComponent("app") }
-    var data: URL { root.appendingPathComponent("data") }
-    var combatPad: URL { root.appendingPathComponent("combat-pad") }
     var output: URL { root.appendingPathComponent("Generated") }
-    var paths: FoundryPaths { FoundryPaths(repository: repository, appPublic: appPublic, data: data) }
+    var paths: FoundryPaths { FoundryPaths(repository: repository, appPublic: appPublic) }
 
     init() throws {
         try writeManifests()
@@ -34,11 +32,6 @@ struct FakeRepository {
         }
         try write("static/icons/spells/fireball.webp", in: repository, text: "icon")
         try write("icons/weapons/sword.webp", in: appPublic, text: "icon")
-        try Self.writePNG(to: combatPad.appendingPathComponent("Art/goblin.png"), width: 900, height: 600)
-        try writeJSON("Bestiary/index.json", in: combatPad, ["entries": [
-            ["key": "pf2e.pathfinder-monster-core.goblin1", "art": ["portrait": "Art/goblin.png", "cardBack": ""]]
-        ]])
-        try writeModule()
         try writeDocuments()
     }
 
@@ -70,17 +63,6 @@ struct FakeRepository {
             "Greeting": "Hello from @Localize[PF2E.Nested]", "Nested": "the lang file"
         ]])
         try writeJSON("static/lang/sf2e-overrides-en.json", in: repository, ["PF2E": ["TraitFire": "Plasma"]])
-    }
-
-    private func writeModule() throws {
-        try writeJSON("modules/tokens/module.json", in: data, ["flags": ["compendiumArtMappings": [
-            "pf2e": ["mapping": "modules/tokens/mapping.json"]
-        ]]])
-        try writeJSON("modules/tokens/mapping.json", in: data, [
-            "pf2e.hazards": ["trap1": ["actor": "modules/tokens/art/trap.png"]],
-            "sf2e.hazards": ["ignored": ["actor": "modules/tokens/art/trap.png"]]
-        ])
-        try Self.writePNG(to: data.appendingPathComponent("modules/tokens/art/trap.png"), width: 200, height: 300)
     }
 
     private func writeDocuments() throws {

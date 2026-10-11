@@ -10,7 +10,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   Combat Pad's `FoundryImport` already proved (JSON access, pack manifests, enricher scanning, the
   Foundry art mapping) is adapted rather than shared, so the two apps change independently.
 - `FieldGuideImport`: the command-line importer.
-- `FieldGuideUI` (iOS, macOS): the SwiftUI app.
+- `FieldGuideUI` (iOS, macOS): the SwiftUI app. It uses Tabletop Kit's `BattleCards`, `Bestiary` and
+  `CreatureArt`; `FieldGuideImport` uses its `CreatureImport`.
 - `FieldGuide`: the Mac app, for trying things out; the iPad app lives in `ios/FieldGuide.xcodeproj`
   (scheme FieldGuide-iPad) and includes `Generated/` as a folder of resources.
 
@@ -44,10 +45,11 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   category's own facets as a JSON object.
 - `ImageCollector` resolves Foundry paths (`systems/<system>/…` → the repository's `static/`, `icons/…` →
   the Foundry app's `public/icons`, `modules/…` → the Foundry data folder) and copies each image once into
-  `Generated/Images`. Creature art comes from Combat Pad's `Generated/Bestiary/index.json` (portrait, else
-  card back) and, where Combat Pad is missing, from the token modules' `compendiumArtMappings` (keyed by
-  pack link name, so both the folder and the link name are tried). Art wider
-  or taller than 512 px is scaled with `cwebp`.
+  `Generated/Images`. Foundry module paths are not resolved: module art is Paizo's. A creature's or
+  hazard's image is `creature/<system>.<pack link name>.<id>`, the bestiary key, drawn by the app; its
+  `<img>` removes itself when the app has no art for it. The area diagrams are shrunk with `cwebp`.
+- `FieldGuideImport` also runs Tabletop Kit's `BestiaryImporter` into `Generated/Creatures`, and
+  `scripts/import.sh` runs `CardArtImport` to copy the Rexard card pieces into `Generated/CardArt`.
 - `CatalogWriter` writes `Generated/catalog.sqlite`: table `entries` (id, system, category, name, level,
   rarity, traits, source, image, subtitle, facets JSON, html) and an FTS5 table over name and text.
 - Trait descriptions come from the language files through `traits.ts`, as in Combat Pad, and are stored
@@ -58,8 +60,19 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   the entry on the right. The list loads every summary of the category once and filters in memory; text
   search uses the FTS table.
 - `EntryView` shows an entry's HTML in a `WKWebView` with the app's stylesheet. A `WKURLSchemeHandler` for
-  `fieldguide:` serves images from `Generated/Images`; `entry:` and `trait:` links are intercepted and
-  pushed onto the entry's navigation stack.
+  `fieldguide:` serves images from `Generated/Images`, and `images/creature/<key>` as PNG drawn from the
+  creature art store, answered asynchronously (a request the web view stopped is not answered); `entry:` and
+  `trait:` links are intercepted and pushed onto the entry's navigation stack.
+- `CreatureArtModel` (`@Observable`) wraps Tabletop Kit's `CreatureArtStore` in `Application Support/Field
+  Guide/Creature Art`, the `BestiaryStore` over `Generated/Creatures` and the `CardArtPieces` in
+  `Generated/CardArt`. It matches art to creatures by name with `LibraryArtMatcher`, adds new PDFs from the
+  watched folders at launch, and gives pages, thumbnails and cards their pictures and missing PDFs.
+- On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote, a
+  toolbar picker switches between the web page and `CreatureCardView`: the `BattleCard`, turned over to
+  `CardBack` with the art, with the card art and glossary in the environment. The web fonts in `Generated`
+  are registered at launch for the cards.
+- `CreatureArtView`, from the sidebar's toolbar, is Combat Pad's creature art settings adapted (a second
+  copy; a third would move to Tabletop Kit).
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices follow the Mac's number format at import, as the import runs there.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data

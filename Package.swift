@@ -10,13 +10,22 @@ let package = Package(
         .executable(name: "FieldGuide", targets: ["FieldGuide"]),
         .executable(name: "FieldGuideImport", targets: ["FieldGuideImport"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.6.0")
+    ],
     targets: [
         .target(name: "FieldGuideKit"),
         .target(name: "CompendiumImport", dependencies: ["FieldGuideKit"]),
-        .executableTarget(name: "FieldGuideImport", dependencies: ["CompendiumImport"]),
-        .target(name: "FieldGuideUI", dependencies: ["FieldGuideKit"], resources: [.process("Resources")]),
+        .executableTarget(name: "FieldGuideImport", dependencies: [
+            "CompendiumImport", .product(name: "CreatureImport", package: "tabletop-kit")
+        ]),
+        .target(name: "FieldGuideUI", dependencies: [
+            "FieldGuideKit", .product(name: "BattleCards", package: "tabletop-kit"),
+            .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit")
+        ], resources: [.process("Resources")]),
         .executableTarget(name: "FieldGuide", dependencies: ["FieldGuideUI"]),
         .testTarget(name: "FieldGuideKitTests", dependencies: ["FieldGuideKit"]),
-        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"])
+        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),
+        .testTarget(name: "FieldGuideUITests", dependencies: ["FieldGuideUI", "FieldGuideKit"])
     ]
 )

@@ -8,13 +8,15 @@ import WebKit
 struct EntryWebView {
     let html: String
     let data: DataLocation
+    let creatureArt: CreatureArtModel
     let onLink: (URL) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(onLink: onLink) }
 
     func makeWebView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        configuration.setURLSchemeHandler(ResourceSchemeHandler(data: data), forURLScheme: "fieldguide")
+        configuration.setURLSchemeHandler(ResourceSchemeHandler(data: data, creatureArt: creatureArt),
+                                          forURLScheme: "fieldguide")
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         #if os(iOS)
@@ -78,28 +80,55 @@ enum PageTemplate {
     }
 }
 
-/// Serves `fieldguide:///images/…`, `fieldguide:///fonts/…` and `fieldguide:///style/entry.css`.
+/// Serves `fieldguide:///images/…`, `fieldguide:///fonts/…` and `fieldguide:///style/entry.css`, and a
+/// creature's art from the user's PDFs for `fieldguide:///images/creature/<key>`.
 @MainActor
 final class ResourceSchemeHandler: NSObject, WKURLSchemeHandler {
-    let data: DataLocation
+    /// Creature art on a page is drawn this large on its long side.
+    static let creatureArtPixels = 1024
+    static let creaturePrefix = "/images/creature/"
 
-    init(data: DataLocation) {
+    let data: DataLocation
+    let creatureArt: CreatureArtModel
+    /// Requests the web view has stopped waiting for, which must not be answered.
+    private var stopped: Set<ObjectIdentifier> = []
+
+    init(data: DataLocation, creatureArt: CreatureArtModel) {
         self.data = data
+        self.creatureArt = creatureArt
     }
 
     func webView(_ webView: WKWebView, start task: any WKURLSchemeTask) {
-        guard let url = task.request.url, let file = file(for: url), let body = try? Data(contentsOf: file) else {
+        guard let url = task.request.url else { return }
+        let path = url.path.removingPercentEncoding ?? url.path
+        if path.hasPrefix(Self.creaturePrefix) {
+            let key = String(path.dropFirst(Self.creaturePrefix.count))
+            Task {
+                let body = await creatureArt.png(forCreature: key, maxPixels: Self.creatureArtPixels)
+                answer(task, url: url, body: body, mimeType: "image/png")
+            }
+            return
+        }
+        let file = file(for: url)
+        answer(task, url: url, body: file.flatMap { try? Data(contentsOf: $0) },
+               mimeType: file.map(Self.mimeType(of:)) ?? "")
+    }
+
+    func webView(_ webView: WKWebView, stop task: any WKURLSchemeTask) {
+        stopped.insert(ObjectIdentifier(task))
+    }
+
+    private func answer(_ task: any WKURLSchemeTask, url: URL, body: Data?, mimeType: String) {
+        guard stopped.remove(ObjectIdentifier(task)) == nil else { return }
+        guard let body else {
             task.didFailWithError(URLError(.fileDoesNotExist))
             return
         }
-        let response = URLResponse(url: url, mimeType: Self.mimeType(of: file), expectedContentLength: body.count,
-                                   textEncodingName: nil)
-        task.didReceive(response)
+        task.didReceive(URLResponse(url: url, mimeType: mimeType, expectedContentLength: body.count,
+                                    textEncodingName: nil))
         task.didReceive(body)
         task.didFinish()
     }
-
-    func webView(_ webView: WKWebView, stop task: any WKURLSchemeTask) {}
 
     func file(for url: URL) -> URL? {
         let path = url.path.removingPercentEncoding ?? url.path

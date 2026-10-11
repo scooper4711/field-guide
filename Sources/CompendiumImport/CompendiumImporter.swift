@@ -4,15 +4,12 @@ import Foundation
 /// Where the importer reads from and writes to.
 public struct ImportOptions: Sendable {
     public var paths: FoundryPaths
-    /// Combat Pad's `Generated` folder, for creature art; nil to use only the Foundry modules.
-    public var combatPadGenerated: URL?
     /// Scrollkeeper's `Files` folder, for the area diagrams in the Player Core PDFs; nil to leave them out.
     public var scrollkeeperFiles: URL?
     public var output: URL
 
-    public init(paths: FoundryPaths, combatPadGenerated: URL?, scrollkeeperFiles: URL? = nil, output: URL) {
+    public init(paths: FoundryPaths, scrollkeeperFiles: URL? = nil, output: URL) {
         self.paths = paths
-        self.combatPadGenerated = combatPadGenerated
         self.scrollkeeperFiles = scrollkeeperFiles
         self.output = output
     }
@@ -38,8 +35,7 @@ public struct CompendiumImporter {
         let enricher = Enricher(localizer: localizer, links: links)
         let images = ImageCollector(paths: options.paths, output: options.output.appendingPathComponent("Images"))
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
-        let art = ArtSource(combatPadGenerated: options.combatPadGenerated, foundryData: options.paths.data)
-        let builder = PageBuilder(context: context, art: art)
+        let builder = PageBuilder(context: context)
         let diagrams = options.scrollkeeperFiles.map {
             AreaDiagrams(scrollkeeperFiles: $0, images: options.output.appendingPathComponent("Images")).rows()
         } ?? []
@@ -50,7 +46,7 @@ public struct CompendiumImporter {
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
         try copyFonts()
-        let report = ImportReport(rows: rows, enricher: enricher, images: images, artCount: art.count)
+        let report = ImportReport(rows: rows, enricher: enricher, images: images)
         try report.markdown.write(to: options.output.appendingPathComponent("import-report.md"), atomically: true,
                                   encoding: .utf8)
         return report
@@ -108,16 +104,14 @@ public struct ImportReport {
     public let unresolvedLinks: [String: Int]
     public let missingImages: [String: Int]
     public let withImages: Int
-    public let artCount: Int
     public let total: Int
 
-    init(rows: [EntryRow], enricher: Enricher, images: ImageCollector, artCount: Int) {
+    init(rows: [EntryRow], enricher: Enricher, images: ImageCollector) {
         counts = Dictionary(grouping: rows) { "\($0.system.title) \($0.category.title)" }.mapValues(\.count)
         unconverted = enricher.unconverted
         unresolvedLinks = enricher.unresolvedLinks
         missingImages = images.missing
         withImages = rows.filter { !$0.image.isEmpty }.count
-        self.artCount = artCount
         total = rows.count
     }
 

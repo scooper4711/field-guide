@@ -7,13 +7,10 @@ public struct FoundryPaths: Sendable {
     public var repository: URL
     /// The Foundry app's `public` folder, holding `icons/…`.
     public var appPublic: URL
-    /// Foundry's `Data` folder, holding `modules/…`.
-    public var data: URL
 
-    public init(repository: URL, appPublic: URL, data: URL) {
+    public init(repository: URL, appPublic: URL) {
         self.repository = repository
         self.appPublic = appPublic
-        self.data = data
     }
 
     /// The file a Foundry path names, or nil for paths that lead nowhere on this Mac.
@@ -24,16 +21,13 @@ public struct FoundryPaths: Sendable {
         switch first {
         case "systems" where parts.count == 3: return repository.appendingPathComponent("static/\(parts[2])")
         case "icons": return appPublic.appendingPathComponent(path)
-        case "modules": return data.appendingPathComponent(path)
         default: return nil
         }
     }
 }
 
-/// Copies the images entries use into the output folder, once each, and scales large art down.
+/// Copies the icons entries use into the output folder, once each.
 public final class ImageCollector {
-    public static let maximumArtSize = 512
-
     private let paths: FoundryPaths
     private let output: URL
     private var stored: [String: String] = [:]
@@ -56,16 +50,6 @@ public final class ImageCollector {
         let path = copy(source, to: relative) ? relative : ""
         stored[foundryPath] = path
         return path
-    }
-
-    /// A creature's art, scaled to at most `maximumArtSize` pixels and stored as `art/<key>.webp`.
-    public func art(_ source: URL, key: String) -> String {
-        let relative = "art/\(key.replacingOccurrences(of: ".", with: "/")).webp"
-        let destination = output.appendingPathComponent(relative)
-        if Self.isUpToDate(destination, comparedWith: source) { return relative }
-        try? FileManager.default.createDirectory(at: destination.deletingLastPathComponent(),
-                                                 withIntermediateDirectories: true)
-        return ArtScaler.scale(source, to: destination, maximumSize: Self.maximumArtSize) ? relative : ""
     }
 
     private func copy(_ source: URL, to relative: String) -> Bool {
@@ -91,7 +75,7 @@ public final class ImageCollector {
     }
 }
 
-/// Scales art with `cwebp`, which reads WebP, PNG and JPEG and writes WebP.
+/// Scales the area diagrams with `cwebp`, which reads WebP, PNG and JPEG and writes WebP.
 enum ArtScaler {
     static let tool = ["/opt/homebrew/bin/cwebp", "/usr/local/bin/cwebp"].first {
         FileManager.default.isExecutableFile(atPath: $0)

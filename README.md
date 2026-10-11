@@ -12,16 +12,23 @@ since the content and art are Paizo's. See `docs/specs/field-guide/` for the req
 - Filters narrow by level, rarity, traits, source and each category's own (spell rank, tradition and
   casting time, item type, feat category, creature size and more).
 - Links in an entry open the linked entry, and traits open their description; Back returns.
+- A creature's page switches between its stat block and its battle card (Card at the top); Turn Over shows
+  the card's back with the creature's art.
+- **Creature Art** (sidebar toolbar) reads creature art from your own Paizo pawn, token and Battle Cards PDFs:
+  Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are (on the iPad, pick On My iPad ▸
+  Scrollkeeper), and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
+  were deleted from Scrollkeeper are listed as missing, and creatures that lose their art say which PDF it
+  needs.
 
 ## Updating
 `make update` brings `~/git/pf2e` up to date with the official repository (fast-forward only), imports again
 and installs on the iPad. The steps on their own:
 
-- `make import` reads `~/git/pf2e` and writes `Generated/`: `catalog.sqlite`, the images, the fonts and
-  `import-report.md` (what could not be converted). Creature art comes from Combat Pad's
-  `~/git/combat-pad/Generated` (Foundry token modules and art from the Paizo PDFs), else from the Foundry
-  token modules; `cwebp` (`brew install webp`) scales it down. The first import takes several minutes for
-  the art; later ones about a minute and a half.
+- `make import` reads `~/git/pf2e` and writes `Generated/`: `catalog.sqlite`, the icons, the fonts,
+  `import-report.md` (what could not be converted), `Creatures/` (the battle cards' creatures, by Tabletop
+  Kit's `CreatureImport`) and `CardArt/` (the cards' UI art, copied from your Rexard packs in
+  `REXARD_PACKS`, default `~/Downloads`). No creature art is imported; the app reads it from your PDFs.
+  `cwebp` (`brew install webp`) shrinks the area diagrams.
 - `make ipad-install` builds the iPad app with `Generated/` inside and installs it on a connected iPad. Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
@@ -35,5 +42,6 @@ and installs on the iPad. The steps on their own:
 ## Layout
 - `Sources/FieldGuideKit`: the catalog model, its SQLite store and list filtering
 - `Sources/CompendiumImport`, `Sources/FieldGuideImport`: the importer
-- `Sources/FieldGuideUI`: SwiftUI shared by the iPad and the Mac; `Sources/FieldGuide`: the Mac app;
+- `Sources/FieldGuideUI`: SwiftUI shared by the iPad and the Mac; the battle cards, bestiary and creature art
+  store come from [Tabletop Kit](https://github.com/scooper4711/tabletop-kit); `Sources/FieldGuide`: the Mac app;
   `ios/`: the iPad project

@@ -8,7 +8,7 @@ import Testing
         let repository = try FakeRepository()
         defer { repository.remove() }
         try repository.writeGMScreen()
-        let options = ImportOptions(paths: repository.paths, combatPadGenerated: nil, output: repository.output)
+        let options = ImportOptions(paths: repository.paths, output: repository.output)
         _ = try CompendiumImporter(options: options).run()
         let catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
         let pages = try catalog.summaries(of: .gmScreen, in: .pathfinder)
