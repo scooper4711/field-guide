@@ -11,8 +11,7 @@ struct Imported {
 
     init() throws {
         repository = try FakeRepository()
-        let options = ImportOptions(paths: repository.paths, combatPadGenerated: repository.combatPad,
-                                    output: repository.output)
+        let options = ImportOptions(paths: repository.paths, output: repository.output)
         report = try CompendiumImporter(options: options).run()
         catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
     }
@@ -63,7 +62,7 @@ struct Imported {
             && light.values(of: .rarity) == ["Uncommon"])
         let creature = try #require(try imported.catalog.summaries(of: .bestiary, in: .pathfinder).first)
         #expect(creature.subtitle == "Creature -1" && creature.values(of: .size) == ["Small"])
-        #expect(creature.image == "art/pf2e/pathfinder-monster-core/goblin1.webp" || ArtScaler.tool == nil)
+        #expect(creature.image == "creature/pf2e.pathfinder-monster-core.goblin1")
         let hazard = try #require(try imported.catalog.summaries(of: .hazards, in: .pathfinder).first)
         #expect(hazard.values(of: .complexity) == ["Complex"] && hazard.subtitle == "Hazard 2")
         let equipment = try imported.catalog.summaries(of: .equipment, in: .pathfinder)

@@ -20,8 +20,10 @@ public struct EntryRow: Sendable {
 
 /// Builds an entry's page: header with image, traits, details or stat block, description and source.
 struct PageBuilder {
+    /// The image path of a creature's art, followed by its key (`<system>.<pack>.<id>`), as the bestiary keys it.
+    static let creatureArtPrefix = "creature/"
+
     let context: PageContext
-    let art: ArtSource
 
     func row(for document: SourceDocument) -> EntryRow {
         let traitsJSON = document.systemData["traits"]
@@ -48,7 +50,9 @@ struct PageBuilder {
         let glyph = Formatting.actionGlyph(type: system[path: "actionType.value"].string,
                                            count: system[path: "actions.value"].optionalInt)
         let spellTime = document.category == .spells ? Formatting.time(system[path: "time.value"].string) : ""
-        let picture = image.isEmpty ? "" : "<img class=\"art\" src=\"\(HTML.imageURL(image))\" alt=\"\">"
+        // A creature's art may be missing; its image then takes no room.
+        let picture = image.isEmpty ? "" : "<img class=\"art\" src=\"\(HTML.imageURL(image))\" alt=\"\" "
+            + "onerror=\"this.remove()\">"
         return "<header class=\"entry-header\">\(picture)<div><h1>\(HTML.escape(document.name)) " +
             "\(glyph)\(spellTime)</h1>"
             + "<p class=\"subtitle\">\(HTML.escape(subtitle))</p></div></header>"
@@ -79,16 +83,12 @@ struct PageBuilder {
         return title.isEmpty ? "" : "<footer class=\"source\">\(HTML.escape(title))</footer>"
     }
 
-    /// A creature's art when there is some, else the document's icon.
+    /// A creature's art, drawn on the device from the user's own PDFs (`creature/<key>`), else the document's
+    /// icon.
     private func image(of document: SourceDocument) -> String {
         if document.category == .bestiary || document.category == .hazards {
-            let id = document.json["_id"].string
-            let system = document.system.rawValue
-            let keys = ["\(system).\(document.pack.folder).\(id)", "\(system).\(document.pack.linkName).\(id)"]
-            if let file = keys.lazy.compactMap(art.art(for:)).first {
-                let stored = context.images.art(file, key: keys[0])
-                if !stored.isEmpty { return stored }
-            }
+            let key = "\(document.system.rawValue).\(document.pack.linkName).\(document.json["_id"].string)"
+            return Self.creatureArtPrefix + key
         }
         return context.images.icon(document.json["img"].string)
     }

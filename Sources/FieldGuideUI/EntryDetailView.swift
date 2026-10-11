@@ -1,3 +1,4 @@
+import Bestiary
 import FieldGuideKit
 import SwiftUI
 
@@ -25,21 +26,47 @@ struct EntryDetailView: View {
 /// One page in the stack.
 struct PageView: View {
     @Environment(CatalogStore.self) private var store
+    @Environment(CreatureArtModel.self) private var creatureArt
     let link: PageLink
     let follow: (PageLink) -> Void
+    @AppStorage("creatureView") private var creatureView = CreatureView.statBlock
 
     var body: some View {
         if let page {
-            EntryWebView(html: page.html, data: store.data) { url in
-                if let next = Self.link(for: url, system: page.system) { follow(next) }
-            }
+            content(of: page)
             .navigationTitle(page.name)
+            .toolbar {
+                if creature(on: page) != nil {
+                    Picker("Show", selection: $creatureView) {
+                        ForEach(CreatureView.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                }
+            }
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
         } else {
             ContentUnavailableView("Not in the Field Guide", systemImage: "questionmark.square.dashed")
         }
+    }
+
+    @ViewBuilder
+    private func content(of page: EntryPage) -> some View {
+        if creatureView == .card, let (key, creature) = creature(on: page) {
+            CreatureCardView(creature: creature, key: key)
+        } else {
+            EntryWebView(html: page.html, data: store.data, creatureArt: creatureArt) { url in
+                if let next = Self.link(for: url, system: page.system) { follow(next) }
+            }
+        }
+    }
+
+    /// The creature a page shows, when the import wrote it for the battle cards.
+    private func creature(on page: EntryPage) -> (key: String, creature: Creature)? {
+        guard let key = CreatureView.creatureKey(ofEntry: page.id), let creature = creatureArt.creature(key)
+        else { return nil }
+        return (key, creature)
     }
 
     private var page: EntryPage? {

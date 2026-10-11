@@ -54,7 +54,8 @@ import Testing
             #expect(html.contains(line), "\(line)")
         }
         #expect(!html.contains("Ref") && !html.contains("Reset"))
-        #expect(html.contains("src=\"fieldguide:///images/art/pf2e/hazards/trap1.webp\"") || ArtScaler.tool == nil)
+        #expect(html.contains("src=\"fieldguide:///images/creature/pf2e.hazards.trap1\""))
+        #expect(html.contains("onerror=\"this.remove()\""))
     }
 
     @Test func aBareCreatureStillReads() throws {
