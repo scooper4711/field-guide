@@ -34,7 +34,7 @@ struct CreatureCardView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Group {
+            FittedCard {
                 if showsBack {
                     CardBack(name: creature.name, game: creature.game, traits: creature.traits.traits) {
                         CreaturePicture(key: key)
@@ -43,7 +43,6 @@ struct CreatureCardView: View {
                     BattleCard(creature: creature)
                 }
             }
-            .frame(maxWidth: 520)
             .rotation3DEffect(.degrees(showsBack ? 180 : 0), axis: (x: 0, y: 1, z: 0))
             .scaleEffect(x: showsBack ? -1 : 1)
             MissingArtNote(sources: creatureArt.missingSources(forCreature: key))
@@ -56,6 +55,23 @@ struct CreatureCardView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environment(\.cardArt, creatureArt.cardArt)
         .environment(\.glossary, GlossaryContext(bestiary: creatureArt.bestiary))
+    }
+}
+
+/// A card laid out at its own width and shrunk as a whole to fit narrower space, so its text wraps the same in
+/// any column.
+struct FittedCard<Card: View>: View {
+    static var layoutWidth: CGFloat { 440 }
+    @ViewBuilder let card: Card
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scale = min(1, proxy.size.width / Self.layoutWidth)
+            card
+                .frame(width: Self.layoutWidth, height: proxy.size.height / scale)
+                .scaleEffect(scale, anchor: .top)
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+        }
     }
 }
 
