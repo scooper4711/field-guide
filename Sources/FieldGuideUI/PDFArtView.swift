@@ -51,6 +51,8 @@ struct PDFArtView: View {
                 Task { await model.refresh(addingNew: true) }
             }
         }
+        // In a Form row a tap would trigger every button; borderless buttons each take only their own taps.
+        .buttonStyle(.borderless)
         .disabled(model.progress != nil)
     }
 
