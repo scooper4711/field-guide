@@ -7,8 +7,9 @@ import UniformTypeIdentifiers
 struct PDFArtView: View {
     @Environment(ArtModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    @State private var isChoosingFolder = false
-    @State private var isChoosingFiles = false
+    // One file importer serves both buttons: SwiftUI presents only one of several on the same view.
+    @State private var isChoosing = false
+    @State private var choice = ArtChoice.pdfs
 
     var body: some View {
         NavigationStack {
@@ -32,12 +33,9 @@ struct PDFArtView: View {
             .formStyle(.grouped)
             .navigationTitle("Art from PDFs")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
-            .fileImporter(isPresented: $isChoosingFolder, allowedContentTypes: [.folder]) { result in
-                if case .success(let folder) = result { Task { await model.importFolder(folder) } }
-            }
-            .fileImporter(isPresented: $isChoosingFiles, allowedContentTypes: [.pdf],
-                          allowsMultipleSelection: true) { result in
-                if case .success(let files) = result { Task { await model.addFiles(files) } }
+            .fileImporter(isPresented: $isChoosing, allowedContentTypes: choice.contentTypes,
+                          allowsMultipleSelection: choice == .pdfs) { result in
+                if case .success(let urls) = result { chose(urls) }
             }
             .task { await model.refresh() }
         }
@@ -47,7 +45,7 @@ struct PDFArtView: View {
     private var importButtons: some View {
         HStack {
             Button("Import from Scrollkeeper…", systemImage: "books.vertical", action: importFromScrollkeeper)
-            Button("Add PDFs…", systemImage: "doc.badge.plus") { isChoosingFiles = true }
+            Button("Add PDFs…", systemImage: "doc.badge.plus") { choose(.pdfs) }
             Spacer()
             Button("Check Again", systemImage: "arrow.clockwise") {
                 Task { await model.refresh(addingNew: true) }
@@ -66,7 +64,22 @@ struct PDFArtView: View {
             return
         }
         #endif
-        isChoosingFolder = true
+        choose(.folder)
+    }
+
+    private func choose(_ choice: ArtChoice) {
+        self.choice = choice
+        isChoosing = true
+    }
+
+    private func chose(_ urls: [URL]) {
+        switch choice {
+        case .folder:
+            guard let folder = urls.first else { return }
+            Task { await model.importFolder(folder) }
+        case .pdfs:
+            Task { await model.addFiles(urls) }
+        }
     }
 
     private var missingSection: some View {
@@ -104,6 +117,13 @@ struct PDFArtView: View {
             }
         }
     }
+}
+
+/// What the file importer is choosing: Scrollkeeper's folder, or PDFs to keep copies of.
+private enum ArtChoice {
+    case folder, pdfs
+
+    var contentTypes: [UTType] { self == .folder ? [.folder] : [.pdf] }
 }
 
 /// A PDF of creature art, with how much art it gives, and a way to remove it.
