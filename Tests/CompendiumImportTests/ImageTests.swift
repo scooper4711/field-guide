@@ -12,13 +12,21 @@ import Testing
         #expect(paths.file(for: "https://example.com/x.webp") == nil && paths.file(for: "") == nil)
     }
 
-    @Test func copiesIconsOnce() throws {
-        let repository = try FakeRepository()
-        defer { repository.remove() }
-        let images = ImageCollector(paths: repository.paths, output: repository.output)
-        #expect(images.icon("icons/weapons/sword.webp") == "icons/weapons/sword.webp")
-        #expect(images.icon("icons/weapons/sword.webp") == "icons/weapons/sword.webp")
-        #expect(images.icon("systems/pf2e/icons/default.svg").isEmpty && images.icon("").isEmpty)
-        #expect(images.icon("icons/none.webp").isEmpty && images.missing == ["icons/none.webp": 1])
+    @Test func copiesTheChosenRexardIconsOnceAsWebP() throws {
+        let fixture = try IconFixture()
+        defer { fixture.remove() }
+        let sword = IconFixture.document("ls", "Longsword", type: "weapon", img: "icons/weapons/sword.webp")
+        let other = IconFixture.document("ot", "Other", type: "weapon", img: "icons/other.webp")
+        let gone = IconFixture.document("gn", "Gone", type: "weapon", img: "icons/gone.webp")
+        let map = IconMap(documents: [sword, other, gone], sources: fixture.sources(overrides: [
+            "icons/gone.webp": "Missing/gone.png"
+        ]))
+        let output = fixture.root.appendingPathComponent("Images")
+        let images = ImageCollector(icons: map, packs: fixture.packs, output: output)
+        #expect(images.icon(of: sword) == "rexard/Weapons/sword.webp")
+        #expect(images.icon(of: sword) == "rexard/Weapons/sword.webp")
+        #expect(ArtScaler.pixelSize(of: output.appendingPathComponent("rexard/Weapons/sword.webp"))?.width == 96)
+        #expect(images.icon(of: other).isEmpty && images.icon(of: gone).isEmpty)
+        #expect(ImageCollector(icons: map, packs: nil, output: output).icon(of: sword).isEmpty)
     }
 }

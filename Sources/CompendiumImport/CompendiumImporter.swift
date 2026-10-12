@@ -4,14 +4,21 @@ import Foundation
 /// Where the importer reads from and writes to.
 public struct ImportOptions: Sendable {
     public var paths: FoundryPaths
+    /// The user's Rexard packs, whose pictures stand in for Foundry's icons; nil for no icons.
+    public var rexardPacks: URL?
+    /// Rexard files by Foundry path or entry id, for icons the rules pick badly.
+    public var iconOverrides: [String: String] = [:]
     /// Scrollkeeper's `Files` folder, for the area diagrams in the Player Core PDFs; nil to leave them out.
     public var scrollkeeperFiles: URL?
     public var output: URL
+    /// Where the import keeps what the app doesn't need: the Rexard hash cache and `icon-map.tsv`. The output
+    /// goes into the app whole.
+    public var workFolder: URL
 
-    public init(paths: FoundryPaths, scrollkeeperFiles: URL? = nil, output: URL) {
+    public init(paths: FoundryPaths, output: URL, workFolder: URL) {
         self.paths = paths
-        self.scrollkeeperFiles = scrollkeeperFiles
         self.output = output
+        self.workFolder = workFolder
     }
 }
 
@@ -33,7 +40,8 @@ public struct CompendiumImporter {
         var links = LinkIndex(documents: documents)
         journalPages.forEach { links.add($0) }
         let enricher = Enricher(localizer: localizer, links: links)
-        let images = ImageCollector(paths: options.paths, output: options.output.appendingPathComponent("Images"))
+        let images = ImageCollector(icons: IconMap(documents: documents, sources: iconSources()),
+                                    packs: options.rexardPacks, output: options.output.appendingPathComponent("Images"))
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
         let builder = PageBuilder(context: context)
         let diagrams = options.scrollkeeperFiles.map {
@@ -46,10 +54,21 @@ public struct CompendiumImporter {
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
         try copyFonts()
+        try FileManager.default.createDirectory(at: options.workFolder, withIntermediateDirectories: true)
+        try images.icons.table(of: documents).write(to: options.workFolder.appendingPathComponent("icon-map.tsv"),
+                                                    atomically: true, encoding: .utf8)
         let report = ImportReport(rows: rows, enricher: enricher, images: images)
         try report.markdown.write(to: options.output.appendingPathComponent("import-report.md"), atomically: true,
                                   encoding: .utf8)
         return report
+    }
+
+    /// The Rexard packs' pictures, hashed, with the overrides.
+    private func iconSources() -> IconSources {
+        let rexard = options.rexardPacks.map {
+            RexardIcons.load(folder: $0, cache: options.workFolder.appendingPathComponent("rexard-hashes.json"))
+        }
+        return IconSources(paths: options.paths, rexard: rexard, overrides: options.iconOverrides)
     }
 
     /// Both systems' documents, with the Pathfinder ones the Starfinder build copies into its packs.
@@ -102,7 +121,10 @@ public struct ImportReport {
     public let counts: [String: Int]
     public let unconverted: [String: Int]
     public let unresolvedLinks: [String: Int]
-    public let missingImages: [String: Int]
+    /// How many entries got their icon by each rule.
+    public let iconRules: [String: Int]
+    /// The Foundry icons of entries left without one, with how many entries use each.
+    public let unresolvedIcons: [String: Int]
     public let withImages: Int
     public let total: Int
 
@@ -110,7 +132,8 @@ public struct ImportReport {
         counts = Dictionary(grouping: rows) { "\($0.system.title) \($0.category.title)" }.mapValues(\.count)
         unconverted = enricher.unconverted
         unresolvedLinks = enricher.unresolvedLinks
-        missingImages = images.missing
+        iconRules = Dictionary(uniqueKeysWithValues: images.icons.counts.map { ($0.key.rawValue, $0.value) })
+        unresolvedIcons = images.icons.unresolved
         withImages = rows.filter { !$0.image.isEmpty }.count
         total = rows.count
     }
@@ -118,7 +141,7 @@ public struct ImportReport {
     public var summary: String {
         let unresolved = unresolvedLinks.values.reduce(0, +)
         return "Imported \(total) entries (\(withImages) with images); \(unresolved) unresolved links, "
-            + "\(missingImages.count) missing images."
+            + "\(unresolvedIcons.values.reduce(0, +)) entries without icons."
     }
 
     public var markdown: String {
@@ -126,7 +149,8 @@ public struct ImportReport {
         lines += counts.sorted { $0.key < $1.key }.map { "- \($0.key): \($0.value)" }
         lines += ["", "## Unconverted enrichers", ""] + Self.top(unconverted)
         lines += ["", "## Unresolved links (most frequent)", ""] + Self.top(unresolvedLinks)
-        lines += ["", "## Missing images", ""] + Self.top(missingImages)
+        lines += ["", "## Icons by rule", ""] + Self.top(iconRules)
+        lines += ["", "## Foundry icons left without a Rexard icon", ""] + Self.top(unresolvedIcons)
         return lines.joined(separator: "\n") + "\n"
     }
 

@@ -84,12 +84,12 @@ struct PageBuilder {
     }
 
     /// A creature's art, drawn on the device from the user's own PDFs (`creature/<key>`), else the document's
-    /// icon.
+    /// Rexard icon.
     private func image(of document: SourceDocument) -> String {
         if document.category == .bestiary || document.category == .hazards {
             let key = "\(document.system.rawValue).\(document.pack.linkName).\(document.json["_id"].string)"
             return Self.creatureArtPrefix + key
         }
-        return context.images.icon(document.json["img"].string)
+        return context.images.icon(of: document)
     }
 }

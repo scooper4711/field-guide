@@ -11,7 +11,9 @@ struct Imported {
 
     init() throws {
         repository = try FakeRepository()
-        let options = ImportOptions(paths: repository.paths, output: repository.output)
+        var options = ImportOptions(paths: repository.paths, output: repository.output,
+                                    workFolder: repository.root.appendingPathComponent("work"))
+        options.rexardPacks = repository.rexardPacks
         report = try CompendiumImporter(options: options).run()
         catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
     }
@@ -52,7 +54,8 @@ struct Imported {
         let spells = try imported.catalog.summaries(of: .spells, in: .pathfinder)
         let fireball = try #require(spells.first { $0.name == "Fireball" })
         #expect(fireball.level == 3 && fireball.subtitle == "Spell 3")
-        #expect(fireball.image == "systems/pf2e/icons/spells/fireball.webp")
+        // pf2e's own icons are Paizo's, which the app may not ship.
+        #expect(fireball.image.isEmpty)
         #expect(fireball.values(of: .tradition) == ["Arcane", "Primal"] && fireball.values(of: .rank) == ["3"])
         #expect(fireball.values(of: .castingTime) == ["Two Actions"] && fireball.values(of: .traits) == ["Fire",
             "Manipulate"])
@@ -96,7 +99,12 @@ struct Imported {
         let fonts = try FileManager.default.contentsOfDirectory(atPath: fontFolder.path)
         #expect(Set(fonts) == ["pathfinder-2e-actions.woff2", "gelasio-regular.woff2"])
         let images = imported.repository.output.appendingPathComponent("Images")
-        #expect(FileManager.default.fileExists(atPath: images.appendingPathComponent("icons/weapons/sword.webp").path))
-        #expect(imported.report.missingImages["icons/missing.webp"] == 1)
+        let sword = try #require(try imported.catalog.summaries(of: .equipment, in: .pathfinder)
+            .first { $0.name == "Longsword" })
+        #expect(sword.image == "rexard/Weapons/sword.webp")
+        #expect(FileManager.default.fileExists(atPath: images.appendingPathComponent(sword.image).path))
+        #expect(imported.report.unresolvedIcons["icons/missing.webp"] == 1 && imported.report.iconRules["match"] == 1)
+        let table = imported.repository.root.appendingPathComponent("work/icon-map.tsv")
+        #expect(try String(contentsOf: table, encoding: .utf8).contains("Longsword"))
     }
 }

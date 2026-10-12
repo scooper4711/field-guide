@@ -59,7 +59,11 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 - R5.5 Tapping a trait shows its description.
 
 ## R6 Images
-- R6.1 Items, spells, feats and actions show their Foundry icons.
+- R6.1 Items, spells, feats and actions show icons from the user's own Rexard packs, never Foundry's or
+  Paizo's: the Rexard original of the entry's Foundry icon; else its base item's icon (a +1 longsword gets
+  the longsword's); else the icon most entries like it clearly share (items: same weapon or armor group,
+  consumable category or item type; others: same trait); else none, and the list shows the category's symbol.
+  `icon-overrides.json` (Foundry path or entry id → Rexard file) corrects bad picks.
 - R6.2 Creatures and hazards show their art, read on the device from the user's own Paizo pawn, token and
   Battle Cards PDFs (Tabletop Kit's `CreatureArt`); without art the page shows none and the list shows the
   category's symbol. No Paizo or Foundry module art is imported or bundled.

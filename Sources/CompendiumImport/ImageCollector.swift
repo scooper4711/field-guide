@@ -26,45 +26,45 @@ public struct FoundryPaths: Sendable {
     }
 }
 
-/// Copies the icons entries use into the output folder, once each.
+/// Copies the Rexard icons entries show into the output folder, once each, as WebP of at most 256 pixels.
 public final class ImageCollector {
-    private let paths: FoundryPaths
+    /// The folder in the output that holds the icons, by their paths in the packs.
+    static let folder = "rexard"
+    static let iconSize = 256
+
+    let icons: IconMap
+    private let packs: URL?
     private let output: URL
     private var stored: [String: String] = [:]
-    public private(set) var missing: [String: Int] = [:]
 
-    public init(paths: FoundryPaths, output: URL) {
-        self.paths = paths
+    init(icons: IconMap, packs: URL?, output: URL) {
+        self.icons = icons
+        self.packs = packs
         self.output = output
     }
 
-    /// The stored path of a Foundry icon, or "" for none: SVG placeholders and missing files are left out.
-    public func icon(_ foundryPath: String) -> String {
-        guard !foundryPath.isEmpty, !foundryPath.hasSuffix(".svg") else { return "" }
-        if let path = stored[foundryPath] { return path }
-        let relative = foundryPath.removingPercentEncoding ?? foundryPath
-        guard let source = paths.file(for: foundryPath), FileManager.default.fileExists(atPath: source.path) else {
-            missing[foundryPath, default: 0] += 1
-            return ""
-        }
-        let path = copy(source, to: relative) ? relative : ""
-        stored[foundryPath] = path
+    /// The stored path of an entry's icon, or "" for none.
+    func icon(of document: SourceDocument) -> String {
+        guard let packs, let file = icons.choice(for: document)?.file else { return "" }
+        if let path = stored[file] { return path }
+        let path = copy(packs.appendingPathComponent(file), as: file)
+        stored[file] = path
         return path
     }
 
-    private func copy(_ source: URL, to relative: String) -> Bool {
-        let destination = output.appendingPathComponent(relative)
-        if Self.isUpToDate(destination, comparedWith: source) { return true }
-        do {
-            try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(),
-                                                    withIntermediateDirectories: true)
-            try? FileManager.default.removeItem(at: destination)
-            try FileManager.default.copyItem(at: source, to: destination)
-            return true
-        } catch {
-            missing[relative, default: 0] += 1
-            return false
-        }
+    /// Writes the picture as WebP, or as it is when it can't be converted; "" when it can't be read.
+    private func copy(_ source: URL, as file: String) -> String {
+        guard FileManager.default.fileExists(atPath: source.path) else { return "" }
+        let webp = "\(Self.folder)/\((file as NSString).deletingPathExtension).webp"
+        let destination = output.appendingPathComponent(webp)
+        if Self.isUpToDate(destination, comparedWith: source) { return webp }
+        try? FileManager.default.createDirectory(at: destination.deletingLastPathComponent(),
+                                                 withIntermediateDirectories: true)
+        if ArtScaler.scale(source, to: destination, maximumSize: Self.iconSize) { return webp }
+        let plain = "\(Self.folder)/\(file)"
+        let target = output.appendingPathComponent(plain)
+        try? FileManager.default.removeItem(at: target)
+        return (try? FileManager.default.copyItem(at: source, to: target)) == nil ? "" : plain
     }
 
     static func isUpToDate(_ destination: URL, comparedWith source: URL) -> Bool {

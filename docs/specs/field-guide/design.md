@@ -43,9 +43,20 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   spellcasting.
 - `FacetExtractor` records each entry's filter values: level, rarity, traits, source title and the
   category's own facets as a JSON object.
-- `ImageCollector` resolves Foundry paths (`systems/<system>/…` → the repository's `static/`, `icons/…` →
-  the Foundry app's `public/icons`, `modules/…` → the Foundry data folder) and copies each image once into
-  `Generated/Images`. Foundry module paths are not resolved: module art is Paizo's. A creature's or
+- `FoundryPaths` resolves Foundry paths (`systems/<system>/…` → the repository's `static/`, `icons/…` →
+  the Foundry app's `public/icons`); module paths are not resolved, since module art is Paizo's.
+- `RexardIcons` hashes every PNG in the Rexard packs (256-bit difference hash, gray, over black, whole and
+  at 12 crops, since Foundry crops some icons), cached by size and date in the import's work folder (`.build/field-guide-import`, since `Generated` goes into
+  the app whole).
+  `IconMap` picks each entry's icon: overrides, then the nearest Rexard picture to its Foundry icon (hashed
+  over black and over white) within 12 bits, then its base item's (`system.baseItem` equal to an item's
+  slug), then `LearnedIcons`: the most common icon among matched entries of the category sharing its
+  weapon/armor group, consumable category or type for items, a trait (traditions count for spells) for
+  the rest, each needing 3 entries of which more than a third show the icon; never the whole category, which would
+  give every action or deity one icon, and never an item's traits, which say little about its looks. The import writes `icon-map.tsv` there (entry, Foundry icon, Rexard
+  file, rule, distance) and counts per rule in `import-report.md`.
+- `ImageCollector` writes each chosen Rexard file once as a WebP of at most 256 pixels to
+  `Generated/Images/rexard/<path in the packs>`. No Foundry or pf2e icon file is copied. A creature's or
   hazard's image is `creature/<system>.<pack link name>.<id>`, the bestiary key, drawn by the app; its
   `<img>` removes itself when the app has no art for it. The area diagrams are shrunk with `cwebp`.
 - `FieldGuideImport` also runs Tabletop Kit's `BestiaryImporter` into `Generated/Creatures`, and

@@ -10,6 +10,7 @@ struct FakeRepository {
     var repository: URL { root.appendingPathComponent("pf2e") }
     var appPublic: URL { root.appendingPathComponent("app") }
     var output: URL { root.appendingPathComponent("Generated") }
+    var rexardPacks: URL { root.appendingPathComponent("rexard") }
     var paths: FoundryPaths { FoundryPaths(repository: repository, appPublic: appPublic) }
 
     init() throws {
@@ -31,7 +32,8 @@ struct FakeRepository {
             try write("static/fonts/\(font)", in: repository, text: "font")
         }
         try write("static/icons/spells/fireball.webp", in: repository, text: "icon")
-        try write("icons/weapons/sword.webp", in: appPublic, text: "icon")
+        try Pattern.rising.write(to: appPublic.appendingPathComponent("icons/weapons/sword.webp"), size: 40)
+        try Pattern.rising.write(to: rexardPacks.appendingPathComponent("Weapons/sword.png"), size: 96)
         try writeDocuments()
     }
 

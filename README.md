@@ -28,7 +28,9 @@ and installs on the iPad. The steps on their own:
   `import-report.md` (what could not be converted), `Creatures/` (the battle cards' creatures, by Tabletop
   Kit's `CreatureImport`) and `CardArt/` (the cards' UI art, copied from your Rexard packs in
   `REXARD_PACKS`, default `~/git/rexard-packs`). No creature art is imported; the app reads it from your PDFs.
-  `cwebp` (`brew install webp`) shrinks the area diagrams.
+  Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists each pick and why);
+  to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to `icon-overrides.json`.
+  `cwebp` (`brew install webp`) shrinks the icons and the area diagrams.
 - `make ipad-install` builds the iPad app with `Generated/` inside and installs it on a connected iPad. Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
