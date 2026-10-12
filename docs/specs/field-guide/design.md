@@ -71,18 +71,20 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   the entry on the right. The list loads every summary of the category once and filters in memory; text
   search uses the FTS table.
 - `EntryView` shows an entry's HTML in a `WKWebView` with the app's stylesheet. A `WKURLSchemeHandler` for
-  `fieldguide:` serves images from `Generated/Images`, and `images/creature/<key>` as PNG drawn from the
-  creature art store, answered asynchronously (a request the web view stopped is not answered); `entry:` and
-  `trait:` links are intercepted and pushed onto the entry's navigation stack.
-- `CreatureArtModel` (`@Observable`) wraps Tabletop Kit's `CreatureArtStore` in `Application Support/Field
+  `fieldguide:` serves images from `Generated/Images`; `images/creature/<key>` as PNG drawn from the
+  art store; and `images/item/…` (`ItemArtPath`: `item/<system>/<name>?fallback=<icon>`, the image the import
+  gives equipment) as the item's art when the user's decks have it, else the icon file; both answered
+  asynchronously (a request the web view stopped is not answered). `entry:` and `trait:` links are intercepted
+  and pushed onto the entry's navigation stack.
+- `ArtModel` (`@Observable`) wraps Tabletop Kit's `CreatureArtStore` in `Application Support/Field
   Guide/Creature Art`, the `BestiaryStore` over `Generated/Creatures` and the `CardArtPieces` in
-  `Generated/CardArt`. It matches art to creatures by name with `LibraryArtMatcher`, adds new PDFs from the
+  `Generated/CardArt`. It matches art to creatures, and to items (`art(forItemNamed:game:)`), by name with `LibraryArtMatcher`, adds new PDFs from the
   watched folders at launch, and gives pages, thumbnails and cards their pictures and missing PDFs.
 - On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote, a
   toolbar picker switches between the web page and `CreatureCardView`: the `BattleCard`, turned over to
   `CardBack` with the art, with the card art and glossary in the environment. The web fonts in `Generated`
   are registered at launch for the cards.
-- `CreatureArtView`, from the sidebar's toolbar, is Combat Pad's creature art settings adapted (a second
+- `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Combat Pad's creature art settings adapted (a second
   copy; a third would move to Tabletop Kit).
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices follow the Mac's number format at import, as the import runs there.

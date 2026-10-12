@@ -4,8 +4,8 @@ import UniformTypeIdentifiers
 
 /// Where creature art comes from: the user's own Paizo PDFs, used where Scrollkeeper keeps them or copied
 /// in, with the ones that have gone missing.
-struct CreatureArtView: View {
-    @Environment(CreatureArtModel.self) private var model
+struct PDFArtView: View {
+    @Environment(ArtModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @State private var isChoosingFolder = false
     @State private var isChoosingFiles = false
@@ -14,8 +14,9 @@ struct CreatureArtView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("Creature art comes from your own Paizo pawn, token and Battle Cards PDFs. Field Guide "
-                         + "uses the ones Scrollkeeper downloads where they are, without copying them.")
+                    Text("Creature art comes from your own Paizo pawn, token and Battle Cards PDFs, and item art "
+                         + "from your item decks (Potions & Talismans, Guns, Deck of Endless Treasure, …). Field "
+                         + "Guide uses the ones Scrollkeeper downloads where they are, without copying them.")
                         .font(.callout).foregroundStyle(.secondary)
                     importButtons
                     if let progress = model.progress {
@@ -29,7 +30,7 @@ struct CreatureArtView: View {
                 pdfsSection
             }
             .formStyle(.grouped)
-            .navigationTitle("Creature Art")
+            .navigationTitle("Art from PDFs")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
             .fileImporter(isPresented: $isChoosingFolder, allowedContentTypes: [.folder]) { result in
                 if case .success(let folder) = result { Task { await model.importFolder(folder) } }
@@ -108,7 +109,7 @@ struct CreatureArtView: View {
 /// A PDF of creature art, with how much art it gives, and a way to remove it.
 private struct SourceRow: View {
     let source: ArtSourceSummary
-    @Environment(CreatureArtModel.self) private var model
+    @Environment(ArtModel.self) private var model
 
     var body: some View {
         HStack {

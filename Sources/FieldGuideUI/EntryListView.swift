@@ -92,7 +92,7 @@ struct EntryRow: View {
     }
 }
 
-/// A stored image, a creature's art from the user's PDFs, or a symbol when there is none.
+/// A stored image, a creature's or item's art from the user's PDFs, or a symbol when there is none.
 struct Thumbnail: View {
     static let creaturePrefix = "creature/"
     let path: String
@@ -102,8 +102,22 @@ struct Thumbnail: View {
     var body: some View {
         if path.hasPrefix(Self.creaturePrefix) {
             CreatureThumbnail(key: String(path.dropFirst(Self.creaturePrefix.count)), placeholder: placeholder)
-        } else if let image = ImageCache.shared.image(at: images.appendingPathComponent(path),
-                                                      isEmpty: path.isEmpty) {
+        } else if let item = ItemArtPath(path: path) {
+            ItemThumbnail(item: item, images: images, placeholder: placeholder)
+        } else {
+            StoredThumbnail(path: path, images: images, placeholder: placeholder)
+        }
+    }
+}
+
+/// A stored image, or a symbol when there is none.
+struct StoredThumbnail: View {
+    let path: String
+    let images: URL
+    let placeholder: String
+
+    var body: some View {
+        if let image = ImageCache.shared.image(at: images.appendingPathComponent(path), isEmpty: path.isEmpty) {
             image.resizable().scaledToFit()
         } else {
             Image(systemName: placeholder)
@@ -113,11 +127,34 @@ struct Thumbnail: View {
     }
 }
 
+/// An item's art from the user's decks, drawn small; its stored icon until then, or without art.
+struct ItemThumbnail: View {
+    let item: ItemArtPath
+    let images: URL
+    let placeholder: String
+    @Environment(ArtModel.self) private var pdfArt
+    @Environment(\.displayScale) private var displayScale
+    @State private var image: CGImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(decorative: image, scale: displayScale).resizable().scaledToFit()
+            } else {
+                StoredThumbnail(path: item.fallback, images: images, placeholder: placeholder)
+            }
+        }
+        .task(id: "\(item.path)#\(pdfArt.catalog.art.count)") {
+            image = await pdfArt.picture(forItem: item, maxPixels: Int(40 * displayScale))
+        }
+    }
+}
+
 /// A creature's art from the user's PDFs, drawn small; its category's symbol until then, or without art.
 struct CreatureThumbnail: View {
     let key: String
     let placeholder: String
-    @Environment(CreatureArtModel.self) private var creatureArt
+    @Environment(ArtModel.self) private var pdfArt
     @Environment(\.displayScale) private var displayScale
     @State private var image: CGImage?
 
@@ -129,8 +166,8 @@ struct CreatureThumbnail: View {
                 Image(systemName: placeholder).font(.title3).foregroundStyle(.secondary)
             }
         }
-        .task(id: "\(key)#\(creatureArt.catalog.art.count)") {
-            image = await creatureArt.picture(forCreature: key, maxPixels: Int(40 * displayScale))
+        .task(id: "\(key)#\(pdfArt.catalog.art.count)") {
+            image = await pdfArt.picture(forCreature: key, maxPixels: Int(40 * displayScale))
         }
     }
 }

@@ -5,12 +5,12 @@ import SwiftUI
 /// The app, shared by the iPad and the Mac.
 public struct FieldGuideApp: App {
     @State private var store: CatalogStore
-    @State private var creatureArt: CreatureArtModel
+    @State private var pdfArt: ArtModel
 
     public init() {
         let store = CatalogStore()
         _store = State(initialValue: store)
-        _creatureArt = State(initialValue: CreatureArtModel.standard(data: store.data))
+        _pdfArt = State(initialValue: ArtModel.standard(data: store.data))
         Fonts.register(from: store.data.folder)
     }
 
@@ -18,8 +18,8 @@ public struct FieldGuideApp: App {
         WindowGroup {
             RootView()
                 .environment(store)
-                .environment(creatureArt)
-                .task { await creatureArt.refresh(addingNew: true) }
+                .environment(pdfArt)
+                .task { await pdfArt.refresh(addingNew: true) }
         }
     }
 }
@@ -53,7 +53,7 @@ struct RootView: View {
 
 struct SidebarView: View {
     @Environment(CatalogStore.self) private var store
-    @State private var isShowingCreatureArt = false
+    @State private var isShowingPDFArt = false
 
     var body: some View {
         @Bindable var store = store
@@ -73,8 +73,8 @@ struct SidebarView: View {
         }
         .navigationTitle("Field Guide")
         .toolbar {
-            Button("Creature Art", systemImage: "photo.on.rectangle.angled") { isShowingCreatureArt = true }
+            Button("Art from PDFs", systemImage: "photo.on.rectangle.angled") { isShowingPDFArt = true }
         }
-        .sheet(isPresented: $isShowingCreatureArt) { CreatureArtView() }
+        .sheet(isPresented: $isShowingPDFArt) { PDFArtView() }
     }
 }

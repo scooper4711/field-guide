@@ -14,7 +14,9 @@ since the content and art are Paizo's. See `docs/specs/field-guide/` for the req
 - Links in an entry open the linked entry, and traits open their description; Back returns.
 - A creature's page switches between its stat block and its battle card (Card at the top); Turn Over shows
   the card's back with the creature's art.
-- **Creature Art** (sidebar toolbar) reads creature art from your own Paizo pawn, token and Battle Cards PDFs:
+- **Art from PDFs** (sidebar toolbar) reads creature art from your own Paizo pawn, token and Battle Cards PDFs,
+  and item art from your item decks (Potions & Talismans, Magic Armaments, Alchemy, Guns, Gears, Relics, Deck
+  of Endless Treasure), shown on equipment in place of the Rexard icon:
   Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are (on the iPad, pick On My iPad ▸
   Scrollkeeper), and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
   were deleted from Scrollkeeper are listed as missing, and creatures that lose their art say which PDF it

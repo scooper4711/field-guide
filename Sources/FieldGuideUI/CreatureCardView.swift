@@ -29,7 +29,7 @@ enum CreatureView: String, CaseIterable, Identifiable {
 struct CreatureCardView: View {
     let creature: Creature
     let key: String
-    @Environment(CreatureArtModel.self) private var creatureArt
+    @Environment(ArtModel.self) private var pdfArt
     @State private var showsBack = false
 
     var body: some View {
@@ -45,7 +45,7 @@ struct CreatureCardView: View {
             }
             .rotation3DEffect(.degrees(showsBack ? 180 : 0), axis: (x: 0, y: 1, z: 0))
             .scaleEffect(x: showsBack ? -1 : 1)
-            MissingArtNote(sources: creatureArt.missingSources(forCreature: key))
+            MissingArtNote(sources: pdfArt.missingSources(forCreature: key))
             Button(showsBack ? "Show Front" : "Turn Over", systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
                 withAnimation(.easeInOut(duration: 0.4)) { showsBack.toggle() }
             }
@@ -53,8 +53,8 @@ struct CreatureCardView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .environment(\.cardArt, creatureArt.cardArt)
-        .environment(\.glossary, GlossaryContext(bestiary: creatureArt.bestiary))
+        .environment(\.cardArt, pdfArt.cardArt)
+        .environment(\.glossary, GlossaryContext(bestiary: pdfArt.bestiary))
     }
 }
 
@@ -78,7 +78,7 @@ struct FittedCard<Card: View>: View {
 /// A creature's art at full size; nothing when it has none.
 struct CreaturePicture: View {
     let key: String
-    @Environment(CreatureArtModel.self) private var creatureArt
+    @Environment(ArtModel.self) private var pdfArt
     @State private var image: CGImage?
 
     var body: some View {
@@ -87,8 +87,8 @@ struct CreaturePicture: View {
                 Image(decorative: image, scale: 1).resizable().interpolation(.high).scaledToFit()
             }
         }
-        .task(id: "\(key)#\(creatureArt.catalog.art.count)") {
-            image = await creatureArt.picture(forCreature: key, maxPixels: 0)
+        .task(id: "\(key)#\(pdfArt.catalog.art.count)") {
+            image = await pdfArt.picture(forCreature: key, maxPixels: 0)
         }
     }
 }

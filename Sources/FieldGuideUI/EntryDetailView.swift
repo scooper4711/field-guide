@@ -26,7 +26,7 @@ struct EntryDetailView: View {
 /// One page in the stack.
 struct PageView: View {
     @Environment(CatalogStore.self) private var store
-    @Environment(CreatureArtModel.self) private var creatureArt
+    @Environment(ArtModel.self) private var pdfArt
     let link: PageLink
     let follow: (PageLink) -> Void
     @AppStorage("creatureView") private var creatureView = CreatureView.statBlock
@@ -56,7 +56,7 @@ struct PageView: View {
         if creatureView == .card, let (key, creature) = creature(on: page) {
             CreatureCardView(creature: creature, key: key)
         } else {
-            EntryWebView(html: page.html, data: store.data, creatureArt: creatureArt) { url in
+            EntryWebView(html: page.html, data: store.data, pdfArt: pdfArt) { url in
                 if let next = Self.link(for: url, system: page.system) { follow(next) }
             }
         }
@@ -64,7 +64,7 @@ struct PageView: View {
 
     /// The creature a page shows, when the import wrote it for the battle cards.
     private func creature(on page: EntryPage) -> (key: String, creature: Creature)? {
-        guard let key = CreatureView.creatureKey(ofEntry: page.id), let creature = creatureArt.creature(key)
+        guard let key = CreatureView.creatureKey(ofEntry: page.id), let creature = pdfArt.creature(key)
         else { return nil }
         return (key, creature)
     }

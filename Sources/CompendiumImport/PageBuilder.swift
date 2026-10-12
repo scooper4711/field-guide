@@ -83,13 +83,18 @@ struct PageBuilder {
         return title.isEmpty ? "" : "<footer class=\"source\">\(HTML.escape(title))</footer>"
     }
 
-    /// A creature's art, drawn on the device from the user's own PDFs (`creature/<key>`), else the document's
-    /// Rexard icon.
+    /// A creature's art, drawn on the device from the user's own PDFs (`creature/<key>`); an item's art from the
+    /// user's item decks, else its Rexard icon (`ItemArtPath`); else the document's Rexard icon.
     private func image(of document: SourceDocument) -> String {
-        if document.category == .bestiary || document.category == .hazards {
+        switch document.category {
+        case .bestiary, .hazards:
             let key = "\(document.system.rawValue).\(document.pack.linkName).\(document.json["_id"].string)"
             return Self.creatureArtPrefix + key
+        case .equipment:
+            return ItemArtPath(system: document.system, name: document.name,
+                               fallback: context.images.icon(of: document)).path
+        default:
+            return context.images.icon(of: document)
         }
-        return context.images.icon(of: document)
     }
 }

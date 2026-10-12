@@ -8,14 +8,14 @@ import WebKit
 struct EntryWebView {
     let html: String
     let data: DataLocation
-    let creatureArt: CreatureArtModel
+    let pdfArt: ArtModel
     let onLink: (URL) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(onLink: onLink) }
 
     func makeWebView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        configuration.setURLSchemeHandler(ResourceSchemeHandler(data: data, creatureArt: creatureArt),
+        configuration.setURLSchemeHandler(ResourceSchemeHandler(data: data, pdfArt: pdfArt),
                                           forURLScheme: "fieldguide")
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
@@ -80,22 +80,24 @@ enum PageTemplate {
     }
 }
 
-/// Serves `fieldguide:///images/…`, `fieldguide:///fonts/…` and `fieldguide:///style/entry.css`, and a
-/// creature's art from the user's PDFs for `fieldguide:///images/creature/<key>`.
+/// Serves `fieldguide:///images/…`, `fieldguide:///fonts/…` and `fieldguide:///style/entry.css`; a creature's art
+/// from the user's PDFs for `fieldguide:///images/creature/<key>`, and an item's for
+/// `fieldguide:///images/item/…` (`ItemArtPath`), else its icon.
 @MainActor
 final class ResourceSchemeHandler: NSObject, WKURLSchemeHandler {
-    /// Creature art on a page is drawn this large on its long side.
-    static let creatureArtPixels = 1024
+    /// Creature and item art on a page is drawn this large on its long side.
+    static let artPixels = 1024
     static let creaturePrefix = "/images/creature/"
+    static let imagesPrefix = "/images/"
 
     let data: DataLocation
-    let creatureArt: CreatureArtModel
+    let pdfArt: ArtModel
     /// Requests the web view has stopped waiting for, which must not be answered.
     private var stopped: Set<ObjectIdentifier> = []
 
-    init(data: DataLocation, creatureArt: CreatureArtModel) {
+    init(data: DataLocation, pdfArt: ArtModel) {
         self.data = data
-        self.creatureArt = creatureArt
+        self.pdfArt = pdfArt
     }
 
     func webView(_ webView: WKWebView, start task: any WKURLSchemeTask) {
@@ -104,14 +106,30 @@ final class ResourceSchemeHandler: NSObject, WKURLSchemeHandler {
         if path.hasPrefix(Self.creaturePrefix) {
             let key = String(path.dropFirst(Self.creaturePrefix.count))
             Task {
-                let body = await creatureArt.png(forCreature: key, maxPixels: Self.creatureArtPixels)
+                let body = await pdfArt.png(forCreature: key, maxPixels: Self.artPixels)
                 answer(task, url: url, body: body, mimeType: "image/png")
             }
+            return
+        }
+        if let item = ItemArtPath(path: String(path.dropFirst(Self.imagesPrefix.count))) {
+            Task { await answerItem(item, task: task, url: url) }
             return
         }
         let file = file(for: url)
         answer(task, url: url, body: file.flatMap { try? Data(contentsOf: $0) },
                mimeType: file.map(Self.mimeType(of:)) ?? "")
+    }
+
+    /// The item's art from the user's decks, else its stored icon.
+    private func answerItem(_ item: ItemArtPath, task: any WKURLSchemeTask, url: URL) async {
+        if let body = await pdfArt.png(forItem: item, maxPixels: Self.artPixels) {
+            answer(task, url: url, body: body, mimeType: "image/png")
+            return
+        }
+        let icon = item.fallback.isEmpty || item.fallback.contains("..") ? nil
+            : data.images.appendingPathComponent(item.fallback)
+        answer(task, url: url, body: icon.flatMap { try? Data(contentsOf: $0) },
+               mimeType: icon.map(Self.mimeType(of:)) ?? "")
     }
 
     func webView(_ webView: WKWebView, stop task: any WKURLSchemeTask) {

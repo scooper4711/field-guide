@@ -2,16 +2,17 @@ import BattleCards
 import Bestiary
 import CoreGraphics
 import CreatureArt
+import FieldGuideKit
 import Foundation
 import ImageIO
 import Observation
 import UniformTypeIdentifiers
 
-/// Creature art from the user's own Paizo PDFs, and the creatures the battle cards show: the shared art store
-/// (Tabletop Kit), the import's `Creatures` folder, and the art matched to each creature by name.
+/// Creature and item art from the user's own Paizo PDFs, and the creatures the battle cards show: the shared art
+/// store (Tabletop Kit), the import's `Creatures` folder, and the art matched to each creature or item by name.
 @MainActor
 @Observable
-public final class CreatureArtModel {
+public final class ArtModel {
     /// The creatures written by the import, for the battle cards; empty when there are none.
     public let bestiary: BestiaryStore
     /// The cards' UI art, copied from the user's Rexard packs by the import.
@@ -31,9 +32,9 @@ public final class CreatureArtModel {
     }
 
     /// The model over the store in `Application Support/Field Guide/Creature Art`.
-    public static func standard(data: DataLocation) -> CreatureArtModel {
+    public static func standard(data: DataLocation) -> ArtModel {
         let folder = URL.applicationSupportDirectory.appendingPathComponent("Field Guide/Creature Art")
-        return CreatureArtModel(data: data, store: try? CreatureArtStore(folder: folder))
+        return ArtModel(data: data, store: try? CreatureArtStore(folder: folder))
     }
 
     /// Reads what the art library holds and matches it again; with `addingNew`, first adds the PDFs that have
@@ -97,7 +98,23 @@ public final class CreatureArtModel {
 
     /// The creature's art as PNG, for entry pages.
     public func png(forCreature key: String, maxPixels: Int) async -> Data? {
-        guard let image = await picture(forCreature: key, maxPixels: maxPixels) else { return nil }
+        await picture(forCreature: key, maxPixels: maxPixels).flatMap(Self.png(of:))
+    }
+
+    /// The item's art from the user's item decks, at most `maxPixels` on its long side; nil when it has none that
+    /// can be drawn.
+    public func picture(forItem item: ItemArtPath, maxPixels: Int) async -> CGImage? {
+        let game: Game = item.system == .starfinder ? .starfinder : .pathfinder
+        guard let id = matcher.art(forItemNamed: item.name, game: game).portrait else { return nil }
+        return await store?.picture(id: id, maxPixels: maxPixels)
+    }
+
+    /// The item's art as PNG, for entry pages.
+    public func png(forItem item: ItemArtPath, maxPixels: Int) async -> Data? {
+        await picture(forItem: item, maxPixels: maxPixels).flatMap(Self.png(of:))
+    }
+
+    private static func png(of image: CGImage) -> Data? {
         let data = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(data, UTType.png.identifier as CFString, 1, nil)
         else { return nil }
