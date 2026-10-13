@@ -29,14 +29,15 @@ struct PageView: View {
     @Environment(ArtModel.self) private var pdfArt
     let link: PageLink
     let follow: (PageLink) -> Void
-    @AppStorage("creatureView") private var creatureView = CreatureView.statBlock
+    /// A stored value from before the Lore tab ("statBlock") reads as the default, the card.
+    @AppStorage("creatureView") private var creatureView = CreatureView.card
 
     var body: some View {
         if let page {
             content(of: page)
             .navigationTitle(page.name)
             .toolbar {
-                if creature(on: page) != nil {
+                if creature(on: page) != nil, !page.lore.isEmpty {
                     Picker("Show", selection: $creatureView) {
                         ForEach(CreatureView.allCases) { Text($0.title).tag($0) }
                     }
@@ -51,14 +52,24 @@ struct PageView: View {
         }
     }
 
+    /// A creature's battle card, or its lore when it has some and the Lore tab is chosen; other pages, and
+    /// creatures without a card, as written.
     @ViewBuilder
     private func content(of page: EntryPage) -> some View {
-        if creatureView == .card, let (key, creature) = creature(on: page) {
-            CreatureCardView(creature: creature, key: key)
-        } else {
-            EntryWebView(html: page.html, data: store.data, pdfArt: pdfArt) { url in
-                if let next = Self.link(for: url, system: page.system) { follow(next) }
+        if let (key, creature) = creature(on: page) {
+            if creatureView == .lore, !page.lore.isEmpty {
+                webView(page.lore, system: page.system)
+            } else {
+                CreatureCardView(creature: creature, key: key)
             }
+        } else {
+            webView(page.html, system: page.system)
+        }
+    }
+
+    private func webView(_ html: String, system: GameSystem) -> some View {
+        EntryWebView(html: html, data: store.data, pdfArt: pdfArt) { url in
+            if let next = Self.link(for: url, system: system) { follow(next) }
         }
     }
 

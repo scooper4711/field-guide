@@ -84,4 +84,28 @@ public struct EntryPage: Equatable, Sendable {
     public let name: String
     public let system: GameSystem
     public let html: String
+
+    /// The page's description section: a creature's lore, without its stat block; empty when it has none.
+    public var lore: String {
+        PageDescription.section(in: html)
+    }
+}
+
+/// The description section the import writes after an entry's details or stat block.
+public enum PageDescription {
+    static let opening = "<section class=\"description\">"
+    static let closing = "</section>"
+
+    /// `html` as the page's description section.
+    public static func section(_ html: String) -> String {
+        opening + html + closing
+    }
+
+    /// The description section of `page`, which comes last before the source line; empty when it has none.
+    public static func section(in page: String) -> String {
+        guard let start = page.range(of: opening)?.lowerBound,
+              let end = page.range(of: closing, options: .backwards, range: start..<page.endIndex)?.upperBound
+        else { return "" }
+        return String(page[start..<end])
+    }
 }

@@ -48,6 +48,8 @@ struct RootView: View {
         }
         .onChange(of: store.category) { selection = nil }
         .onChange(of: store.system) { selection = nil }
+        // On the Mac, battle cards shown full screen fill this window.
+        .battleCardFullScreenHost()
     }
 }
 
