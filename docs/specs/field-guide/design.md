@@ -64,6 +64,13 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   `Generated/Images/rexard/<path in the packs>`. No Foundry or pf2e icon file is copied. A creature's or
   hazard's image is `creature/<system>.<pack link name>.<id>`, the bestiary key, drawn by the app; its
   `<img>` removes itself when the app has no art for it. The area diagrams are shrunk with `cwebp`.
+- `ReligiousSymbols` lists the PNGs in the Community Use Package's Religious Symbols folders by name
+  (`--symbols`, `--starfinder-symbols`; default `~/git/community-use-artwork/Community Use Package- …`).
+  A deity takes the picture named as it is, or whose name starts with its name and a space ("Thamir Gixx"
+  for Thamir), ignoring a leading "The "; Starfinder deities look in the Starfinder folder first.
+  `ImageCollector` writes it as WebP to `Images/symbols/<system>/<name>.webp`, the deity's image in place of
+  any Rexard icon, and `PageBuilder` puts it in the header as `<img class="symbol">`, in the top-right corner,
+  instead of the art on the left.
 - `FieldGuideImport` also runs Tabletop Kit's `BestiaryImporter` into `Generated/Creatures`, and
   `scripts/import.sh` runs `CardArtImport` to copy the Rexard card pieces into `Generated/CardArt`.
 - `CatalogWriter` writes `Generated/catalog.sqlite`: table `entries` (id, system, category, name, level,
