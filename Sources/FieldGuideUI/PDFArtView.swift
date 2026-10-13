@@ -110,6 +110,7 @@ struct PDFArtView: View {
                     }
                     Spacer()
                     Button("Stop Watching") { Task { await model.stopWatching(folder) } }
+                        .buttonStyle(.borderless)
                 }
             }
         }
