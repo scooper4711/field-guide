@@ -29,7 +29,9 @@ and installs on the iPad. The steps on their own:
 - `make import` reads `~/git/pf2e` and writes `Generated/`: `catalog.sqlite`, the icons, the fonts,
   `import-report.md` (what could not be converted), `Creatures/` (the battle cards' creatures, by Tabletop
   Kit's `CreatureImport`) and `CardArt/` (the cards' UI art, copied from your Rexard packs in
-  `REXARD_PACKS`, default `~/git/rexard-packs`). No creature art is imported; the app reads it from your PDFs.
+  `REXARD_PACKS`, default `~/git/rexard-packs`). Deities show their religious symbols from Paizo's Community Use
+  Package in `COMMUNITY_USE` (default `~/git/community-use-artwork`). No creature art is imported; the app
+  reads it from your PDFs.
   Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists each pick and why);
   to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to `icon-overrides.json`.
   `cwebp` (`brew install webp`) shrinks the icons and the area diagrams.
