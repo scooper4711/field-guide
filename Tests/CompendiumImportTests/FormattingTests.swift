@@ -29,6 +29,15 @@ import Testing
         #expect(FacetExtractor.featCategory("pfsboon") == "PFS Boon" && FacetExtractor.itemType("ammo") == "Ammunition")
     }
 
+    @Test func aDeitysSubtitleIsItsKind() {
+        func subtitle(_ system: [String: Any]) -> String {
+            let document = IconFixture.document("d1", "Gods", type: "deity", category: .deities, system: system)
+            return FacetExtractor.facets(of: document, traitLabels: []).subtitle
+        }
+        #expect(subtitle(["category": "pantheon"]) == "Pantheon" && subtitle(["category": "deity"]) == "Deity")
+        #expect(subtitle([:]) == "Deity")
+    }
+
     @Test func plainTextDropsTagsAndEntities() {
         #expect(HTML.plainText("<p>A &amp; B</p>\n<p>C&nbsp;&lt;D&gt;</p>") == "A & B C <D>")
         #expect(HTML.imageURL("icons/a b.webp") == "fieldguide:///images/icons/a%20b.webp")

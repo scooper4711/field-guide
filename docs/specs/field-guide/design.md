@@ -47,7 +47,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   `StatBlockBuilder`, which follows Combat Pad's parsers for senses, skills, defenses, Strikes and
   spellcasting.
 - `FacetExtractor` records each entry's filter values: level, rarity, traits, source title and the
-  category's own facets as a JSON object.
+  category's own facets as a JSON object. A deity's subtitle is its kind: Deity, Pantheon, Covenant or
+  Philosophy.
 - `FoundryPaths` resolves Foundry paths (`systems/<system>/…` → the repository's `static/`, `icons/…` →
   the Foundry app's `public/icons`); module paths are not resolved, since module art is Paizo's.
 - `RexardIcons` hashes every PNG in the Rexard packs (256-bit difference hash, gray, over black, whole and

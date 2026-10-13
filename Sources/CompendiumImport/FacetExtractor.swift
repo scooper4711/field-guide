@@ -80,6 +80,10 @@ enum FacetExtractor {
             let system = document.systemData
             return Formatting.actionTypeName(type: system[path: "actionType.value"].string,
                                              count: system[path: "actions.value"].optionalInt)
+        case .deities:
+            // A deity, pantheon, covenant or philosophy.
+            let kind = document.systemData["category"].string
+            return kind.isEmpty ? document.category.singularTitle : Words.title(kind)
         default: return document.category.singularTitle
         }
     }
