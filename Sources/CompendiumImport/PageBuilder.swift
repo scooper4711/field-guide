@@ -52,12 +52,19 @@ struct PageBuilder {
         let glyph = Formatting.actionGlyph(type: system[path: "actionType.value"].string,
                                            count: system[path: "actions.value"].optionalInt)
         let spellTime = document.category == .spells ? Formatting.time(system[path: "time.value"].string) : ""
-        // A creature's art may be missing; its image then takes no room.
-        let picture = image.isEmpty ? "" : "<img class=\"art\" src=\"\(HTML.imageURL(image))\" alt=\"\" "
+        let title = "<div><h1>\(HTML.escape(document.name)) \(glyph)\(spellTime)</h1>"
+            + "<p class=\"subtitle\">\(HTML.escape(subtitle))</p></div>"
+        // A religious symbol sits in the top-right corner, other art on the left.
+        if image.hasPrefix(ImageCollector.symbolFolder + "/") {
+            return "<header class=\"entry-header\">\(title)\(picture(image, className: "symbol"))</header>"
+        }
+        return "<header class=\"entry-header\">\(picture(image, className: "art"))\(title)</header>"
+    }
+
+    /// The image's `<img>`, or "" for none. A creature's art may be missing; its image then takes no room.
+    private func picture(_ image: String, className: String) -> String {
+        image.isEmpty ? "" : "<img class=\"\(className)\" src=\"\(HTML.imageURL(image))\" alt=\"\" "
             + "onerror=\"this.remove()\">"
-        return "<header class=\"entry-header\">\(picture)<div><h1>\(HTML.escape(document.name)) " +
-            "\(glyph)\(spellTime)</h1>"
-            + "<p class=\"subtitle\">\(HTML.escape(subtitle))</p></div></header>"
     }
 
     private func body(_ document: SourceDocument) -> String {
@@ -86,7 +93,8 @@ struct PageBuilder {
     }
 
     /// A creature's art, drawn on the device from the user's own PDFs (`creature/<key>`); an item's art from the
-    /// user's item decks, else its Rexard icon (`ItemArtPath`); else the document's Rexard icon.
+    /// user's item decks, else its Rexard icon (`ItemArtPath`); a deity's religious symbol; else the document's
+    /// Rexard icon.
     private func image(of document: SourceDocument) -> String {
         switch document.category {
         case .bestiary, .hazards:
@@ -95,6 +103,9 @@ struct PageBuilder {
         case .equipment:
             return ItemArtPath(system: document.system, name: document.name,
                                fallback: context.images.icon(of: document)).path
+        case .deities:
+            let symbol = context.images.symbol(of: document)
+            return symbol.isEmpty ? context.images.icon(of: document) : symbol
         default:
             return context.images.icon(of: document)
         }

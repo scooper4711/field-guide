@@ -14,6 +14,7 @@ struct Imported {
         var options = ImportOptions(paths: repository.paths, output: repository.output,
                                     workFolder: repository.root.appendingPathComponent("work"))
         options.rexardPacks = repository.rexardPacks
+        options.religiousSymbols = ReligiousSymbols(pathfinder: repository.religiousSymbols, starfinder: nil)
         report = try CompendiumImporter(options: options).run()
         catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
     }
@@ -120,6 +121,11 @@ struct Imported {
         #expect(item == ItemArtPath(system: .pathfinder, name: "Longsword", fallback: "rexard/Weapons/sword.webp"))
         #expect(FileManager.default.fileExists(atPath: images.appendingPathComponent(item.fallback).path))
         #expect(imported.report.unresolvedIcons["icons/missing.webp"] == 1 && imported.report.iconRules["match"] == 1)
+        let abadar = try #require(try imported.catalog.summaries(of: .deities, in: .pathfinder).first)
+        #expect(abadar.image == "symbols/pf2e/Abadar.webp")
+        #expect(FileManager.default.fileExists(atPath: images.appendingPathComponent(abadar.image).path))
+        #expect(try imported.page(abadar.id).contains("</div><img class=\"symbol\" "
+            + "src=\"fieldguide:///images/symbols/pf2e/Abadar.webp\""))
         let table = imported.repository.root.appendingPathComponent("work/icon-map.tsv")
         #expect(try String(contentsOf: table, encoding: .utf8).contains("Longsword"))
     }

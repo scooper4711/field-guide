@@ -26,15 +26,22 @@ public struct FoundryPaths: Sendable {
     }
 }
 
-/// Copies the Rexard icons entries show into the output folder, once each, as WebP of at most 256 pixels.
+/// Copies the Rexard icons entries show into the output folder, once each, as WebP of at most 256 pixels, and
+/// the deities' religious symbols as WebP of at most 512.
 public final class ImageCollector {
     /// The folder in the output that holds the icons, by their paths in the packs.
     static let folder = "rexard"
+    /// The folder in the output that holds the religious symbols, by system and name.
+    static let symbolFolder = "symbols"
     static let iconSize = 256
+    static let symbolSize = 512
 
     let icons: IconMap
+    /// The deities' religious symbols; none unless set.
+    var symbols = ReligiousSymbols()
     private let packs: URL?
     private let output: URL
+    /// The stored path of each picture copied, by its path without extension in the output.
     private var stored: [String: String] = [:]
 
     init(icons: IconMap, packs: URL?, output: URL) {
@@ -46,22 +53,36 @@ public final class ImageCollector {
     /// The stored path of an entry's icon, or "" for none.
     func icon(of document: SourceDocument) -> String {
         guard let packs, let file = icons.choice(for: document)?.file else { return "" }
-        if let path = stored[file] { return path }
-        let path = copy(packs.appendingPathComponent(file), as: file)
-        stored[file] = path
+        let stem = "\(Self.folder)/\((file as NSString).deletingPathExtension)"
+        return copyOnce(packs.appendingPathComponent(file), to: stem, maximumSize: Self.iconSize)
+    }
+
+    /// The stored path of a deity's religious symbol, or "" for none.
+    func symbol(of document: SourceDocument) -> String {
+        guard let file = symbols.file(forDeity: document.name, in: document.system) else { return "" }
+        let stem = "\(Self.symbolFolder)/\(document.system.rawValue)/\(file.deletingPathExtension().lastPathComponent)"
+        return copyOnce(file, to: stem, maximumSize: Self.symbolSize)
+    }
+
+    /// Copies the picture to `stem` in the output unless it was copied already. The size is a third argument
+    /// since icons and symbols are stored at different sizes.
+    private func copyOnce(_ source: URL, to stem: String, maximumSize: Int) -> String {
+        if let path = stored[stem] { return path }
+        let path = copy(source, to: stem, maximumSize: maximumSize)
+        stored[stem] = path
         return path
     }
 
     /// Writes the picture as WebP, or as it is when it can't be converted; "" when it can't be read.
-    private func copy(_ source: URL, as file: String) -> String {
+    private func copy(_ source: URL, to stem: String, maximumSize: Int) -> String {
         guard FileManager.default.fileExists(atPath: source.path) else { return "" }
-        let webp = "\(Self.folder)/\((file as NSString).deletingPathExtension).webp"
+        let webp = "\(stem).webp"
         let destination = output.appendingPathComponent(webp)
         if Self.isUpToDate(destination, comparedWith: source) { return webp }
         try? FileManager.default.createDirectory(at: destination.deletingLastPathComponent(),
                                                  withIntermediateDirectories: true)
-        if ArtScaler.scale(source, to: destination, maximumSize: Self.iconSize) { return webp }
-        let plain = "\(Self.folder)/\(file)"
+        if ArtScaler.scale(source, to: destination, maximumSize: maximumSize) { return webp }
+        let plain = "\(stem).\(source.pathExtension)"
         let target = output.appendingPathComponent(plain)
         try? FileManager.default.removeItem(at: target)
         return (try? FileManager.default.copyItem(at: source, to: target)) == nil ? "" : plain
