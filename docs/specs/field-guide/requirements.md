@@ -80,6 +80,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 - R6.2b Deities show their religious symbol from Paizo's Community Use Package (Religious Symbols; for
   Starfinder deities, the Starfinder package first) when it has one by the deity's name, in the list in place
   of the category's symbol and in the top-right corner of the page.
+- R6.2c Action icons are Paizo's Pathfinder-Icons font, bundled unaltered under the Paizo Compatibility
+  License and kept out of the repository.
 - R6.3 Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, without copying them,
   and picks up new downloads at launch; Add PDFs copies other PDFs into the app.
 - R6.4 PDFs deleted or moved since they were read are listed as missing in Art from PDFs, and a creature's
