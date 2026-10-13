@@ -2,17 +2,17 @@ import BattleCards
 import Bestiary
 import SwiftUI
 
-/// How a creature's page is shown: its stat block, or its battle card.
+/// How a creature's page is shown: its battle card, or its lore.
 enum CreatureView: String, CaseIterable, Identifiable {
-    case statBlock
     case card
+    case lore
 
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .statBlock: "Stat Block"
-        case .card: "Card"
+        case .card: "Battle Card"
+        case .lore: "Lore"
         }
     }
 
@@ -25,36 +25,36 @@ enum CreatureView: String, CaseIterable, Identifiable {
     }
 }
 
-/// A creature's battle card (Tabletop Kit), turned over to its back with the art from the user's PDFs.
+/// A creature's battle card (Tabletop Kit's interactive card): a tap on empty card area shows the icons that turn
+/// it over to the art from the user's PDFs and show it full screen; linked words open glossary popovers.
 struct CreatureCardView: View {
+    /// Card backs draw the art this large on its long side; the art store scales to the size asked for.
+    static let artPixels = 1600
     let creature: Creature
     let key: String
     @Environment(ArtModel.self) private var pdfArt
-    @State private var showsBack = false
 
     var body: some View {
         VStack(spacing: 12) {
             FittedCard {
-                if showsBack {
-                    CardBack(name: creature.name, game: creature.game, traits: creature.traits.traits) {
-                        CreaturePicture(key: key)
-                    }
-                } else {
+                InteractiveBattleCard {
                     BattleCard(creature: creature)
+                } back: {
+                    CardBack(name: creature.name, game: creature.game, traits: creature.traits.traits) {
+                        ArtPicture(path: key)
+                    }
                 }
+                .id(key)
             }
-            .rotation3DEffect(.degrees(showsBack ? 180 : 0), axis: (x: 0, y: 1, z: 0))
-            .scaleEffect(x: showsBack ? -1 : 1)
             MissingArtNote(sources: pdfArt.missingSources(forCreature: key))
-            Button(showsBack ? "Show Front" : "Turn Over", systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
-                withAnimation(.easeInOut(duration: 0.4)) { showsBack.toggle() }
-            }
-            .buttonStyle(.bordered)
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .environment(\.cardArt, pdfArt.cardArt)
         .environment(\.glossary, GlossaryContext(bestiary: pdfArt.bestiary))
+        .environment(\.artPictureLoader, ArtPictureLoader { [pdfArt] key in
+            await pdfArt.picture(forCreature: key, maxPixels: Self.artPixels)
+        })
     }
 }
 
@@ -71,24 +71,6 @@ struct FittedCard<Card: View>: View {
                 .frame(width: Self.layoutWidth, height: proxy.size.height / scale)
                 .scaleEffect(scale, anchor: .top)
                 .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
-        }
-    }
-}
-
-/// A creature's art at full size; nothing when it has none.
-struct CreaturePicture: View {
-    let key: String
-    @Environment(ArtModel.self) private var pdfArt
-    @State private var image: CGImage?
-
-    var body: some View {
-        Group {
-            if let image {
-                Image(decorative: image, scale: 1).resizable().interpolation(.high).scaledToFit()
-            }
-        }
-        .task(id: "\(key)#\(pdfArt.catalog.art.count)") {
-            image = await pdfArt.picture(forCreature: key, maxPixels: 0)
         }
     }
 }

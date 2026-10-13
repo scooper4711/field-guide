@@ -80,10 +80,12 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   Guide/Creature Art`, the `BestiaryStore` over `Generated/Creatures` and the `CardArtPieces` in
   `Generated/CardArt`. It matches art to creatures, and to items (`art(forItemNamed:game:)`), by name with `LibraryArtMatcher`, adds new PDFs from the
   watched folders at launch, and gives pages, thumbnails and cards their pictures and missing PDFs.
-- On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote, a
-  toolbar picker switches between the web page and `CreatureCardView`: the `BattleCard`, turned over to
-  `CardBack` with the art, with the card art and glossary in the environment. The web fonts in `Generated`
-  are registered at launch for the cards.
+- On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote,
+  `CreatureCardView` shows Tabletop Kit's `InteractiveBattleCard`: the `BattleCard`, and `CardBack` around an
+  `ArtPicture`, with the card art, glossary and an `ArtPictureLoader` over `ArtModel` in the environment. When
+  the page has lore (`EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a
+  toolbar picker switches to it in the web view. `RootView` is the Mac's `battleCardFullScreenHost()`. The web
+  fonts in `Generated` are registered at launch for the cards.
 - `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Combat Pad's creature art settings adapted (a second
   copy; a third would move to Tabletop Kit).
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and

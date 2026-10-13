@@ -53,9 +53,10 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   inline rolls and localized text.
 - R5.3 Links to other compendium entries open them in the app; Back returns. Links to entries the app
   doesn't hold read as plain text.
-- R5.4 Creatures and hazards show a full stat block: traits, Perception and senses, languages, skills,
-  attribute modifiers, items, AC, saves, HP, immunities, resistances and weaknesses, speeds, Strikes,
-  actions and reactions in stat-block order, and spellcasting by rank; then the creature's description.
+- R5.4 Creatures show their battle card and lore (R8). Hazards, and creatures without a battle card, show a
+  full stat block: traits, Perception and senses, languages, skills, attribute modifiers, items, AC, saves, HP,
+  immunities, resistances and weaknesses, speeds, Strikes, actions and reactions in stat-block order, and
+  spellcasting by rank; then the creature's description.
 - R5.5 Tapping a trait shows its description.
 
 ## R6 Images
@@ -75,10 +76,16 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   card says which missing PDF its art needs.
 
 ## R8 Battle cards
-- R8.1 A creature's page switches between its stat block and its battle card (Tabletop Kit's `BattleCards`,
-  in the Rexard style); the choice is remembered.
-- R8.2 Turn Over shows the card's back: the creature's art in a backdrop chosen by its traits, with its name.
-- R8.3 Links on the card open their glossary entries in popovers.
+- R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
+  style, as in Combat Pad) and its lore, the description without the stat block; the choice is remembered. A
+  creature without lore shows only its card.
+- R8.2 Tapping an empty part of the card shows its corner icons and a second tap hides them; with a pointer,
+  each icon shows while the pointer is over its corner. The top-right icon turns the card over to its back:
+  the creature's art in a backdrop chosen by its traits, with its name. The bottom-right icon, or a pinch
+  out, shows the card full screen, where flipping works too; its icon, a pinch in or Escape closes it.
+- R8.3 Linked words and trait or condition tags on the card open their glossary entries in popovers, two
+  deep, instead of showing the icons. Cards pop up, pages navigate: links in the lore and on other pages
+  open their entries (R5.3).
 
 ## R7 The app
 - R7.1 iPadOS 18 or later, in every orientation, with a Mac build for development.

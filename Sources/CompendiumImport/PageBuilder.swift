@@ -75,7 +75,7 @@ struct PageBuilder {
 
     private func description(_ html: String) -> String {
         let trimmed = html.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? "" : "<hr><section class=\"description\">\(context.enrich(trimmed))</section>"
+        return trimmed.isEmpty ? "" : "<hr>" + PageDescription.section(context.enrich(trimmed))
     }
 
     private func footer(_ document: SourceDocument) -> String {
