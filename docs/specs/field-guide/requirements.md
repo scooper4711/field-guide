@@ -45,6 +45,10 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   rank, kind (cantrip, focus, ritual), tradition and casting time.
 - R4.4 Sort by name or by level.
 - R4.5 The number of matching entries is shown.
+- R4.6 Search Everything, in the sidebar and from a button beside the entry, searches every category of the
+  system as you type: names as in R4.2, or with a switch the entries' text, names counting most. Matches are
+  grouped by category, the category with the best match first, showing the first ten and how many there are;
+  a match opens its entry, and Show All opens the category's list searched the same way.
 
 ## R5 Entries
 - R5.1 An entry shows its image, name, type and level, traits (rarity colored as in Foundry), the details

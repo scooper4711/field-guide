@@ -97,6 +97,12 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   copy; a third would move to Tabletop Kit).
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices follow the Mac's number format at import, as the import runs there.
+- Search Everything: `GlobalSearch` (FieldGuideKit) holds every entry of the system, read once with
+  `Catalog.summaries(in:)`, and ranks names in memory: names starting with the text, then names with each word
+  at a word's start, then the rest. Text searches run on `TextSearcher`, an actor with its own connection, using
+  `Catalog.rankedSearch` (bm25, the name weighted ten to one; the match materialized first so it runs once);
+  a newer search cancels one still running. The sidebar shows `GlobalSearchResults` while its search has text;
+  the entry column's toolbar button shows the sidebar with the search focused.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
   folder, for trying pages out from a script.
 

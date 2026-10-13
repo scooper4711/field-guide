@@ -19,15 +19,26 @@ public final class Catalog {
 
     /// Every entry of a category, by name.
     public func summaries(of category: EntryCategory, in system: GameSystem) throws -> [EntrySummary] {
+        try summaries(where: "system = ? AND category = ?", [.text(system.rawValue), .text(category.rawValue)])
+    }
+
+    /// Every entry of every category of `system`, by name.
+    public func summaries(in system: GameSystem) throws -> [EntrySummary] {
+        try summaries(where: "system = ?", [.text(system.rawValue)])
+    }
+
+    private func summaries(where condition: String, _ values: [SQLiteValue]) throws -> [EntrySummary] {
         var result: [EntrySummary] = []
         let sql = """
-            SELECT id, name, level, subtitle, image, facets FROM entries
-            WHERE system = ? AND category = ? ORDER BY name COLLATE NOCASE
+            SELECT id, system, category, name, level, subtitle, image, facets FROM entries
+            WHERE \(condition) ORDER BY name COLLATE NOCASE
             """
-        try database.query(sql, [.text(system.rawValue), .text(category.rawValue)]) { row in
+        try database.query(sql, values) { row in
+            guard let category = EntryCategory(rawValue: row.text(2)) else { return }
             result.append(EntrySummary(
-                id: row.text(0), system: system, category: category, name: row.text(1), level: row.integer(2),
-                subtitle: row.text(3), image: row.text(4), facets: Self.facets(fromJSON: row.text(5))
+                id: row.text(0), system: GameSystem(rawValue: row.text(1)) ?? .pathfinder, category: category,
+                name: row.text(3), level: row.integer(4), subtitle: row.text(5), image: row.text(6),
+                facets: Self.facets(fromJSON: row.text(7))
             ))
         }
         return result
@@ -45,9 +56,7 @@ public final class Catalog {
 
     /// The IDs of a category's entries whose name or text contains every word of `text`.
     public func search(_ text: String, in category: EntryCategory, of system: GameSystem) throws -> Set<String> {
-        let words = text.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
-        guard !words.isEmpty else { return [] }
-        let match = words.map { "\"\($0)\"*" }.joined(separator: " ")
+        guard let match = Self.match(text) else { return [] }
         var ids: Set<String> = []
         // Matched once, then filtered: joined, SQLite runs the match again for every entry of the category, which
         // takes minutes for a one-letter prefix in the bestiary.
@@ -59,6 +68,29 @@ public final class Catalog {
             ids.insert($0.text(0))
         }
         return ids
+    }
+
+    /// The IDs of `system`'s entries whose name or text contains every word of `text`, best first: a match in the
+    /// name counts ten times one in the text.
+    public func rankedSearch(_ text: String, in system: GameSystem) throws -> [String] {
+        guard let match = Self.match(text) else { return [] }
+        var ids: [String] = []
+        // Materialized so the text is matched once, as in `search(_:in:of:)`.
+        let sql = """
+            WITH matches AS MATERIALIZED (
+                SELECT rowid, bm25(search, 10.0, 1.0) AS score FROM search WHERE search MATCH ?
+            )
+            SELECT entries.id FROM matches JOIN entries ON entries.rowid = matches.rowid
+            WHERE entries.system = ? ORDER BY matches.score, entries.name COLLATE NOCASE
+            """
+        try database.query(sql, [.text(match), .text(system.rawValue)]) { ids.append($0.text(0)) }
+        return ids
+    }
+
+    /// A full-text query matching every word of `text` as a prefix; nil when it has no words.
+    static func match(_ text: String) -> String? {
+        let words = text.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+        return words.isEmpty ? nil : words.map { "\"\($0)\"*" }.joined(separator: " ")
     }
 
     /// A trait's description page, or nil when the system has none for it.
