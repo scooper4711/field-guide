@@ -21,3 +21,14 @@ struct PageLinkTests {
         #expect(EntryTab.allCases.map(\.title) == ["Overview", "Details"])
     }
 }
+
+@Suite("Fitting a battle card to its column")
+@MainActor
+struct FittedCardTests {
+    @Test("The card grows to fill a wide column and shrinks to fit a narrow one", arguments: [
+        (CGFloat(880), CGFloat(2)), (440, 1), (220, 0.5), (0, 1)
+    ])
+    func scale(width: CGFloat, scale: CGFloat) {
+        #expect(FittedCard<EmptyView>.scale(toFit: width) == scale)
+    }
+}
