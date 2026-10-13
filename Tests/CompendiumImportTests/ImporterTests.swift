@@ -77,6 +77,21 @@ struct Imported {
         #expect(feat.values(of: .featCategory) == ["Class Feature"] && feat.subtitle == "Class Feature 1")
     }
 
+    @Test func searchesEveryCategoryNameMatchesFirst() async throws {
+        let imported = try Imported()
+        defer { imported.repository.remove() }
+        let fireballID = "Compendium.pf2e.spells-srd.Item.fb1"
+        let ranked = try imported.catalog.rankedSearch("fireball", in: .pathfinder)
+        #expect(ranked.first == fireballID)
+        #expect(try imported.catalog.rankedSearch("sulfur", in: .pathfinder) == [fireballID])
+        #expect(try imported.catalog.rankedSearch(" ", in: .pathfinder).isEmpty)
+        let searcher = TextSearcher(url: imported.repository.output.appendingPathComponent("catalog.sqlite"))
+        #expect(await searcher.rankedSearch("sulfur", in: .pathfinder) == [fireballID])
+        let everything = try imported.catalog.summaries(in: .pathfinder)
+        #expect(Set(everything.map(\.category)).isSuperset(of: [.spells, .feats, .classes]))
+        #expect(everything.allSatisfy { $0.system == .pathfinder })
+    }
+
     @Test func searchesTextAndTraits() throws {
         let imported = try Imported()
         defer { imported.repository.remove() }
