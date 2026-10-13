@@ -39,6 +39,13 @@ and installs on the iPad. The steps on their own:
 - `make run` opens the Mac build on `Generated/`, for trying things out. `FIELD_GUIDE_SELECT=<entry id>`
   opens an entry at launch.
 
+## Artwork
+
+The `Artwork/` folder is a private Git submodule ([toolkit-artwork](https://github.com/scooper4711/toolkit-artwork)).
+Clone with `git clone --recursive`, or run `git submodule update --init` after cloning. Its contents are
+licensed and not redistributable. Without access to it, the build still works and falls back to built-in
+artwork.
+
 ## Test
 `make test`, `make lint` and `make coverage` (80% of lines and regions in `FieldGuideKit` and
 `CompendiumImport`). The importer's tests run against a small fake repository, so they need no Paizo data.
