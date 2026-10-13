@@ -10,6 +10,8 @@ public struct ImportOptions: Sendable {
     public var iconOverrides: [String: String] = [:]
     /// The deities' religious symbols from the Community Use Package; none unless set.
     public var religiousSymbols = ReligiousSymbols()
+    /// Paizo's Pathfinder-Icons font for the action icons, copied unaltered; nil (or a missing file) for none.
+    public var actionIconsFont: URL?
     /// Scrollkeeper's `Files` folder, for the area diagrams in the Player Core PDFs; nil to leave them out.
     public var scrollkeeperFiles: URL?
     public var output: URL
@@ -108,19 +110,24 @@ public struct CompendiumImporter {
         return result
     }
 
-    /// The Pathfinder action glyphs and Foundry's text fonts, for the entry pages.
+    /// Foundry's text fonts and the Pathfinder-Icons action font, for the entry pages. The pf2e action font
+    /// that Pathfinder-Icons replaced is removed.
     private func copyFonts() throws {
         let fonts = options.paths.repository.appendingPathComponent("static/fonts")
         let destination = options.output.appendingPathComponent("Fonts")
         try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+        try? FileManager.default.removeItem(at: destination.appendingPathComponent("pathfinder-2e-actions.woff2"))
         let wanted = try FileManager.default.contentsOfDirectory(atPath: fonts.path).filter {
-            $0.hasSuffix(".woff2") && ($0.hasPrefix("pathfinder-2e-actions") || $0.hasPrefix("gelasio")
-                || $0.hasPrefix("roboto-condensed"))
+            $0.hasSuffix(".woff2") && ($0.hasPrefix("gelasio") || $0.hasPrefix("roboto-condensed"))
         }
-        for name in wanted {
-            let target = destination.appendingPathComponent(name)
+        var sources = wanted.map { fonts.appendingPathComponent($0) }
+        if let font = options.actionIconsFont, FileManager.default.fileExists(atPath: font.path) {
+            sources.append(font)
+        }
+        for source in sources {
+            let target = destination.appendingPathComponent(source.lastPathComponent)
             try? FileManager.default.removeItem(at: target)
-            try FileManager.default.copyItem(at: fonts.appendingPathComponent(name), to: target)
+            try FileManager.default.copyItem(at: source, to: target)
         }
     }
 }

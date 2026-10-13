@@ -14,6 +14,7 @@ struct Imported {
         var options = ImportOptions(paths: repository.paths, output: repository.output,
                                     workFolder: repository.root.appendingPathComponent("work"))
         options.rexardPacks = repository.rexardPacks
+        options.actionIconsFont = repository.actionIconsFont
         options.religiousSymbols = ReligiousSymbols(pathfinder: repository.religiousSymbols, starfinder: nil)
         report = try CompendiumImporter(options: options).run()
         catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
@@ -113,7 +114,7 @@ struct Imported {
         defer { imported.repository.remove() }
         let fontFolder = imported.repository.output.appendingPathComponent("Fonts")
         let fonts = try FileManager.default.contentsOfDirectory(atPath: fontFolder.path)
-        #expect(Set(fonts) == ["pathfinder-2e-actions.woff2", "gelasio-regular.woff2"])
+        #expect(Set(fonts) == ["Pathfinder-Icons.ttf", "gelasio-regular.woff2"])
         let images = imported.repository.output.appendingPathComponent("Images")
         let sword = try #require(try imported.catalog.summaries(of: .equipment, in: .pathfinder)
             .first { $0.name == "Longsword" })

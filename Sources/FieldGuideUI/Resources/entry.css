@@ -1,4 +1,4 @@
-@font-face { font-family: "Pathfinder2eActions"; src: url("fieldguide:///fonts/pathfinder-2e-actions.woff2"); }
+@font-face { font-family: "Pathfinder-Icons"; src: url("fieldguide:///fonts/Pathfinder-Icons.ttf"); }
 @font-face { font-family: "Gelasio"; src: url("fieldguide:///fonts/gelasio-v9-latin-ext_latin-regular.woff2"); }
 @font-face { font-family: "Gelasio"; font-style: italic;
     src: url("fieldguide:///fonts/gelasio-v9-latin-ext_latin-italic.woff2"); }
@@ -64,7 +64,9 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .rarity-unique { background: var(--unique); }
 .size { background: var(--size); }
 
-.action-glyph { font-family: "Pathfinder2eActions"; font-weight: normal; font-size: 1.1em; line-height: 1; }
+/* Sized and lowered to match the pf2e action font that Pathfinder-Icons replaced, which was set at 1.1em. */
+.action-glyph { font-family: "Pathfinder-Icons"; font-weight: normal; font-size: 0.97em; line-height: 1;
+    vertical-align: -0.075em; }
 .check, .damage { font-weight: bold; }
 
 .details, .stat-block { background: var(--panel); padding: 8px 12px; border-radius: 6px; }

@@ -38,12 +38,12 @@ enum HTML {
         ("&nbsp;", " "), ("&lt;", "<"), ("&gt;", ">"), ("&quot;", "\""), ("&#39;", "'"), ("&amp;", "&")
     ]
 
-    /// An action glyph in the Pathfinder actions font: 1–3 actions, free action or reaction.
+    /// An action icon in the Pathfinder-Icons font: 1–3 actions, free action or reaction, or a range of them.
     static func actionGlyph(_ actions: String) -> String {
         let letters = ["1": "1", "2": "2", "3": "3", "free": "F", "reaction": "R", "1 to 3": "1 - 3",
                        "1 or 2": "1 / 2", "2 or 3": "2 / 3"]
         guard let letter = letters[actions] else { return escape(actions) }
-        return "<span class=\"action-glyph\">\(letter)</span>"
+        return ActionGlyphs.html(letter)
     }
 }
 
