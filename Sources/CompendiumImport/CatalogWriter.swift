@@ -6,7 +6,8 @@ enum CatalogWriter {
     static let schema = """
         CREATE TABLE entries (
             id TEXT PRIMARY KEY, system TEXT NOT NULL, category TEXT NOT NULL, name TEXT NOT NULL,
-            level INTEGER, subtitle TEXT NOT NULL, image TEXT NOT NULL, facets TEXT NOT NULL, html TEXT NOT NULL
+            level INTEGER, subtitle TEXT NOT NULL, image TEXT NOT NULL, facets TEXT NOT NULL, html TEXT NOT NULL,
+            details TEXT NOT NULL
         );
         CREATE INDEX entries_by_category ON entries (system, category);
         CREATE VIRTUAL TABLE search USING fts5(name, text, tokenize = 'unicode61 remove_diacritics 2');
@@ -39,11 +40,11 @@ enum CatalogWriter {
 
     private static func insert(_ row: EntryRow, rowID: Int, into database: SQLiteDatabase) throws {
         try database.query(
-            "INSERT OR IGNORE INTO entries (rowid, id, system, category, name, level, subtitle, image, facets, html) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO entries (rowid, id, system, category, name, level, subtitle, image, facets, html, "
+                + "details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [.integer(rowID), .text(row.id), .text(row.system.rawValue), .text(row.category.rawValue), .text(row.name),
              row.level.map(SQLiteValue.integer) ?? .null, .text(row.subtitle), .text(row.image),
-             .text(facetsJSON(row.facets)), .text(row.html)]
+             .text(facetsJSON(row.facets)), .text(row.html), .text(row.details)]
         )
         try database.query("INSERT INTO search (rowid, name, text) VALUES (?, ?, ?)",
                            [.integer(rowID), .text(row.name), .text(row.text)])

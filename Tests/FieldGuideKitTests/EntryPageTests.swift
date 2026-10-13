@@ -24,3 +24,18 @@ import Testing
         #expect(page("<section class=\"description\"><p>Unclosed").lore.isEmpty)
     }
 }
+
+@Suite struct EntryLinkTests {
+    @Test func detailsLinksReadBackAsTheirEntry() {
+        let target = EntryLink.details(of: "Compendium.pf2e.classes.Item.fi1")
+        #expect(target == "Compendium.pf2e.classes.Item.fi1#details")
+        #expect(EntryLink.entry(of: target) == ("Compendium.pf2e.classes.Item.fi1", true))
+        #expect(EntryLink.entry(of: "Compendium.pf2e.classes.Item.fi1") == ("Compendium.pf2e.classes.Item.fi1", false))
+    }
+
+    @Test func newCategoriesHaveTheirOwnTitles() {
+        #expect(EntryCategory.remasterChanges.title == "Remaster Changes")
+        #expect(EntryCategory.remasterChanges.singularTitle == "Remaster Change")
+        #expect(EntryCategory.archetypes.singularTitle == "Archetype" && !EntryCategory.domains.hasLevels)
+    }
+}

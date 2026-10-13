@@ -25,10 +25,15 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   the physical item types (Equipment); `feat`; `hazard`; `spell`; `condition` and everything in a
   `conditions` pack; `ancestry`, `heritage`, `background`, `class`, `deity`. Effects, macros, journals,
   tables, vehicles and characters are skipped.
-- `GMScreen` reads `packs/<system>/journals/gm-screen.json`: each page with more than a line of text becomes
-  an entry with ID `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`, and its
-  section is the last level-1 page before it in sort order. Relative links (`@UUID[.<page>]`) are made
-  absolute before enriching, and `LinkIndex` resolves page links (ignoring `#anchors`).
+- `GMScreen` reads `packs/<system>/journals/*.json`: each page with more than a line of text becomes an entry
+  with ID `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`. A GM Screen page's
+  section is the last level-1 page before it in sort order; the other journals' pages are in the category of
+  their journal (Archetypes, Domains, Remaster Changes, else Journals, sectioned by journal name). Relative links
+  (`@UUID[.<page>]`) are made absolute before enriching, and `LinkIndex` resolves page links (ignoring
+  `#anchors`).
+- `JournalDetails` makes each page of the Ancestries and Classes journals the Details of the ancestry or class
+  of the same name in its system: the row's `details` column (also searched), with links to the page leading to
+  `entry:<id>#details` (`EntryLink`). Pages without such an entry stay in Journals.
 - `AreaDiagrams` renders a region of a Player Core page with PDFKit (the PDF is the largest one in
   Scrollkeeper's `Files/<Pathfinder|Starfinder> Player Core` folder; the page is found by its label) at
   three times the page's resolution and stores it as WebP in `Images/gm-screen/`.
@@ -84,7 +89,9 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   `CreatureCardView` shows Tabletop Kit's `InteractiveBattleCard`: the `BattleCard`, and `CardBack` around an
   `ArtPicture`, with the card art, glossary and an `ArtPictureLoader` over `ArtModel` in the environment. When
   the page has lore (`EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a
-  toolbar picker switches to it in the web view. `RootView` is the Mac's `battleCardFullScreenHost()`. The web
+  toolbar picker switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it to
+  the column's width. An entry with Details gets an [Overview | Details] picker instead (`EntryTab`, opened on
+  Details by `entry:<id>#details` links). `RootView` is the Mac's `battleCardFullScreenHost()`. The web
   fonts in `Generated` are registered at launch for the cards.
 - `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Combat Pad's creature art settings adapted (a second
   copy; a third would move to Tabletop Kit).

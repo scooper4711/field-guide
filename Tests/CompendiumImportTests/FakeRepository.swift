@@ -115,6 +115,34 @@ extension FakeRepository {
         ]])
     }
 
+    /// The other rules journals: the Elf and Fighter pages (whose entries the fake packs hold) and the
+    /// Ancestries index linking the Elf page, one page each of Archetypes, Domains, Remaster Changes and the Hero
+    /// Point Deck, and a Classes page no class is named for.
+    func writeRulesJournals() throws {
+        struct Page {
+            let id: String
+            let name: String
+            let text: String
+        }
+        let filler = String(repeating: "Some rules text. ", count: 10)
+        func journal(_ file: String, _ id: String, _ name: String, _ pages: [Page]) throws {
+            try writeJSON("packs/pf2e/journals/\(file).json", in: repository, ["_id": id, "name": name, "pages":
+                pages.enumerated().map { index, page in
+                    ["_id": page.id, "name": page.name, "sort": index,
+                     "text": ["content": "<p>\(filler)\(page.text)</p>"]]
+                }])
+        }
+        try journal("ancestries", "an1", "Ancestries", [Page(id: "anI", name: "Index", text: "See @UUID[.anE]{Elf}."),
+                                                         Page(id: "anE", name: "Elf", text: "Elves live long lives.")])
+        try journal("classes", "cl1", "Classes", [Page(id: "clF", name: "Fighter", text: "Fighters train hard."),
+                                                  Page(id: "clD", name: "Draconic Connections", text: "Dragons.")])
+        try journal("archetypes", "ar1", "Archetypes", [Page(id: "arA", name: "Acrobat", text: "Tumbling.")])
+        try journal("domains", "do1", "Domains", [Page(id: "doF", name: "Fire Domain", text: "Flames.")])
+        try journal("remaster-changes", "re1", "Remaster Changes",
+                    [Page(id: "reS", name: "Spells", text: "Renamed spells.")])
+        try journal("hero-point-deck", "he1", "Hero Point Deck", [Page(id: "heC", name: "Last Stand", text: "A card.")])
+    }
+
     /// A two-page PDF in Scrollkeeper's layout; the second page is labeled "2".
     func writePlayerCore(folder: String) throws -> URL {
         let url = root.appendingPathComponent("Files/\(folder)/Book.pdf")
