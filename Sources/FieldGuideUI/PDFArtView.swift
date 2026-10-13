@@ -1,4 +1,5 @@
 import CreatureArt
+import FieldGuideKit
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -101,9 +102,15 @@ struct PDFArtView: View {
         Section("Watched folders") {
             ForEach(model.catalog.watchedFolders, id: \.self) { folder in
                 HStack {
-                    Text(folder).font(.callout).lineLimit(2).truncationMode(.middle)
+                    let name = FolderName(path: folder)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Label(name.title, systemImage: "folder")
+                        Text(name.location).font(.caption).foregroundStyle(.secondary)
+                            .lineLimit(1).truncationMode(.middle)
+                    }
                     Spacer()
                     Button("Stop Watching") { Task { await model.stopWatching(folder) } }
+                        .buttonStyle(.borderless)
                 }
             }
         }
@@ -137,7 +144,8 @@ private struct SourceRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(source.title)
-                Text(source.place).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                Text(FolderName.place(ofFile: source.place)).font(.caption).foregroundStyle(.secondary)
+                    .lineLimit(1).truncationMode(.middle)
             }
             Spacer()
             Text("\(source.artCount) art").font(.caption).foregroundStyle(.secondary)
