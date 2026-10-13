@@ -49,11 +49,13 @@ public final class Catalog {
         guard !words.isEmpty else { return [] }
         let match = words.map { "\"\($0)\"*" }.joined(separator: " ")
         var ids: Set<String> = []
+        // Matched once, then filtered: joined, SQLite runs the match again for every entry of the category, which
+        // takes minutes for a one-letter prefix in the bestiary.
         let sql = """
-            SELECT entries.id FROM search JOIN entries ON entries.rowid = search.rowid
-            WHERE search MATCH ? AND entries.system = ? AND entries.category = ?
+            SELECT id FROM entries
+            WHERE system = ? AND category = ? AND rowid IN (SELECT rowid FROM search WHERE search MATCH ?)
             """
-        try database.query(sql, [.text(match), .text(system.rawValue), .text(category.rawValue)]) {
+        try database.query(sql, [.text(system.rawValue), .text(category.rawValue), .text(match)]) {
             ids.insert($0.text(0))
         }
         return ids
