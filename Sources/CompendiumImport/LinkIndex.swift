@@ -33,9 +33,11 @@ public struct LinkIndex: Sendable {
     public func name(of entryID: String) -> String? { names[entryID] }
 
     /// Registers a journal page, linked as
-    /// `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`.
-    mutating func add(_ page: JournalPage) {
-        targets["\(page.system.rawValue).journals.\(page.journalID).JournalEntryPage.\(page.pageID)"] = page.uuid
-        names[page.uuid] = page.name
+    /// `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`; its links lead to
+    /// `target`, the page or the Details of the entry it belongs to.
+    mutating func add(_ page: JournalPage, target: String? = nil) {
+        let target = target ?? page.uuid
+        targets["\(page.system.rawValue).journals.\(page.journalID).JournalEntryPage.\(page.pageID)"] = target
+        names[target] = page.name
     }
 }

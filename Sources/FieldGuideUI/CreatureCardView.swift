@@ -58,20 +58,25 @@ struct CreatureCardView: View {
     }
 }
 
-/// A card laid out at its own width and shrunk as a whole to fit narrower space, so its text wraps the same in
-/// any column.
+/// A card laid out at its own width and scaled as a whole to fill the space's width, so its text wraps the same in
+/// any column, whether the sidebar shows or not.
 struct FittedCard<Card: View>: View {
     static var layoutWidth: CGFloat { 440 }
     @ViewBuilder let card: Card
 
     var body: some View {
         GeometryReader { proxy in
-            let scale = min(1, proxy.size.width / Self.layoutWidth)
+            let scale = Self.scale(toFit: proxy.size.width)
             card
                 .frame(width: Self.layoutWidth, height: proxy.size.height / scale)
                 .scaleEffect(scale, anchor: .top)
                 .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
         }
+    }
+
+    /// How much the card is scaled to fill `width`; not at all before there is a width.
+    static func scale(toFit width: CGFloat) -> CGFloat {
+        width > 0 ? width / layoutWidth : 1
     }
 }
 

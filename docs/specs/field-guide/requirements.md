@@ -22,7 +22,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 ## R3 Categories
 - R3.1 Foundry's compendium browser tabs: Actions, Bestiary, Campaign Features, Equipment, Feats, Hazards
   and Spells.
-- R3.2 Also: Conditions, Ancestries, Heritages, Backgrounds, Classes and Deities.
+- R3.2 Also: Conditions, Ancestries, Heritages, Backgrounds, Classes and Deities; and from the rules journals,
+  Archetypes, Domains and Remaster Changes, each page an entry.
 - R3.3 A category with no entries in a system, such as Campaign Features in Starfinder, is not shown.
 - R3.4 GM Screen, first in the list: each page of the system's GM Screen journal (such as DCs by Level,
   Simple DCs and Encounter Budget) is an entry, filterable by its section (Playing the Game, Running the
@@ -31,9 +32,9 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 - R3.5 GM Screen also has an Areas entry per system: the area diagrams (emanation, burst, cone, line) from
   page 429 of the Pathfinder Player Core and page 421 of the Starfinder Player Core, taken from the PDFs
   Scrollkeeper downloaded. Without the PDF, the entry is left out.
-- R3.6 Journals: the pages of the system's other rules journals (Archetypes, Classes, Ancestries, Domains,
-  Hero Point Deck, Remaster Changes), filterable by journal, so links into them work. Links to skill-action
-  macros open the action they run.
+- R3.6 Journals: the rest of the rules journals, filterable by journal: the Hero Point Deck, and the pages of
+  the Ancestries and Classes journals that no ancestry or class is named for (Index, Versatile Heritages,
+  Draconic Sorcerer Bloodlines). Links to skill-action macros open the action they run.
 
 ## R4 Browsing
 - R4.1 Each category lists its entries with a small image, name, level (where it has one) and type.
@@ -58,6 +59,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   immunities, resistances and weaknesses, speeds, Strikes, actions and reactions in stat-block order, and
   spellcasting by rank; then the creature's description.
 - R5.5 Tapping a trait shows its description.
+- R5.6 An ancestry or class switches between its overview and its Details, its page in the Ancestries or
+  Classes journal, when it has one; a link to that journal page opens the entry on its Details.
 
 ## R6 Images
 - R6.1 Items, spells, feats and actions show icons from the user's own Rexard packs, never Foundry's or
@@ -78,7 +81,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 ## R8 Battle cards
 - R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
   style, as in Combat Pad) and its lore, the description without the stat block; the choice is remembered. A
-  creature without lore shows only its card.
+  creature without lore shows only its card. The card fills the width of its column, padded, and grows when
+  the sidebar is hidden.
 - R8.2 Tapping an empty part of the card shows its corner icons and a second tap hides them; with a pointer,
   each icon shows while the pointer is over its corner. The top-right icon turns the card over to its back:
   the creature's art in a backdrop chosen by its traits, with its name. The bottom-right icon, or a pinch

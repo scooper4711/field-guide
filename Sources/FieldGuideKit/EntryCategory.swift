@@ -1,11 +1,13 @@
 import Foundation
 
-/// The kinds of entry the app browses: the GM Screen, Foundry's compendium browser tabs, then character
-/// options.
+/// The kinds of entry the app browses: the GM Screen, Foundry's compendium browser tabs, character options, then
+/// the rules journals that are categories of their own and the rest of the journals.
 public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable {
     case gmScreen
     case actions, bestiary, campaignFeatures, equipment, feats, hazards, spells
-    case conditions, ancestries, heritages, backgrounds, classes, deities, journals
+    case conditions, ancestries, heritages, backgrounds, classes, archetypes, deities, domains
+    // swiftlint:disable:next inclusive_language - "Remaster" is Paizo's name for its revised rules
+    case remasterChanges, journals
 
     public var id: String { rawValue }
 
@@ -13,6 +15,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         switch self {
         case .campaignFeatures: "Campaign Features"
         case .gmScreen: "GM Screen"
+        case .remasterChanges: "Remaster Changes"
         default: rawValue.prefix(1).uppercased() + rawValue.dropFirst()
         }
     }
@@ -23,6 +26,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .ancestries: "Ancestry"
         case .classes: "Class"
         case .deities: "Deity"
+        case .remasterChanges: "Remaster Change"
         case .bestiary: "Creature"
         case .gmScreen: "GM Screen"
         default: String(title.dropLast())
@@ -45,7 +49,10 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .heritages: "person.crop.circle.badge.plus"
         case .backgrounds: "book.closed"
         case .classes: "graduationcap"
+        case .archetypes: "person.crop.rectangle.stack"
         case .deities: "sun.max"
+        case .domains: "circle.hexagongrid"
+        case .remasterChanges: "arrow.triangle.2.circlepath"
         case .journals: "books.vertical"
         }
     }
@@ -53,7 +60,8 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     /// Whether entries have levels worth filtering and sorting by.
     public var hasLevels: Bool {
         switch self {
-        case .gmScreen, .journals, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities:
+        case .gmScreen, .journals, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities,
+             .archetypes, .domains, .remasterChanges:
             false
         default: true
         }

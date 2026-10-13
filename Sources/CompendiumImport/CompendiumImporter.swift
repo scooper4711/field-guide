@@ -37,19 +37,18 @@ public struct CompendiumImporter {
         let localizer = try Localizer(languageDirectory: repository.appendingPathComponent("static/lang"))
         let glossary = TraitGlossary(repository: repository, localizer: localizer)
         let journalPages = GameSystem.allCases.flatMap { GMScreen.pages(repository: repository, system: $0) }
+        let details = JournalDetails(pages: journalPages, documents: documents)
         var links = LinkIndex(documents: documents)
-        journalPages.forEach { links.add($0) }
+        journalPages.forEach { links.add($0, target: details.linkTarget(of: $0)) }
         let enricher = Enricher(localizer: localizer, links: links)
         let images = ImageCollector(icons: IconMap(documents: documents, sources: iconSources()),
                                     packs: options.rexardPacks, output: options.output.appendingPathComponent("Images"))
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
         let builder = PageBuilder(context: context)
-        let diagrams = options.scrollkeeperFiles.map {
-            AreaDiagrams(scrollkeeperFiles: $0, images: options.output.appendingPathComponent("Images")).rows()
-        } ?? []
+        let diagrams = areaDiagrams()
         let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
-        let journalRows = journalPages.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
-        let rows = documents.map(builder.row(for:)) + journalRows + diagrams
+        let journalRows = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
+        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
         let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
@@ -61,6 +60,13 @@ public struct CompendiumImporter {
         try report.markdown.write(to: options.output.appendingPathComponent("import-report.md"), atomically: true,
                                   encoding: .utf8)
         return report
+    }
+
+    /// The GM Screen's area diagrams, from the Player Core PDFs Scrollkeeper downloaded; none without them.
+    private func areaDiagrams() -> [EntryRow] {
+        options.scrollkeeperFiles.map {
+            AreaDiagrams(scrollkeeperFiles: $0, images: options.output.appendingPathComponent("Images")).rows()
+        } ?? []
     }
 
     /// The Rexard packs' pictures, hashed, with the overrides.

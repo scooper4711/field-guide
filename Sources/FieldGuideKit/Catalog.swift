@@ -36,9 +36,9 @@ public final class Catalog {
     /// The entry's page body as HTML, or nil when there is no such entry.
     public func page(of id: String) throws -> EntryPage? {
         var page: EntryPage?
-        try database.query("SELECT name, system, html FROM entries WHERE id = ?", [.text(id)]) { row in
+        try database.query("SELECT name, system, html, details FROM entries WHERE id = ?", [.text(id)]) { row in
             page = EntryPage(id: id, name: row.text(0), system: GameSystem(rawValue: row.text(1)) ?? .pathfinder,
-                             html: row.text(2))
+                             html: row.text(2), details: row.text(3))
         }
         return page
     }
@@ -49,11 +49,13 @@ public final class Catalog {
         guard !words.isEmpty else { return [] }
         let match = words.map { "\"\($0)\"*" }.joined(separator: " ")
         var ids: Set<String> = []
+        // Matched once, then filtered: joined, SQLite runs the match again for every entry of the category, which
+        // takes minutes for a one-letter prefix in the bestiary.
         let sql = """
-            SELECT entries.id FROM search JOIN entries ON entries.rowid = search.rowid
-            WHERE search MATCH ? AND entries.system = ? AND entries.category = ?
+            SELECT id FROM entries
+            WHERE system = ? AND category = ? AND rowid IN (SELECT rowid FROM search WHERE search MATCH ?)
             """
-        try database.query(sql, [.text(match), .text(system.rawValue), .text(category.rawValue)]) {
+        try database.query(sql, [.text(system.rawValue), .text(category.rawValue), .text(match)]) {
             ids.insert($0.text(0))
         }
         return ids
@@ -84,10 +86,35 @@ public struct EntryPage: Equatable, Sendable {
     public let name: String
     public let system: GameSystem
     public let html: String
+    /// An ancestry's or class's page from the rules journals, shown beside its overview; empty for others.
+    public let details: String
+
+    public init(id: String, name: String, system: GameSystem, html: String, details: String = "") {
+        self.id = id
+        self.name = name
+        self.system = system
+        self.html = html
+        self.details = details
+    }
 
     /// The page's description section: a creature's lore, without its stat block; empty when it has none.
     public var lore: String {
         PageDescription.section(in: html)
+    }
+}
+
+/// How links lead to an entry's Details (`EntryPage.details`): `entry:<id>#details`.
+public enum EntryLink {
+    public static let detailsSuffix = "#details"
+
+    /// The link target of `entryID`'s Details.
+    public static func details(of entryID: String) -> String {
+        entryID + detailsSuffix
+    }
+
+    /// The entry a link target leads to, and whether to its Details.
+    public static func entry(of target: String) -> (id: String, isDetails: Bool) {
+        target.hasSuffix(detailsSuffix) ? (String(target.dropLast(detailsSuffix.count)), true) : (target, false)
     }
 }
 

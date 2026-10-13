@@ -16,6 +16,8 @@ public struct EntryRow: Sendable {
     public var text: String
     /// The trait slugs the page shows, whose descriptions the catalog keeps.
     public var traitSlugs: [String]
+    /// An ancestry's or class's journal page, its Details; empty for other entries.
+    public var details = ""
 }
 
 /// Builds an entry's page: header with image, traits, details or stat block, description and source.

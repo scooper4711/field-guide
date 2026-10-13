@@ -1,10 +1,13 @@
 import FieldGuideKit
 import Foundation
 
-/// One page of a system's GM Screen journal.
+/// One page of a system's rules journals.
 struct JournalPage: Equatable {
     var system: GameSystem
     var category: EntryCategory = .gmScreen
+    /// For the Ancestries and Classes journals, the category whose entry of the same name the page is the Details
+    /// of; when no entry has its name, the page stays in `category`.
+    var detailsOf: EntryCategory?
     var journalID: String
     var pageID: String
     var name: String
@@ -16,10 +19,16 @@ struct JournalPage: Equatable {
 
 /// Reads the system's journals (`packs/<system>/journals/*.json`) into pages. GM Screen pages go under the
 /// last level-1 page before them, their section, and level-1 pages with little text are only headings; the
-/// other journals' pages go under the journal's name.
+/// other journals' pages go under the journal's name. Archetypes, Domains and Remaster Changes are categories of
+/// their own; the Ancestries and Classes pages are their entries' Details; the rest are Journals.
 enum GMScreen {
     static let minimumText = 120
     static let gmScreenFile = "gm-screen.json"
+    static let categories: [String: EntryCategory] = [
+        gmScreenFile: .gmScreen, "archetypes.json": .archetypes, "domains.json": .domains,
+        "remaster-changes.json": .remasterChanges
+    ]
+    static let details: [String: EntryCategory] = ["ancestries.json": .ancestries, "classes.json": .classes]
 
     static func pages(repository: URL, system: GameSystem) -> [JournalPage] {
         let folder = repository.appendingPathComponent("packs/\(system.rawValue)/journals")
@@ -32,6 +41,7 @@ enum GMScreen {
         guard let journal = try? JSONValue(contentsOf: file) else { return [] }
         let journalID = journal["_id"].string
         let isGMScreen = file.lastPathComponent == gmScreenFile
+        let category = categories[file.lastPathComponent] ?? .journals
         var section = isGMScreen ? "" : journal["name"].string
         var pages: [JournalPage] = []
         for page in journal["pages"].array.sorted(by: { $0["sort"].int < $1["sort"].int }) {
@@ -39,7 +49,7 @@ enum GMScreen {
             if isGMScreen, page[path: "title.level"].int == 1 { section = page["name"].string }
             guard HTML.plainText(html).count >= minimumText else { continue }
             pages.append(JournalPage(
-                system: system, category: isGMScreen ? .gmScreen : .journals, journalID: journalID,
+                system: system, category: category, detailsOf: details[file.lastPathComponent], journalID: journalID,
                 pageID: page["_id"].string, name: page["name"].string,
                 section: section, html: absoluteLinks(html, system: system, journalID: journalID)
             ))
@@ -64,13 +74,25 @@ enum GMScreen {
     static func row(_ page: JournalPage, context: PageContext, areasEntry: String? = nil) -> EntryRow {
         var body = context.enrich(page.html)
         if let areasEntry, page.name == "GM Screen" { body = linkingAreas(body, entry: areasEntry) }
+        // Pages of a category of their own read as its kind ("Archetype"), the others as their journal.
+        let isOwnCategory = !page.category.facets.contains(.section)
+        let subtitle = isOwnCategory ? page.category.singularTitle : page.section
         let html = "<header class=\"entry-header\"><div><h1>\(HTML.escape(page.name))</h1>"
-            + "<p class=\"subtitle\">\(HTML.escape(page.section))</p></div></header>"
-            + "<section class=\"description journal\">\(body)</section>"
+            + "<p class=\"subtitle\">\(HTML.escape(subtitle))</p></div></header>" + section(body)
         return EntryRow(
             id: page.uuid, system: page.system, category: page.category, name: page.name, level: nil,
-            subtitle: page.section, image: "", facets: page.section.isEmpty ? [:] : [.section: [page.section]],
+            subtitle: subtitle, image: "",
+            facets: isOwnCategory || page.section.isEmpty ? [:] : [.section: [page.section]],
             html: html, text: HTML.plainText(html), traitSlugs: []
         )
+    }
+
+    /// A page's text as an entry's Details: no header, since the entry's overview has one.
+    static func details(_ page: JournalPage, context: PageContext) -> String {
+        section(context.enrich(page.html))
+    }
+
+    private static func section(_ body: String) -> String {
+        "<section class=\"description journal\">\(body)</section>"
     }
 }
