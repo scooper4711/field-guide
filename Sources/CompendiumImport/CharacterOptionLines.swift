@@ -63,7 +63,6 @@ enum CharacterOptionLines {
             "<strong>\(rank)</strong> " + context.link(uuid: uuid.string, name: Enricher.linkedName(uuid.string))
         }
         return [
-            HTML.line("EntryCategory", HTML.escape(Words.title(system["category"].string))),
             HTML.line("Sanctification", HTML.escape(sanctificationText)),
             HTML.line("Divine Attribute",
                       HTML.escape(system["attribute"].strings.compactMap { Formatting.attributes[$0] }

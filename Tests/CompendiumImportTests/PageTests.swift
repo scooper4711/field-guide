@@ -74,12 +74,19 @@ import Testing
         let acolyte = try imported.page("Compendium.pf2e.backgrounds.Item.ac1")
         #expect(acolyte.contains("<strong>Attribute Boosts</strong> Intelligence or Wisdom"))
         #expect(acolyte.contains("<strong>Trained Skills</strong> Religion, Scribing Lore"))
+        #expect(try imported.page("Compendium.pf2e.conditionitems.Item.fr1").contains("You're scared."))
+    }
+
+    @Test func deityPagesShowTheirDetailsAndKind() throws {
+        let imported = try Imported()
+        defer { imported.repository.remove() }
         let abadar = try imported.page("Compendium.pf2e.deities.Item.ab1")
         for line in ["<strong>Sanctification</strong> can be holy", "<strong>Divine Attribute</strong> Constitution",
                      "<strong>Favored Weapon</strong> crossbow", "<strong>Alternate Domains</strong> wealth",
                      "<strong>1</strong> <a href=\"entry:Compendium.pf2e.spells-srd.Item.li1\">Light</a>"] {
             #expect(abadar.contains(line), "\(line)")
         }
-        #expect(try imported.page("Compendium.pf2e.conditionitems.Item.fr1").contains("You're scared."))
+        // The deity's kind is its subtitle, not a line of its details.
+        #expect(abadar.contains("<p class=\"subtitle\">Deity</p>") && !abadar.contains("EntryCategory"))
     }
 }
