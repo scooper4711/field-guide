@@ -8,6 +8,8 @@ public struct ImportOptions: Sendable {
     public var rexardPacks: URL?
     /// Rexard files by Foundry path or entry id, for icons the rules pick badly.
     public var iconOverrides: [String: String] = [:]
+    /// The deities' religious symbols from the Community Use Package; none unless set.
+    public var religiousSymbols = ReligiousSymbols()
     /// Scrollkeeper's `Files` folder, for the area diagrams in the Player Core PDFs; nil to leave them out.
     public var scrollkeeperFiles: URL?
     public var output: URL
@@ -43,6 +45,7 @@ public struct CompendiumImporter {
         let enricher = Enricher(localizer: localizer, links: links)
         let images = ImageCollector(icons: IconMap(documents: documents, sources: iconSources()),
                                     packs: options.rexardPacks, output: options.output.appendingPathComponent("Images"))
+        images.symbols = options.religiousSymbols
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
         let builder = PageBuilder(context: context)
         let diagrams = areaDiagrams()

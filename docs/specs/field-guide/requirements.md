@@ -77,6 +77,9 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   category's symbol. No Paizo or Foundry module art is imported or bundled.
 - R6.2a Equipment shows its art from the user's own item decks (Tabletop Kit's item art) when a card names it,
   in any grade ("Healing Potion (Minor)" shows the Healing Potion card); else its Rexard icon (R6.1).
+- R6.2b Deities show their religious symbol from Paizo's Community Use Package (Religious Symbols; for
+  Starfinder deities, the Starfinder package first) when it has one by the deity's name, in the list in place
+  of the category's symbol and in the top-right corner of the page.
 - R6.3 Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, without copying them,
   and picks up new downloads at launch; Add PDFs copies other PDFs into the app.
 - R6.4 PDFs deleted or moved since they were read are listed as missing in Art from PDFs, and a creature's

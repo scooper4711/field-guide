@@ -29,4 +29,23 @@ import Testing
         #expect(images.icon(of: other).isEmpty && images.icon(of: gone).isEmpty)
         #expect(ImageCollector(icons: map, packs: nil, output: output).icon(of: sword).isEmpty)
     }
+
+    @Test func copiesDeitiesSymbolsOnceAsWebP() throws {
+        let fixture = try IconFixture()
+        let symbols = try SymbolFixture()
+        defer {
+            fixture.remove()
+            symbols.remove()
+        }
+        let output = fixture.root.appendingPathComponent("Images")
+        let images = ImageCollector(icons: IconMap(documents: [], sources: fixture.sources()), packs: nil,
+                                    output: output)
+        images.symbols = symbols.symbols
+        let thamir = IconFixture.document("th", "Thamir", type: "deity", img: "", category: .deities)
+        #expect(images.symbol(of: thamir) == "symbols/pf2e/Thamir Gixx.webp")
+        #expect(images.symbol(of: thamir) == "symbols/pf2e/Thamir Gixx.webp")
+        #expect(ArtScaler.pixelSize(of: output.appendingPathComponent("symbols/pf2e/Thamir Gixx.webp"))?.width == 24)
+        let nobody = IconFixture.document("nb", "Nobody", type: "deity", img: "", category: .deities)
+        #expect(images.symbol(of: nobody).isEmpty)
+    }
 }

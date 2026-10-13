@@ -2,21 +2,26 @@ import CompendiumImport
 import CreatureImport
 import Foundation
 
-/// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--scrollkeeper DIR] [--out DIR]
-/// [--work DIR]`
+/// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--scrollkeeper DIR] [--symbols DIR]
+/// [--starfinder-symbols DIR] [--out DIR] [--work DIR]`
 ///
 /// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, Scrollkeeper's downloads,
-/// `Generated` and `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each
-/// entry's icon and why) out of the app. Entries show the user's Rexard icons in place of Foundry's;
-/// `icon-overrides.json` corrects them. Also writes the creatures for the battle cards to `<out>/Creatures`
-/// (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the user's own PDFs on
-/// the device.
+/// the Community Use Package's Religious Symbols and Starfinder Religious Symbols in
+/// `~/git/community-use-artwork`, `Generated` and `.build/field-guide-import`, which keeps the Rexard hash cache
+/// and `icon-map.tsv` (each entry's icon and why) out of the app. Entries show the user's Rexard icons in place
+/// of Foundry's; `icon-overrides.json` corrects them. Also writes the creatures for the battle cards to
+/// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
+/// user's own PDFs on the device.
 let home = FileManager.default.homeDirectoryForCurrentUser
 var settings = [
     "--pf2e": home.appendingPathComponent("git/pf2e").path,
     "--foundry-app": "/Applications/Foundry Virtual Tabletop.app/Contents/Resources/app/public",
     "--rexard": home.appendingPathComponent("git/rexard-packs").path,
     "--scrollkeeper": home.appendingPathComponent("Library/Application Support/Scrollkeeper/Files").path,
+    "--symbols": home.appendingPathComponent(
+        "git/community-use-artwork/Community Use Package- Religious Symbols").path,
+    "--starfinder-symbols": home.appendingPathComponent(
+        "git/community-use-artwork/Community Use Package- Starfinder Religious Symbols").path,
     "--out": "Generated",
     "--work": ".build/field-guide-import"
 ]
@@ -43,6 +48,8 @@ var options = ImportOptions(
 )
 options.rexardPacks = existingFolder(settings["--rexard"])
 options.scrollkeeperFiles = existingFolder(settings["--scrollkeeper"])
+options.religiousSymbols = ReligiousSymbols(pathfinder: existingFolder(settings["--symbols"]),
+                                            starfinder: existingFolder(settings["--starfinder-symbols"]))
 let creatures = ImportConfiguration(repository: options.paths.repository,
                                     outputDirectory: options.output.appendingPathComponent("Creatures"),
                                     configurationDirectory: URL(fileURLWithPath: "."))

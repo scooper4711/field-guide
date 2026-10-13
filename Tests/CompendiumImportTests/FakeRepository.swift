@@ -11,6 +11,7 @@ struct FakeRepository {
     var appPublic: URL { root.appendingPathComponent("app") }
     var output: URL { root.appendingPathComponent("Generated") }
     var rexardPacks: URL { root.appendingPathComponent("rexard") }
+    var religiousSymbols: URL { root.appendingPathComponent("Religious Symbols") }
     var paths: FoundryPaths { FoundryPaths(repository: repository, appPublic: appPublic) }
 
     init() throws {
@@ -34,6 +35,7 @@ struct FakeRepository {
         try write("static/icons/spells/fireball.webp", in: repository, text: "icon")
         try Pattern.rising.write(to: appPublic.appendingPathComponent("icons/weapons/sword.webp"), size: 40)
         try Pattern.rising.write(to: rexardPacks.appendingPathComponent("Weapons/sword.png"), size: 96)
+        try Pattern.falling.write(to: religiousSymbols.appendingPathComponent("Abadar.png"), size: 48)
         try writeDocuments()
     }
 
