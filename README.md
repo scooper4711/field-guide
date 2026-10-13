@@ -30,8 +30,8 @@ and installs on the iPad. The steps on their own:
   `import-report.md` (what could not be converted), `Creatures/` (the battle cards' creatures, by Tabletop
   Kit's `CreatureImport`) and `CardArt/` (the cards' UI art, copied from your Rexard packs in
   `REXARD_PACKS`, default `~/git/rexard-packs`). Deities show their religious symbols from Paizo's Community Use
-  Package in `COMMUNITY_USE` (default `~/git/community-use-artwork`). No creature art is imported; the app
-  reads it from your PDFs.
+  Package in `COMMUNITY_USE` (default `~/git/community-use-artwork`). Action icons use Paizo's Pathfinder-Icons
+  font from the `Artwork` submodule (`ARTWORK`). No creature art is imported; the app reads it from your PDFs.
   Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists each pick and why);
   to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to `icon-overrides.json`.
   `cwebp` (`brew install webp`) shrinks the icons and the area diagrams.
@@ -46,7 +46,10 @@ and installs on the iPad. The steps on their own:
 The `Artwork/` folder is a private Git submodule ([toolkit-artwork](https://github.com/scooper4711/toolkit-artwork)).
 Clone with `git clone --recursive`, or run `git submodule update --init` after cloning. Its contents are
 licensed and not redistributable. Without access to it, the build still works and falls back to built-in
-artwork.
+artwork. The action icons are Paizo's Pathfinder-Icons font, used unaltered under the
+[Paizo Compatibility License](https://paizo.com/licenses/compatibility).
+
+Pathfinder and Starfinder are registered trademarks and copyrights of Paizo Inc.
 
 ## Test
 `make test`, `make lint` and `make coverage` (80% of lines and regions in `FieldGuideKit` and

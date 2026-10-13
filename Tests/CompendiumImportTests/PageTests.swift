@@ -8,7 +8,7 @@ import Testing
         let imported = try Imported()
         defer { imported.repository.remove() }
         let html = try imported.page("Compendium.pf2e.spells-srd.Item.fb1")
-        #expect(html.contains("<h1>Fireball <span class=\"action-glyph\">2</span></h1>"))
+        #expect(html.contains("<h1>Fireball <span class=\"action-glyph\">\u{E901}</span></h1>"))
         #expect(html.contains("<strong>Traditions</strong> arcane, primal"))
         #expect(html.contains("<strong>Cost</strong> a pinch of sulfur")
             && html.contains("<strong>Area</strong> 20-foot burst"))

@@ -3,12 +3,13 @@ import CreatureImport
 import Foundation
 
 /// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--scrollkeeper DIR] [--symbols DIR]
-/// [--starfinder-symbols DIR] [--out DIR] [--work DIR]`
+/// [--starfinder-symbols DIR] [--artwork DIR] [--out DIR] [--work DIR]`
 ///
 /// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, Scrollkeeper's downloads,
 /// the Community Use Package's Religious Symbols and Starfinder Religious Symbols in
-/// `~/git/community-use-artwork`, `Generated` and `.build/field-guide-import`, which keeps the Rexard hash cache
-/// and `icon-map.tsv` (each entry's icon and why) out of the app. Entries show the user's Rexard icons in place
+/// `~/git/community-use-artwork`, the `Artwork` submodule (for Paizo's Pathfinder-Icons font), `Generated` and
+/// `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each entry's icon and why)
+/// out of the app. Entries show the user's Rexard icons in place
 /// of Foundry's; `icon-overrides.json` corrects them. Also writes the creatures for the battle cards to
 /// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
 /// user's own PDFs on the device.
@@ -22,6 +23,7 @@ var settings = [
         "git/community-use-artwork/Community Use Package- Religious Symbols").path,
     "--starfinder-symbols": home.appendingPathComponent(
         "git/community-use-artwork/Community Use Package- Starfinder Religious Symbols").path,
+    "--artwork": "Artwork",
     "--out": "Generated",
     "--work": ".build/field-guide-import"
 ]
@@ -48,6 +50,8 @@ var options = ImportOptions(
 )
 options.rexardPacks = existingFolder(settings["--rexard"])
 options.scrollkeeperFiles = existingFolder(settings["--scrollkeeper"])
+options.actionIconsFont = existingFolder(settings["--artwork"])?
+    .appendingPathComponent("pathfinder-icons/Pathfinder-Icons.ttf")
 options.religiousSymbols = ReligiousSymbols(pathfinder: existingFolder(settings["--symbols"]),
                                             starfinder: existingFolder(settings["--starfinder-symbols"]))
 let creatures = ImportConfiguration(repository: options.paths.repository,

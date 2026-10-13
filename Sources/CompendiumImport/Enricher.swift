@@ -2,7 +2,7 @@ import Foundation
 
 /// Replaces Foundry text enrichers in description HTML with readable HTML: `@UUID` links become `entry:`
 /// links (or plain text), `@Check`, `@Damage` and `@Template` become prose, `@Localize` its text, and inline
-/// rolls their label.
+/// rolls their label. The pf2e action font's letters become Pathfinder-Icons spans (`ActionGlyphs`).
 public final class Enricher {
     private let localizer: Localizer
     private let links: LinkIndex
@@ -16,7 +16,7 @@ public final class Enricher {
     }
 
     public func enrich(_ html: String) -> String {
-        replaceEnrichers(in: replaceInlineRolls(in: expandLocalizations(html, depth: 0)))
+        ActionGlyphs.convertSpans(in: replaceEnrichers(in: replaceInlineRolls(in: expandLocalizations(html, depth: 0))))
     }
 
     private func expandLocalizations(_ html: String, depth: Int) -> String {

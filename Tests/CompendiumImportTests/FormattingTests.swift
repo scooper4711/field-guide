@@ -18,13 +18,14 @@ import Testing
         #expect(Formatting.actionTypeName(type: "action", count: 3) == "Three Actions")
         #expect(Formatting.actionTypeName(type: "free", count: nil) == "Free Action")
         #expect(Formatting.actionTypeName(type: "passive", count: nil) == "Passive")
-        #expect(Formatting.actionGlyph(type: "free", count: nil) == "<span class=\"action-glyph\">F</span>")
+        #expect(Formatting.actionGlyph(type: "free", count: nil) == "<span class=\"action-glyph\">\u{E903}</span>")
         #expect(Formatting.actionGlyph(type: "passive", count: nil).isEmpty)
         #expect(Formatting.castingTimeName("reaction") == "Reaction"
             && Formatting.castingTimeName("free") == "Free Action")
         #expect(Formatting.castingTimeName("1") == "One Action" && Formatting.castingTimeName("3") == "Three Actions")
         #expect(Formatting.castingTimeName("10 minutes") == "10 minutes" && Formatting.castingTimeName("").isEmpty)
-        #expect(Formatting.time("1 to 3") == "<span class=\"action-glyph\">1 - 3</span>")
+        #expect(Formatting.time("1 to 3")
+            == "<span class=\"action-glyph\">\u{E902}</span> - <span class=\"action-glyph\">\u{E900}</span>")
         #expect(HTML.actionGlyph("odd") == "odd" && Words.title("low-light-vision") == "Low-light Vision")
         #expect(FacetExtractor.featCategory("pfsboon") == "PFS Boon" && FacetExtractor.itemType("ammo") == "Ammunition")
     }

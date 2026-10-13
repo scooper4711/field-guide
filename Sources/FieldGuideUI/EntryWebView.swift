@@ -167,6 +167,7 @@ final class ResourceSchemeHandler: NSObject, WKURLSchemeHandler {
         case "jpg", "jpeg": "image/jpeg"
         case "svg": "image/svg+xml"
         case "woff2": "font/woff2"
+        case "ttf": "font/ttf"
         default: "application/octet-stream"
         }
     }

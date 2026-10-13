@@ -12,6 +12,7 @@ struct FakeRepository {
     var output: URL { root.appendingPathComponent("Generated") }
     var rexardPacks: URL { root.appendingPathComponent("rexard") }
     var religiousSymbols: URL { root.appendingPathComponent("Religious Symbols") }
+    var actionIconsFont: URL { root.appendingPathComponent("Artwork/pathfinder-icons/Pathfinder-Icons.ttf") }
     var paths: FoundryPaths { FoundryPaths(repository: repository, appPublic: appPublic) }
 
     init() throws {
@@ -32,6 +33,7 @@ struct FakeRepository {
         for font in ["pathfinder-2e-actions.woff2", "gelasio-regular.woff2", "eczar.woff2"] {
             try write("static/fonts/\(font)", in: repository, text: "font")
         }
+        try write("pathfinder-icons/Pathfinder-Icons.ttf", in: root.appendingPathComponent("Artwork"), text: "font")
         try write("static/icons/spells/fireball.webp", in: repository, text: "icon")
         try Pattern.rising.write(to: appPublic.appendingPathComponent("icons/weapons/sword.webp"), size: 40)
         try Pattern.rising.write(to: rexardPacks.appendingPathComponent("Weapons/sword.png"), size: 96)

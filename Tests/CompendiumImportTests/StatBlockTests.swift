@@ -17,7 +17,7 @@ import Testing
         "<strong>Speed</strong> 25 feet, climb 15 feet, ignores difficult terrain",
         "dogslicer +7 (agile), <strong>Damage</strong> 1d6+2 slashing plus 1d4 fire plus 1d6 persistent bleed " +
             "plus Grab plus knockdown",
-        "<strong>Ranged</strong> <span class=\"action-glyph\">1</span> javelin –1 (range increment 30 feet), " +
+        "<strong>Ranged</strong> <span class=\"action-glyph\">\u{E902}</span> javelin –1 (range increment 30 feet), " +
             "<strong>Damage</strong> 1d6 piercing",
         "spit +3 (range 10 feet)</p>",
         "<strong>Arcane Innate Spells</strong> DC 18, attack +10; <strong>3rd</strong> <a " +
@@ -26,7 +26,7 @@ import Testing
         "<strong>Arcane Prepared Spells</strong> DC 20; <strong>3rd</strong> <a " +
             "href=\"entry:Compendium.pf2e.spells-srd.Item.fb1\">fireball</a> (×2); <strong>Cantrips " +
                 "(2nd)</strong> light",
-        "<strong>Goblin Scuttle</strong> <span class=\"action-glyph\">R</span> (move)",
+        "<strong>Goblin Scuttle</strong> <span class=\"action-glyph\">\u{E904}</span> (move)",
         "<hr><section class=\"description\"><p>Goblins fight in groups.</p>"
     ]
 
@@ -50,7 +50,7 @@ import Testing
                      "<strong>AC</strong> 18; <strong>Fort</strong> +8", "<strong>Hardness</strong> 5; " +
                          "<strong>HP</strong> 20 (BT 10)",
                      "<strong>Routine</strong> Shoots.", "<strong>Dart</strong> <span " +
-                         "class=\"action-glyph\">R</span>"] {
+                         "class=\"action-glyph\">\u{E904}</span>"] {
             #expect(html.contains(line), "\(line)")
         }
         #expect(!html.contains("Ref") && !html.contains("Reset"))
