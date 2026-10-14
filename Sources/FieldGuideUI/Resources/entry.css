@@ -86,28 +86,28 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 
 .source { margin-top: 18px; color: var(--muted); font-style: italic; font-size: 14px; }
 
-/* The Areas entry's diagrams: each size a step lighter from the smallest outward. */
+/* The Areas entry's diagrams: each size a step along a blue-to-lime ramp, from the smallest outward. */
 :root {
-    --area-1: #6b2e1a;
-    --area-2: #94523a;
-    --area-3: #b97c62;
-    --area-4: #d6a990;
-    --area-5: #ead2c2;
-    --area-grid: rgba(60, 40, 30, 0.25);
-    --area-origin: #c0262d;
+    --area-1: #3d4db7;
+    --area-2: #2f86c9;
+    --area-3: #1fb2ad;
+    --area-4: #62cf86;
+    --area-5: #c6e766;
+    --area-grid: rgba(30, 40, 70, 0.22);
+    --area-origin: #e8364a;
     --area-creature: #1c1c1c;
     --area-creature-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --area-1: #f0a78f;
-        --area-2: #c47c66;
-        --area-3: #965a49;
-        --area-4: #6c3f33;
-        --area-5: #4a2c25;
-        --area-grid: rgba(255, 240, 220, 0.18);
-        --area-origin: #ff5a5f;
+        --area-1: #c6e766;
+        --area-2: #62cf86;
+        --area-3: #1fb2ad;
+        --area-4: #2f86c9;
+        --area-5: #3d4db7;
+        --area-grid: rgba(220, 230, 255, 0.16);
+        --area-origin: #ff5c6c;
         --area-creature: #e8e2d8;
         --area-creature-text: #1c1c1c;
     }
