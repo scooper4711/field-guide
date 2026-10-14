@@ -114,7 +114,9 @@ Foundry VTT's compendium browser.
 - R7.1 iPadOS 18 or later, in every orientation, and macOS 15 or later. Pushing a version tag makes GitHub
   build the universal Mac app with the same data as a local build and attach its disk image to the release.
 - R7.2 Everything works offline.
-- R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad)
-  shows the notice Paizo's Community Use Policy requires, the Paizo Compatibility License's trademark line,
-  credits for the compendium text, the religious symbols, the Rexard art and the action icon font, and a link
-  for reaching the author. The README carries the same notices.
+- R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad) shows
+  the notice Paizo's Community Use Policy requires, the Paizo Compatibility License's trademark line, credits for
+  the compendium text, the religious symbols, the Rexard art and the action icon font, and a link for reaching the
+  author. It also lists the full texts of the licenses the bundled content requires: the Open Game License and the
+  ORC License (the compendium text), the Apache License for Roboto Condensed and the SIL Open Font License for
+  Gelasio. The README carries the same notices.

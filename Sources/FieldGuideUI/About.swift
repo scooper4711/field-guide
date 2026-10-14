@@ -2,8 +2,13 @@ import AppNotices
 import Foundation
 
 extension AboutInfo {
-    /// Field Guide's About screen. The credits match the README's Paizo notices.
-    static let fieldGuide = AboutInfo(
+    /// Field Guide's About screen, with the licenses the import copied into `Generated/Licenses`.
+    static var fieldGuide: AboutInfo {
+        fieldGuideNotices.licensed(by: DataLocation.standard.folder.appendingPathComponent("Licenses"))
+    }
+
+    /// The notices and credits, which match the README's Paizo notices.
+    private static let fieldGuideNotices = AboutInfo(
         appName: "Field Guide",
         tagline: "An unofficial, free, offline compendium browser for Pathfinder and Starfinder.",
         credits: [
@@ -13,6 +18,8 @@ extension AboutInfo {
                 + "Policy.",
             "Item and spell icons and the battle cards' parchment, frames and panels are Rexard game dev assets, "
                 + "used under license.",
+            "The Roboto Condensed font is by Google, used under the Apache License 2.0, and the Gelasio font by the "
+                + "Gelasio Project Authors, used under the SIL Open Font License 1.1.",
             "The action icons are Paizo's Pathfinder-Icons font, used unaltered under the Paizo Compatibility "
                 + "License."
         ],
