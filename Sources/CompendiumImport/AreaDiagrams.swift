@@ -5,8 +5,21 @@ import Foundation
 struct AreaDiagram: Sendable {
     /// What starts the area: grid corners, or a creature's space with its size letter.
     enum Origin: Sendable {
-        case corners([GridSquare])
+        case corners([Corner])
         case creature(letter: String, square: GridSquare, space: Int)
+    }
+
+    /// A grid corner an area starts from, with the label shown to its left, if any.
+    struct Corner: Sendable {
+        var square: GridSquare
+        var label = ""
+    }
+
+    /// A line's slope: `down` squares for every `across`, and how the diagram labels it.
+    struct Slope: Sendable {
+        var across: Int
+        var down: Int
+        var label: String
     }
 
     var title: String
@@ -15,7 +28,7 @@ struct AreaDiagram: Sendable {
     var origin: Origin
     var squares: @Sendable (Int) -> Set<GridSquare>
 
-    static let corner = Origin.corners([GridSquare(column: 0, row: 0)])
+    static let corner = Origin.corners([Corner(square: GridSquare(column: 0, row: 0))])
     static let medium = creature("M", column: 0, row: 0, space: 1)
     static let emanationSizes = [5, 10, 15, 20, 30]
     static let reachSizes = [5, 10, 15]
@@ -49,11 +62,14 @@ struct AreaDiagram: Sendable {
                     origin: creature("M", column: -1, row: -1, space: 1)) {
             AreaGeometry.diagonalCone(feet: $0)
         },
-        AreaDiagram(title: "Line", caption: "From a corner of a square: straight, at a slant and diagonal.",
-                    sizes: [30, 60], origin: .corners(lineStarts.map(\.corner))) { feet in
-            lineStarts.reduce(into: Set<GridSquare>()) { squares, start in
-                squares.formUnion(AreaGeometry.line(feet: feet, across: start.across, down: start.down)
-                    .map { GridSquare(column: $0.column, row: $0.row + start.corner.row) })
+        AreaDiagram(title: "Line", caption: "From a corner of a square, at five slopes.", sizes: lineSizes,
+                    origin: .corners(zip(lineSlopes, lineRows).map { slope, row in
+                        Corner(square: GridSquare(column: 0, row: row), label: slope.label)
+                    })) { feet in
+            zip(lineSlopes, lineRows).reduce(into: Set<GridSquare>()) { squares, start in
+                let (slope, row) = start
+                squares.formUnion(AreaGeometry.line(feet: feet, across: slope.across, down: slope.down)
+                    .map { GridSquare(column: $0.column, row: $0.row + row) })
             }
         }
     ]
@@ -62,10 +78,17 @@ struct AreaDiagram: Sendable {
         .creature(letter: letter, square: GridSquare(column: column, row: row), space: space)
     }
 
-    /// The Line diagram's three lines, each from its own corner, far enough apart for 60 feet.
-    static let lineStarts = [(corner: GridSquare(column: 0, row: 0), across: 1, down: 0),
-                             (corner: GridSquare(column: 0, row: 2), across: 2, down: 1),
-                             (corner: GridSquare(column: 0, row: 10), across: 1, down: 1)]
+    static let lineSizes = [30, 60]
+    /// The Line diagram's lines, shallowest first, so each can start soon after the one above.
+    static let lineSlopes = [Slope(across: 1, down: 0, label: "Straight"),
+                             Slope(across: 3, down: 1, label: "3 across, 1 down"),
+                             Slope(across: 2, down: 1, label: "2 across, 1 down"),
+                             Slope(across: 3, down: 2, label: "3 across, 2 down"),
+                             Slope(across: 1, down: 1, label: "Diagonal")]
+    /// The row each line starts on.
+    static let lineRows = AreaGeometry.packedRows(lineSlopes.map {
+        AreaGeometry.line(feet: lineSizes.max() ?? 0, across: $0.across, down: $0.down)
+    })
 }
 
 /// The GM Screen's Areas entry for each system, drawn from the rules as inline SVG.
@@ -74,6 +97,8 @@ struct AreaDiagrams {
 
     var diagrams = AreaDiagram.all
     static let squareSize = 16
+    /// The space left of the grid for the lines' labels, in the drawing's units.
+    static let labelMargin = 6 * squareSize
     /// How many times larger than the drawing's units the diagrams are shown.
     static let displayScale = 2
 
@@ -104,13 +129,15 @@ struct AreaDiagrams {
         let bounds = gridBounds(Set(shaded.keys), origin: diagram.origin)
         let squares = shaded.sorted { ($0.key.row, $0.key.column) < ($1.key.row, $1.key.column) }
             .map { rect($0.key, size: 1, in: bounds, class: "area-\($0.value)") }
-        let width = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
+        let gridWidth = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
+        let margin = labels(diagram.origin, in: bounds).isEmpty ? 0 : labelMargin
+        let width = gridWidth + margin
         // Every diagram shows its squares at the same size, up to the page's width.
         let maximumWidth = min(width * displayScale, 480)
         return "<svg class=\"area-grid\" style=\"max-width: \(maximumWidth)px\" viewBox=\"0 0 \(width) \(height)\" "
-            + "role=\"img\" aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
-            + gridLines(width: width, height: height) + outlines(diagram, in: bounds)
-            + originMarks(diagram.origin, in: bounds) + "</svg>"
+            + "role=\"img\" aria-label=\"\(HTML.escape(diagram.title))\"><g transform=\"translate(\(margin) 0)\">"
+            + squares.joined() + gridLines(width: gridWidth, height: height) + outlines(diagram, in: bounds)
+            + originMarks(diagram.origin, in: bounds) + labels(diagram.origin, in: bounds) + "</g></svg>"
     }
 
     /// The smallest size, as its place in the list counting from 1, that covers each square.
@@ -192,11 +219,21 @@ struct AreaDiagrams {
         return "<path class=\"grid\" d=\"\((columns + rows).joined())\"/>"
     }
 
+    /// Each labeled corner's label, ending just left of its dot, in the margin.
+    private static func labels(_ origin: AreaDiagram.Origin, in bounds: Bounds) -> String {
+        guard case let .corners(corners) = origin else { return "" }
+        return corners.filter { !$0.label.isEmpty }.map { corner in
+            let point = position(of: corner.square, in: bounds)
+            return "<text class=\"line-label\" x=\"\(point.x - 7)\" y=\"\(point.y + 3)\">"
+                + "\(HTML.escape(corner.label))</text>"
+        }.joined()
+    }
+
     private static func originMarks(_ origin: AreaDiagram.Origin, in bounds: Bounds) -> String {
         switch origin {
         case let .corners(corners):
             return corners.map { corner in
-                let point = position(of: corner, in: bounds)
+                let point = position(of: corner.square, in: bounds)
                 return "<circle class=\"origin\" cx=\"\(point.x)\" cy=\"\(point.y)\" r=\"4\"/>"
             }.joined()
         case let .creature(letter, square, space):

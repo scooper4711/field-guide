@@ -140,6 +140,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .area-grid .outline-3 { stroke: var(--outline-3); }
 .area-grid .outline-4 { stroke: var(--outline-4); }
 .area-grid .outline-5 { stroke: var(--outline-5); }
+.area-grid text.line-label { fill: var(--text); font-size: 8.5px; text-anchor: end; }
 .area-grid .origin { fill: var(--area-origin); }
 .area-grid rect.creature { fill: var(--area-creature); }
 .area-grid text.creature { fill: var(--area-creature-text); font: bold 11px "Roboto Condensed", sans-serif;

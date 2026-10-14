@@ -45,6 +45,12 @@ import Testing
         #expect(AreaGeometry.emanation(feet: 5, space: 3).count == 25)
     }
 
+    @Test func packedLinesKeepAClearSquareBetweenThem() {
+        let straight = AreaGeometry.line(feet: 30, across: 1, down: 0)
+        #expect(AreaGeometry.packedRows([straight, straight, straight]) == [0, 2, 4])
+        #expect(AreaGeometry.packedRows([]).isEmpty)
+    }
+
     @Test func linesTakeTheSquaresTheyCross() {
         #expect(picture(AreaGeometry.line(feet: 30, across: 1, down: 0), columns: 0...6, rows: -1...0)
                 == [".......", "######."])
@@ -99,7 +105,11 @@ import Testing
 
     @Test func originsAreMarked() throws {
         let line = try #require(AreaDiagram.all.last)
-        #expect(AreaDiagrams.svg(line).components(separatedBy: "class=\"origin\"").count - 1 == 3)
+        let lines = AreaDiagrams.svg(line)
+        #expect(lines.components(separatedBy: "class=\"origin\"").count - 1 == 5)
+        #expect(lines.contains(">3 across, 2 down</text>") && lines.contains("translate(96 0)"))
+        #expect(AreaDiagram.lineRows == [0, 2, 4, 7, 10])
+        #expect(!AreaDiagrams.svg(AreaDiagram.all[0]).contains("line-label"))
         let large = named("Emanation, Large creature")
         #expect(AreaDiagrams.svg(large).contains("width=\"32\" height=\"32\"/><text class=\"creature\""))
         #expect(AreaDiagrams.svg(large).contains(">L</text>"))
