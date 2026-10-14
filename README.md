@@ -1,8 +1,16 @@
 # Field Guide
 
-A private iPad app for looking things up at the table: Foundry VTT's compendium browser for Pathfinder 2e and
-Starfinder 2e, offline, with art. It is built from the Foundry pf2e system repository and is not distributed,
-since the content and art are Paizo's. See `docs/specs/field-guide/` for the requirements and design.
+Looking up a rule, a spell or a monster at the table usually means a laptop, a website that needs a signal,
+or a stack of books.
+
+Field Guide is an iPad app that carries the Pathfinder and Starfinder compendium, offline: actions, creatures,
+equipment, feats, hazards, spells, conditions, ancestries, classes, deities and more. Search as you type,
+filter by level, rarity, traits and source, and follow the links from one entry to the next. Creatures can be
+shown as battle cards with art from your own pawn and Battle Cards PDFs, and equipment with art from your item
+decks.
+
+The content comes from the Foundry VTT pf2e system repository, under the ORC License and the Open Game License.
+See `docs/specs/field-guide/` for the requirements and design.
 
 ## Use
 - Pick Pathfinder or Starfinder at the top of the sidebar, then a category: Actions, Bestiary, Campaign
