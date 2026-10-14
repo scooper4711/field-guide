@@ -49,7 +49,19 @@ licensed and not redistributable. Without access to it, the build still works an
 artwork. The action icons are Paizo's Pathfinder-Icons font, used unaltered under the
 [Paizo Compatibility License](https://paizo.com/licenses/compatibility).
 
+## Paizo notices
+
+Field Guide uses trademarks and/or copyrights owned by Paizo Inc., used under Paizo's Community Use Policy
+([paizo.com/licenses/communityuse](https://paizo.com/licenses/communityuse)). We are expressly prohibited from
+charging you to use or access this content. Field Guide is not published, endorsed, or specifically approved by
+Paizo. For more information about Paizo Inc. and Paizo products, visit [paizo.com](https://paizo.com).
+
 Pathfinder and Starfinder are registered trademarks and copyrights of Paizo Inc.
+
+The compendium text comes from the [pf2e system for Foundry VTT](https://github.com/foundryvtt/pf2e) and is used
+under the ORC License and the Open Game License 1.0a. The deities' religious symbols are from Paizo's Community
+Use Package. The same notices and credits are in the app's About screen (the app menu on the Mac, the sidebar's
+About button on the iPad). Contact: [scooper4711 on GitHub](https://github.com/scooper4711).
 
 ## Test
 `make test`, `make lint` and `make coverage` (80% of lines and regions in `FieldGuideKit` and
