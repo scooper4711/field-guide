@@ -61,21 +61,23 @@ import Testing
         #expect(levels[GridSquare(column: 1, row: 0)] == 2)
         #expect(levels[GridSquare(column: 5, row: 0)] == 5)
         #expect(AreaDiagrams.key(burst).contains("<span class=\"swatch area-5\"></span>30 feet"))
-        #expect([1, 2, 3].map { AreaDiagrams.shade($0, of: 3) } == ["area-1", "area-3", "area-5"])
-        #expect([1, 2].map { AreaDiagrams.shade($0, of: 2) } == ["area-1", "area-5"])
-        #expect(AreaDiagrams.shade(1, of: 1) == "area-1")
+        #expect([1, 2, 3].map { AreaDiagrams.tone($0, of: 3) } == [1, 3, 5])
+        #expect([1, 2].map { AreaDiagrams.tone($0, of: 2) } == [1, 5])
+        #expect(AreaDiagrams.tone(1, of: 1) == 1)
     }
 
     @Test func outlinesFollowTheAreasEdge() {
         let square: Set = [GridSquare(column: 0, row: 0)]
         let bounds = (columns: 0..<1, rows: 0..<1)
-        #expect(AreaDiagrams.outline(square, in: bounds)
-                == "<path class=\"outline\" d=\"M0 0h16M0 16h16M0 0v16M16 0v16\"/>")
+        #expect(AreaDiagrams.outline(square, in: bounds, tone: 2)
+                == "<path class=\"outline outline-2\" d=\"M0 0h16M0 16h16M0 0v16M16 0v16\"/>")
         let pair: Set = [GridSquare(column: 0, row: 0), GridSquare(column: 1, row: 0)]
-        let edges = AreaDiagrams.outline(pair, in: (columns: 0..<2, rows: 0..<1)).components(separatedBy: "M")
+        let edges = AreaDiagrams.outline(pair, in: (columns: 0..<2, rows: 0..<1), tone: 1).components(separatedBy: "M")
         #expect(edges.count - 1 == 6)
         let burst = AreaDiagram.all[0]
-        #expect(AreaDiagrams.svg(burst).components(separatedBy: "class=\"outline\"").count - 1 == burst.sizes.count)
+        let svg = AreaDiagrams.svg(burst)
+        #expect((1...5).allSatisfy { svg.contains("class=\"outline outline-\($0)\"") })
+        #expect(svg.range(of: "outline-5")!.lowerBound < svg.range(of: "outline-1")!.lowerBound)
     }
 
     @Test func originsAreMarked() throws {

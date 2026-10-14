@@ -91,12 +91,11 @@ struct AreaDiagrams {
         let shaded = shading(diagram)
         let bounds = gridBounds(Set(shaded.keys), origin: diagram.origin)
         let squares = shaded.sorted { ($0.key.row, $0.key.column) < ($1.key.row, $1.key.column) }
-            .map { rect($0.key, size: 1, in: bounds, class: shade($0.value, of: diagram.sizes.count)) }
+            .map { rect($0.key, size: 1, in: bounds, class: "area-\(tone($0.value, of: diagram.sizes.count))") }
         let width = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
         return "<svg class=\"area-grid\" viewBox=\"0 0 \(width) \(height)\" role=\"img\" "
             + "aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
-            + gridLines(width: width, height: height) + diagram.sizes.map { outline(diagram.squares($0), in: bounds) }
-                .joined()
+            + gridLines(width: width, height: height) + outlines(diagram, in: bounds)
             + originMarks(diagram.origin, in: bounds) + "</svg>"
     }
 
@@ -111,15 +110,15 @@ struct AreaDiagrams {
 
     static func key(_ diagram: AreaDiagram) -> String {
         "<ul class=\"area-key\">" + diagram.sizes.enumerated().map { index, feet in
-            "<li><span class=\"swatch \(shade(index + 1, of: diagram.sizes.count))\"></span>\(feet) feet</li>"
+            "<li><span class=\"swatch area-\(tone(index + 1, of: diagram.sizes.count))\"></span>\(feet) feet</li>"
         }.joined() + "</ul>"
     }
 
-    /// The color class of the `level`th of `count` sizes, spread over the five shades so a few sizes stay apart.
-    static func shade(_ level: Int, of count: Int) -> String {
-        let shades = 5
-        guard count > 1 else { return "area-1" }
-        return "area-\(1 + ((level - 1) * (shades - 1) + (count - 1) / 2) / (count - 1))"
+    /// The color, 1 to 5, of the `level`th of `count` sizes, spread over the five so a few sizes stay apart.
+    static func tone(_ level: Int, of count: Int) -> Int {
+        let tones = 5
+        guard count > 1 else { return 1 }
+        return 1 + ((level - 1) * (tones - 1) + (count - 1) / 2) / (count - 1)
     }
 
     /// The squares shown: every shaded one and the creature's space, with one square of margin.
@@ -144,8 +143,15 @@ struct AreaDiagrams {
         ((square.column - bounds.columns.lowerBound) * squareSize, (square.row - bounds.rows.lowerBound) * squareSize)
     }
 
-    /// A path along every edge where a square of the area meets one outside it.
-    static func outline(_ squares: Set<GridSquare>, in bounds: Bounds) -> String {
+    /// Each size's outline in its own color, the largest first so the smaller ones draw over shared edges.
+    static func outlines(_ diagram: AreaDiagram, in bounds: Bounds) -> String {
+        diagram.sizes.enumerated().reversed().map { index, feet in
+            outline(diagram.squares(feet), in: bounds, tone: tone(index + 1, of: diagram.sizes.count))
+        }.joined()
+    }
+
+    /// A path along every edge where a square of the area meets one outside it, colored by `tone`.
+    static func outline(_ squares: Set<GridSquare>, in bounds: Bounds, tone: Int) -> String {
         let size = squareSize
         let edges = squares.sorted { ($0.row, $0.column) < ($1.row, $1.column) }.flatMap { square in
             let (left, top) = position(of: square, in: bounds)
@@ -156,7 +162,7 @@ struct AreaDiagrams {
                     (isOutside(-1, 0), "M\(left) \(top)v\(size)"), (isOutside(1, 0), "M\(left + size) \(top)v\(size)")]
                 .filter(\.0).map(\.1)
         }
-        return "<path class=\"outline\" d=\"\(edges.joined())\"/>"
+        return "<path class=\"outline outline-\(tone)\" d=\"\(edges.joined())\"/>"
     }
 
     private static func gridLines(width: Int, height: Int) -> String {
