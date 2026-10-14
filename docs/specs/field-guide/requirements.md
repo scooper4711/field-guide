@@ -103,3 +103,7 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 ## R7 The app
 - R7.1 iPadOS 18 or later, in every orientation, with a Mac build for development.
 - R7.2 Everything works offline.
+- R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad)
+  shows the notice Paizo's Community Use Policy requires, the Paizo Compatibility License's trademark line,
+  credits for the compendium text, the religious symbols, the Rexard art and the action icon font, and a link
+  for reaching the author. The README carries the same notices.
