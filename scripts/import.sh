@@ -3,7 +3,6 @@
 #
 # PF2E_REPO      the pf2e system repository (default ~/git/pf2e)
 # FOUNDRY_APP    the Foundry app's public folder, for core icons
-# SCROLLKEEPER   Scrollkeeper's downloads, for the area diagrams in the Player Core PDFs
 # REXARD_PACKS   the folder holding the user's Rexard packs, for the entries' icons and the battle cards' art
 #                (default ~/git/rexard-packs)
 # COMMUNITY_USE  the folder holding Paizo's Community Use Package, for the deities' religious symbols
@@ -17,16 +16,15 @@ cd "$(dirname "$0")/.."
 
 PF2E_REPO="${PF2E_REPO:-$HOME/git/pf2e}"
 FOUNDRY_APP="${FOUNDRY_APP:-/Applications/Foundry Virtual Tabletop.app/Contents/Resources/app/public}"
-SCROLLKEEPER="${SCROLLKEEPER:-$HOME/Library/Application Support/Scrollkeeper/Files}"
 REXARD_PACKS="${REXARD_PACKS:-$HOME/git/rexard-packs}"
 COMMUNITY_USE="${COMMUNITY_USE:-$HOME/git/community-use-artwork}"
 ARTWORK="${ARTWORK:-Artwork}"
 
-command -v cwebp >/dev/null || echo "cwebp is not installed (brew install webp); the area diagrams will stay PNG."
+command -v cwebp >/dev/null || echo "cwebp is not installed (brew install webp); the icons will stay PNG."
 
 swift build -c release --product FieldGuideImport
 "$(swift build -c release --show-bin-path)/FieldGuideImport" --pf2e "$PF2E_REPO" --foundry-app "$FOUNDRY_APP" \
-    --rexard "$REXARD_PACKS" --scrollkeeper "$SCROLLKEEPER" \
+    --rexard "$REXARD_PACKS" \
     --symbols "$COMMUNITY_USE/Community Use Package- Religious Symbols" \
     --starfinder-symbols "$COMMUNITY_USE/Community Use Package- Starfinder Religious Symbols" \
     --artwork "$ARTWORK" --out Generated
