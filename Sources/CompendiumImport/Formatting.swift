@@ -15,7 +15,8 @@ enum Formatting {
     static func price(_ price: JSONValue) -> String {
         let coins = ["pp", "gp", "sp", "cp"].compactMap { coin -> String? in
             let amount = price["value"][coin].int
-            return amount > 0 ? "\(amount.formatted()) \(coin)" : nil
+            // Written the same on every Mac, whatever its region, so imports match (and Paizo writes "1,500").
+            return amount > 0 ? "\(amount.formatted(.number.locale(Locale(identifier: "en_US")))) \(coin)" : nil
         }
         guard !coins.isEmpty else { return "" }
         let per = price["per"].int
