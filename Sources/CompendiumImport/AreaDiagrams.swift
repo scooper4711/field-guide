@@ -18,7 +18,9 @@ struct AreaDiagram: Sendable {
     static let corner = Origin.corners([GridSquare(column: 0, row: 0)])
     static let medium = creature("M", column: 0, row: 0, space: 1)
     static let emanationSizes = [5, 10, 15, 20, 30]
+    static let reachSizes = [5, 10, 15]
     static let coneSizes = [15, 30, 60]
+    static let large = creature("L", column: 0, row: 0, space: 2)
 
     static let all = [
         AreaDiagram(title: "Burst", caption: "From a corner of a square, within range.", sizes: emanationSizes,
@@ -27,9 +29,17 @@ struct AreaDiagram: Sendable {
                     caption: "From every side of the creature's space.", sizes: emanationSizes, origin: medium) {
             AreaGeometry.emanation(feet: $0, space: 1)
         },
+        AreaDiagram(title: "Reach, Medium or smaller creature",
+                    caption: "As an emanation, except that 10-foot reach reaches 2 squares diagonally.",
+                    sizes: reachSizes, origin: medium) { AreaGeometry.reach(feet: $0, space: 1) },
         AreaDiagram(title: "Emanation, Large creature", caption: "From every side of the creature's space.",
-                    sizes: emanationSizes, origin: creature("L", column: 0, row: 0, space: 2)) {
-            AreaGeometry.emanation(feet: $0, space: 2)
+                    sizes: emanationSizes, origin: large) { AreaGeometry.emanation(feet: $0, space: 2) },
+        AreaDiagram(title: "Reach, Large creature",
+                    caption: "As an emanation, except that 10-foot reach reaches 2 squares diagonally.",
+                    sizes: reachSizes, origin: large) { AreaGeometry.reach(feet: $0, space: 2) },
+        AreaDiagram(title: "Emanation, Huge creature", caption: "From every side of the creature's space.",
+                    sizes: emanationSizes, origin: creature("H", column: 0, row: 0, space: 3)) {
+            AreaGeometry.emanation(feet: $0, space: 3)
         },
         AreaDiagram(title: "Cone, orthogonal", caption: "From the middle of one side of the creature's space.",
                     sizes: coneSizes, origin: creature("M", column: 0, row: -1, space: 1)) {
@@ -64,6 +74,8 @@ struct AreaDiagrams {
 
     var diagrams = AreaDiagram.all
     static let squareSize = 16
+    /// How many times larger than the drawing's units the diagrams are shown.
+    static let displayScale = 2
 
     func rows() -> [EntryRow] {
         GameSystem.allCases.map(row(for:))
@@ -93,8 +105,10 @@ struct AreaDiagrams {
         let squares = shaded.sorted { ($0.key.row, $0.key.column) < ($1.key.row, $1.key.column) }
             .map { rect($0.key, size: 1, in: bounds, class: "area-\($0.value)") }
         let width = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
-        return "<svg class=\"area-grid\" viewBox=\"0 0 \(width) \(height)\" role=\"img\" "
-            + "aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
+        // Every diagram shows its squares at the same size, up to the page's width.
+        let maximumWidth = min(width * displayScale, 480)
+        return "<svg class=\"area-grid\" style=\"max-width: \(maximumWidth)px\" viewBox=\"0 0 \(width) \(height)\" "
+            + "role=\"img\" aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
             + gridLines(width: width, height: height) + outlines(diagram, in: bounds)
             + originMarks(diagram.origin, in: bounds) + "</svg>"
     }

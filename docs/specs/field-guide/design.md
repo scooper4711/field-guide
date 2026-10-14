@@ -34,11 +34,12 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `JournalDetails` makes each page of the Ancestries and Classes journals the Details of the ancestry or class
   of the same name in its system: the row's `details` column (also searched), with links to the page leading to
   `entry:<id>#details` (`EntryLink`). Pages without such an entry stay in Journals.
-- `AreaGeometry` lists the squares an area covers, by the rules: a square counts when the squares moved to
-  reach its far side, `max + min / 2` (rounded down), times 5 feet is within the area's size. Bursts start at
-  a grid corner, emanations at the edges of the creature's space, diagonal cones at its corner, orthogonal
-  cones at the middle of its side (a square counts when its column is no farther out than its row), and lines
-  take the squares a ray from a corner passes through, within the burst of the same size.
+- `AreaGeometry` lists the squares an area covers, by the rules: a square counts when the squares moved to reach
+  its far side, `max + min / 2` (rounded down), times 5 feet is within the area's size. Bursts start at a grid
+  corner, emanations at the edges of the creature's space, reach likewise except that 10-foot reach takes every
+  square within 2 (the corners too), diagonal cones at its corner, orthogonal cones at the middle of its side (a
+  square counts when its column is no farther out than its row), and lines take the squares a ray from a corner
+  passes through, within the burst of the same size.
 - `AreaDiagrams` draws each kind as an inline `<svg>` in a `<figure>`: each square shaded by the smallest size that
   covers it (`area-1`…`area-5` in order of size, colored by `entry.css` for light and dark mode), the grid, an
   outline along the edge of each size (`outline-1`…`outline-5`: darker than its color, lighter in dark mode;
