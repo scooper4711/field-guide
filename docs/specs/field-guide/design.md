@@ -1,13 +1,13 @@
 # Field Guide: design
 
-A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad.
+A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper.
 
 ## Targets
 - `FieldGuideKit` (iOS, macOS): the catalog model and its SQLite store. `GameSystem` (pf2e, sf2e),
   `EntryCategory` (not `Category`, which clashes with an Objective-C type), `EntrySummary` (what lists and filters need), `Catalog` (reads the database), `EntryQuery`
   (search text, filters and sort, applied in memory), `FacetValues` (the filter options of a list).
 - `CompendiumImport` (macOS): reads the pf2e repository and writes the database and images. Code that
-  Combat Pad's `FoundryImport` already proved (JSON access, pack manifests, enricher scanning, the
+  Turnkeeper's `FoundryImport` already proved (JSON access, pack manifests, enricher scanning, the
   Foundry art mapping) is adapted rather than shared, so the two apps change independently.
 - `FieldGuideImport`: the command-line importer.
 - `FieldGuideUI` (iOS, macOS): the SwiftUI app. It uses Tabletop Kit's `BattleCards`, `Bestiary` and
@@ -50,7 +50,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   below the baseline, matching the pf2e action font it replaced.
 - `PageBuilder` writes each entry's HTML body: a header (name, type and level), traits, a details block
   for the entry's kind (`DetailLines`), then the enriched description. Creatures and hazards use
-  `StatBlockBuilder`, which follows Combat Pad's parsers for senses, skills, defenses, Strikes and
+  `StatBlockBuilder`, which follows Turnkeeper's parsers for senses, skills, defenses, Strikes and
   spellcasting.
 - `FacetExtractor` records each entry's filter values: level, rarity, traits, source title and the
   category's own facets as a JSON object. A deity's subtitle is its kind: Deity, Pantheon, Covenant or
@@ -82,7 +82,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   `scripts/import.sh` runs `CardArtImport` to copy the Rexard card pieces into `Generated/CardArt`.
 - `CatalogWriter` writes `Generated/catalog.sqlite`: table `entries` (id, system, category, name, level,
   rarity, traits, source, image, subtitle, facets JSON, html) and an FTS5 table over name and text.
-- Trait descriptions come from the language files through `traits.ts`, as in Combat Pad, and are stored
+- Trait descriptions come from the language files through `traits.ts`, as in Turnkeeper, and are stored
   in table `traits` (system, slug, label, html).
 
 ## App
@@ -107,7 +107,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   the column's width. An entry with Details gets an [Overview | Details] picker instead (`EntryTab`, opened on
   Details by `entry:<id>#details` links). `RootView` is the Mac's `battleCardFullScreenHost()`. The web
   fonts in `Generated` are registered at launch for the cards.
-- `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Combat Pad's creature art settings adapted (a second
+- `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Turnkeeper's creature art settings adapted (a second
   copy; a third would move to Tabletop Kit).
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices follow the Mac's number format at import, as the import runs there.
@@ -126,4 +126,4 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
 - `scripts/update.sh`: fetches the pf2e repository's `upstream` remote and fast-forwards the checked-out
   branch to `upstream/<branch>`; then `make import` and `make ipad-install`.
 - `make import` builds and runs `FieldGuideImport`; `make ipad-install` builds the iPad app and installs it,
-  as Combat Pad does.
+  as Turnkeeper does.

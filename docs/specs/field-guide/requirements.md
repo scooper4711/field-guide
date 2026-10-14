@@ -89,7 +89,7 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 
 ## R8 Battle cards
 - R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
-  style, as in Combat Pad) and its lore, the description without the stat block; the choice is remembered. A
+  style, as in Turnkeeper) and its lore, the description without the stat block; the choice is remembered. A
   creature without lore shows only its card. The card fills the width of its column, padded, and grows when
   the sidebar is hidden.
 - R8.2 Tapping an empty part of the card shows its corner icons and a second tap hides them; with a pointer,
