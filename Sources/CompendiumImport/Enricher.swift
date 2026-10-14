@@ -74,9 +74,10 @@ public final class Enricher {
         return name.hasPrefix("Effect: ") ? String(name.dropFirst("Effect: ".count)) : name
     }
 
-    /// `[[/r 1d4 #Recharge]]{1d4 rounds}` becomes "1d4 rounds", and `[[/act demoralize]]` "Demoralize".
+    /// `[[/r 1d4 #Recharge]]{1d4 rounds}` becomes "1d4 rounds", `[[/r 4d8[healing] #Treat Wounds]]` "4d8", and
+    /// `[[/act demoralize]]` "Demoralize". A body may hold one level of brackets, such as damage types.
     private func replaceInlineRolls(in text: String) -> String {
-        let pattern = /\[\[\/(?<command>\w+) (?<body>[^\]]*)\]\](?:\{(?<label>[^}]*)\})?/
+        let pattern = /\[\[\/(?<command>\w+) (?<body>(?:[^\[\]]|\[[^\[\]]*\])*)\]\](?:\{(?<label>[^}]*)\})?/
         return text.replacing(pattern) { match in
             if let label = match.output.label { return String(label) }
             let body = String(match.output.body)
@@ -84,7 +85,8 @@ public final class Enricher {
                 let action = body.split(separator: " ").first.map(String.init) ?? body
                 return action.split(separator: "-").map(\.capitalized).joined(separator: " ")
             }
-            return body.split(separator: "#").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? body
+            let formula = body.split(separator: "#").first.map(String.init) ?? body
+            return formula.replacing(/\[[^\]]*\]/, with: "").trimmingCharacters(in: .whitespaces)
         }
     }
 }
