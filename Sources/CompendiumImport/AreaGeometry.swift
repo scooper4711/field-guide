@@ -33,6 +33,12 @@ enum AreaGeometry {
         }
     }
 
+    /// A creature's reach: an emanation, except that 10-foot reach takes every square within 2, corners too.
+    static func reach(feet: Int, space: Int) -> Set<GridSquare> {
+        guard feet == 2 * feetPerSquare else { return emanation(feet: feet, space: space) }
+        return squares(in: -2..<(space + 2), -2..<(space + 2)) { _ in true }
+    }
+
     /// A cone from the grid corner (0, 0), spreading right and down: the quarter of a burst.
     static func diagonalCone(feet: Int) -> Set<GridSquare> {
         burst(feet: feet).filter { $0.column >= 0 && $0.row >= 0 }

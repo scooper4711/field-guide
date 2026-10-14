@@ -35,6 +35,16 @@ import Testing
         #expect(AreaGeometry.diagonalCone(feet: 30).count == 24)
     }
 
+    @Test func tenFootReachTakesTheCorners() {
+        #expect(AreaGeometry.reach(feet: 5, space: 2) == AreaGeometry.emanation(feet: 5, space: 2))
+        #expect(AreaGeometry.reach(feet: 10, space: 2).count == 36)
+        #expect(AreaGeometry.reach(feet: 10, space: 2).contains(GridSquare(column: -2, row: -2)))
+        #expect(!AreaGeometry.emanation(feet: 10, space: 2).contains(GridSquare(column: -2, row: -2)))
+        #expect(AreaGeometry.reach(feet: 15, space: 2) == AreaGeometry.emanation(feet: 15, space: 2))
+        #expect(AreaGeometry.reach(feet: 10, space: 1).count == 25)
+        #expect(AreaGeometry.emanation(feet: 5, space: 3).count == 25)
+    }
+
     @Test func linesTakeTheSquaresTheyCross() {
         #expect(picture(AreaGeometry.line(feet: 30, across: 1, down: 0), columns: 0...6, rows: -1...0)
                 == [".......", "######."])
@@ -45,6 +55,10 @@ import Testing
 }
 
 @Suite struct AreaDiagramTests {
+    func named(_ title: String) -> AreaDiagram {
+        AreaDiagram.all.first { $0.title == title }!
+    }
+
     @Test func eachSystemGetsTheDrawnDiagrams() throws {
         let rows = AreaDiagrams().rows()
         #expect(rows.map(\.id) == ["fieldguide.pf2e.areas", "fieldguide.sf2e.areas"])
@@ -61,7 +75,7 @@ import Testing
         #expect(levels[GridSquare(column: 1, row: 0)] == 2)
         #expect(levels[GridSquare(column: 5, row: 0)] == 5)
         #expect(AreaDiagrams.key(burst).contains("<span class=\"swatch area-5\"></span>30 feet"))
-        let cone = AreaDiagrams.svg(AreaDiagram.all[3])
+        let cone = AreaDiagrams.svg(named("Cone, orthogonal"))
         #expect((1...3).allSatisfy { cone.contains("class=\"area-\($0)\"") } && !cone.contains("class=\"area-4\""))
     }
 
@@ -86,8 +100,9 @@ import Testing
     @Test func originsAreMarked() throws {
         let line = try #require(AreaDiagram.all.last)
         #expect(AreaDiagrams.svg(line).components(separatedBy: "class=\"origin\"").count - 1 == 3)
-        let large = AreaDiagram.all[2]
+        let large = named("Emanation, Large creature")
         #expect(AreaDiagrams.svg(large).contains("width=\"32\" height=\"32\"/><text class=\"creature\""))
         #expect(AreaDiagrams.svg(large).contains(">L</text>"))
+        #expect(AreaDiagrams.svg(named("Emanation, Huge creature")).contains("width=\"48\" height=\"48\"/><text"))
     }
 }

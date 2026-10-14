@@ -126,7 +126,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 
 .area { margin: 18px 0; }
 .area figcaption { margin-bottom: 6px; }
-.area-grid { display: block; width: 100%; max-width: 480px; height: auto; }
+.area-grid { display: block; width: 100%; height: auto; }
 .area-grid .grid { stroke: var(--area-grid); stroke-width: 0.5; fill: none; }
 /* Shaded squares draw their own grid lines in a neutral tint, so only the outlines carry color. */
 .area-grid rect[class^="area-"] { stroke: rgba(255, 255, 255, 0.45); stroke-width: 0.75; }
