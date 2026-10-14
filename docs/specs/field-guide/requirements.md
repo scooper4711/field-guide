@@ -1,16 +1,19 @@
 # Field Guide: requirements
 
-A private iPad app for looking up Pathfinder 2e and Starfinder 2e rules at the table, in the manner of
-Foundry VTT's compendium browser. It is not distributed: the data and art it carries are Paizo's.
+An iPad and Mac app for looking up Pathfinder 2e and Starfinder 2e rules at the table, in the manner of
+Foundry VTT's compendium browser.
 
 ## R1 Data
-- R1.1 The content comes from the Foundry pf2e system repository at `~/git/pf2e`, whose `packs` folder
-  holds both systems.
-- R1.2 `make update` brings that repository up to date with the official one (fast-forward only, leaving
-  it alone if it has local commits), imports again and installs the app on the iPad, so new and corrected
-  content arrives with one command.
-- R1.3 The import is repeatable and needs no network: running it twice on the same repository gives the
-  same result.
+- R1.1 The content comes from the Foundry pf2e system repository (whose `packs` folder holds both
+  systems), at the release named in `pf2e.release`, which the import downloads from `foundryvtt/pf2e`.
+  `PF2E_REPO` reads another checkout instead, for development.
+- R1.2 `make update` switches `pf2e.release` to pf2e's newest release, imports again and installs the app on
+  the iPad, so new and corrected content arrives with one command. Weekly, GitHub makes the same switch and,
+  when the new release changes the imported compendium and the app has a release, tags the next patch version
+  and builds it into a draft release to publish; a pf2e release that changes nothing Field Guide shows makes
+  no release.
+- R1.3 The import is repeatable: running it twice on the same pf2e release gives the same result, on this
+  Mac or on GitHub. It needs the network only to download a pf2e release it doesn't have.
 - R1.4 Each import writes a report: entries per system and category, links that lead nowhere, and
   enrichers it could not convert.
 
@@ -77,7 +80,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   Paizo's: the Rexard original of the entry's Foundry icon; else its base item's icon (a +1 longsword gets
   the longsword's); else the icon most entries like it clearly share (items: same weapon or armor group,
   consumable category or item type; others: same trait); else none, and the list shows the category's symbol.
-  `icon-overrides.json` (Foundry path or entry id → Rexard file) corrects bad picks.
+  `icon-overrides.json` (Foundry path or entry id → Rexard file) corrects bad picks. `icon-matches.tsv` keeps
+  each Foundry icon's match, so an import without the Foundry app (on GitHub) picks the same icons.
 - R6.2 Creatures and hazards show their art, read on the device from the user's own Paizo pawn, token and
   Battle Cards PDFs (Tabletop Kit's `CreatureArt`); without art the page shows none and the list shows the
   category's symbol. No Paizo or Foundry module art is imported or bundled.
@@ -107,7 +111,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   open their entries (R5.3).
 
 ## R7 The app
-- R7.1 iPadOS 18 or later, in every orientation, with a Mac build for development.
+- R7.1 iPadOS 18 or later, in every orientation, and macOS 15 or later. Pushing a version tag makes GitHub
+  build the universal Mac app with the same data as a local build and attach its disk image to the release.
 - R7.2 Everything works offline.
 - R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad)
   shows the notice Paizo's Community Use Policy requires, the Paizo Compatibility License's trademark line,

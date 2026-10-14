@@ -31,23 +31,30 @@ See `docs/specs/field-guide/` for the requirements and design.
   needs.
 
 ## Updating
-`make update` brings `~/git/pf2e` up to date with the official repository (fast-forward only), imports again
-and installs on the iPad. The steps on their own:
+`make update` switches `pf2e.release` to pf2e's newest release, imports again and installs on the iPad. GitHub
+makes the same switch every Monday, and when the new release changes the compendium and Field Guide has a
+release, it builds the next patch version into a draft release. Commit `pf2e.release`, `import.sha256` and
+`icon-matches.tsv` after a local import. The steps on their own:
 
-- `make import` reads `~/git/pf2e` and writes `Generated/`: `catalog.sqlite`, the icons, the fonts,
+- `make import` reads the pf2e release named in `pf2e.release`, which it downloads into `build/pf2e` (set
+  `PF2E_REPO` to read your own checkout), and writes `Generated/`: `catalog.sqlite`, the icons, the fonts,
   `import-report.md` (what could not be converted), `Creatures/` (the battle cards' creatures, by Tabletop
   Kit's `CreatureImport`) and `CardArt/` (the cards' UI art, copied from your Rexard packs in
   `REXARD_PACKS`, default `~/git/rexard-packs`). Deities show their religious symbols from Paizo's Community Use
   Package in `COMMUNITY_USE` (default `~/git/community-use-artwork`). Action icons use Paizo's Pathfinder-Icons
   font from the `Artwork` submodule (`ARTWORK`). No creature art is imported; the app reads it from your PDFs.
-  Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists each pick and why);
-  to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to `icon-overrides.json`.
+  Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists
+  each pick and why); to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to
+  `icon-overrides.json`. `icon-matches.tsv` keeps each Foundry icon's match for imports without the Foundry
+  app, such as GitHub's.
   `cwebp` (`brew install webp`) shrinks the icons.
 - `make ipad-install` builds the iPad app with `Generated/` inside and installs it on a connected iPad. Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
 - `make run` opens the Mac build on `Generated/`, for trying things out. `FIELD_GUIDE_SELECT=<entry id>`
-  opens an entry at launch.
+  opens an entry at launch. `make dmg` builds `build/Field Guide.app` and `build/Field-Guide-<version>.dmg`.
+  Pushing a `v*` tag builds the universal app on GitHub from the same pf2e release and the `Artwork`
+  submodule, and attaches its disk image to the release.
 
 ## Artwork
 
