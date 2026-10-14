@@ -42,7 +42,7 @@ and installs on the iPad. The steps on their own:
   font from the `Artwork` submodule (`ARTWORK`). No creature art is imported; the app reads it from your PDFs.
   Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists each pick and why);
   to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to `icon-overrides.json`.
-  `cwebp` (`brew install webp`) shrinks the icons and the area diagrams.
+  `cwebp` (`brew install webp`) shrinks the icons.
 - `make ipad-install` builds the iPad app with `Generated/` inside and installs it on a connected iPad. Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
