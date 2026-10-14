@@ -72,7 +72,7 @@ struct AreaDiagrams {
     private func row(for system: GameSystem) -> EntryRow {
         let html = "<header class=\"entry-header\"><div><h1>Areas</h1><p class=\"subtitle\">Playing the Game</p></div>"
             + "</header><section class=\"description\"><p>Every second diagonal square counts as 10 feet. Each "
-            + "diagram shades its sizes from the smallest outward.</p>"
+            + "size has its own color, from the smallest outward.</p>"
             + diagrams.map(Self.figure).joined() + "</section>"
         return EntryRow(
             id: "fieldguide.\(system.rawValue).areas", system: system, category: .gmScreen, name: "Areas",
@@ -91,7 +91,7 @@ struct AreaDiagrams {
         let shaded = shading(diagram)
         let bounds = gridBounds(Set(shaded.keys), origin: diagram.origin)
         let squares = shaded.sorted { ($0.key.row, $0.key.column) < ($1.key.row, $1.key.column) }
-            .map { rect($0.key, size: 1, in: bounds, class: "area-\(tone($0.value, of: diagram.sizes.count))") }
+            .map { rect($0.key, size: 1, in: bounds, class: "area-\($0.value)") }
         let width = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
         return "<svg class=\"area-grid\" viewBox=\"0 0 \(width) \(height)\" role=\"img\" "
             + "aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
@@ -110,15 +110,8 @@ struct AreaDiagrams {
 
     static func key(_ diagram: AreaDiagram) -> String {
         "<ul class=\"area-key\">" + diagram.sizes.enumerated().map { index, feet in
-            "<li><span class=\"swatch area-\(tone(index + 1, of: diagram.sizes.count))\"></span>\(feet) feet</li>"
+            "<li><span class=\"swatch area-\(index + 1)\"></span>\(feet) feet</li>"
         }.joined() + "</ul>"
-    }
-
-    /// The color, 1 to 5, of the `level`th of `count` sizes, spread over the five so a few sizes stay apart.
-    static func tone(_ level: Int, of count: Int) -> Int {
-        let tones = 5
-        guard count > 1 else { return 1 }
-        return 1 + ((level - 1) * (tones - 1) + (count - 1) / 2) / (count - 1)
     }
 
     /// The squares shown: every shaded one and the creature's space, with one square of margin.
@@ -149,7 +142,7 @@ struct AreaDiagrams {
         let name = diagram.title.lowercased().components(separatedBy: CharacterSet.alphanumerics.inverted)
             .filter { !$0.isEmpty }.joined(separator: "-")
         return diagram.sizes.enumerated().reversed().map { index, feet in
-            let squares = diagram.squares(feet), tone = tone(index + 1, of: diagram.sizes.count)
+            let squares = diagram.squares(feet), tone = index + 1
             let clip = "area-\(name)-\(tone)"
             return "<clipPath id=\"\(clip)\"><path d=\"\(fill(squares, in: bounds))\"/></clipPath>"
                 + "<g clip-path=\"url(#\(clip))\">\(outline(squares, in: bounds, tone: tone))</g>"

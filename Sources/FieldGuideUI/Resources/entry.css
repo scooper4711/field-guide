@@ -86,19 +86,20 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 
 .source { margin-top: 18px; color: var(--muted); font-style: italic; font-size: 14px; }
 
-/* The Areas entry's diagrams: each size a step along a blue-to-lime ramp, from the smallest outward. */
+/* The Areas entry's diagrams: each size its own color from the Okabe-Ito palette, which stays distinct with
+   color blindness, and an outline in a stronger tone of that color. */
 :root {
-    --area-1: #3d4db7;
-    --area-2: #2f86c9;
-    --area-3: #1fb2ad;
-    --area-4: #62cf86;
-    --area-5: #c6e766;
+    --area-1: #0072b2;
+    --area-2: #e69f00;
+    --area-3: #009e73;
+    --area-4: #f0e442;
+    --area-5: #56b4e9;
     --area-grid: rgba(30, 40, 70, 0.22);
-    --outline-1: #1f2a73;
-    --outline-2: #17588c;
-    --outline-3: #0c7470;
-    --outline-4: #2a8a4d;
-    --outline-5: #73902a;
+    --outline-1: #003f63;
+    --outline-2: #8a5f00;
+    --outline-3: #005a41;
+    --outline-4: #9a9200;
+    --outline-5: #1f6f9c;
     --area-origin: #e8364a;
     --area-creature: #1c1c1c;
     --area-creature-text: #ffffff;
@@ -106,17 +107,17 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --area-1: #c6e766;
-        --area-2: #62cf86;
-        --area-3: #1fb2ad;
-        --area-4: #2f86c9;
-        --area-5: #3d4db7;
+        --area-1: #2a8ad0;
+        --area-2: #e69f00;
+        --area-3: #14b386;
+        --area-4: #f0e442;
+        --area-5: #56b4e9;
         --area-grid: rgba(220, 230, 255, 0.16);
-        --outline-1: #effbc4;
-        --outline-2: #b5f0c9;
-        --outline-3: #8ae6e2;
-        --outline-4: #9ccdf3;
-        --outline-5: #a8b3f5;
+        --outline-1: #b3dcff;
+        --outline-2: #ffd98a;
+        --outline-3: #9cf0d4;
+        --outline-4: #fffab0;
+        --outline-5: #c9ebff;
         --area-origin: #ff5c6c;
         --area-creature: #e8e2d8;
         --area-creature-text: #1c1c1c;
