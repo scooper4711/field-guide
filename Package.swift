@@ -11,7 +11,7 @@ let package = Package(
         .executable(name: "FieldGuideImport", targets: ["FieldGuideImport"])
     ],
     dependencies: [
-        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.10.0")
+        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.11.0")
     ],
     targets: [
         .target(name: "FieldGuideKit"),
@@ -23,7 +23,8 @@ let package = Package(
         ]),
         .target(name: "FieldGuideUI", dependencies: [
             "FieldGuideKit", .product(name: "BattleCards", package: "tabletop-kit"),
-            .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit")
+            .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit"),
+            .product(name: "AppNotices", package: "tabletop-kit")
         ], resources: [.process("Resources")]),
         .executableTarget(name: "FieldGuide", dependencies: ["FieldGuideUI"]),
         .testTarget(name: "FieldGuideKitTests", dependencies: ["FieldGuideKit"]),

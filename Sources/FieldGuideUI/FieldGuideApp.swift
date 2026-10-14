@@ -1,3 +1,4 @@
+import AppNotices
 import BattleCards
 import FieldGuideKit
 import SwiftUI
@@ -21,6 +22,9 @@ public struct FieldGuideApp: App {
                 .environment(pdfArt)
                 .task { await pdfArt.refresh(addingNew: true) }
         }
+        #if os(macOS)
+        .commands { AboutCommands(info: .fieldGuide) }
+        #endif
     }
 }
 
@@ -89,6 +93,7 @@ struct SidebarView: View {
     /// Called when a match of the search is opened.
     let opened: () -> Void
     @State private var isShowingPDFArt = false
+    @State private var isShowingAbout = false
 
     var body: some View {
         @Bindable var store = store
@@ -104,8 +109,13 @@ struct SidebarView: View {
         .navigationTitle("Field Guide")
         .toolbar {
             Button("Art from PDFs", systemImage: "photo.on.rectangle.angled") { isShowingPDFArt = true }
+            // The Mac has About in the app menu.
+            #if os(iOS)
+            Button("About", systemImage: "info.circle") { isShowingAbout = true }
+            #endif
         }
         .sheet(isPresented: $isShowingPDFArt) { PDFArtView() }
+        .sheet(isPresented: $isShowingAbout) { AboutSheet(info: .fieldGuide) }
     }
 
     private var categories: some View {

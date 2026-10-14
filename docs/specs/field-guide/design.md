@@ -119,6 +119,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Combat Pad
   the entry column's toolbar button shows the sidebar with the search focused.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
   folder, for trying pages out from a script.
+- About: Tabletop Kit's `AppNotices`, with `AboutInfo.fieldGuide` (`About.swift`): `AboutCommands` on the Mac and
+  an `AboutSheet` from the sidebar's toolbar on the iPad.
 
 ## Updating
 - `scripts/update.sh`: fetches the pf2e repository's `upstream` remote and fast-forwards the checked-out
