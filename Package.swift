@@ -11,7 +11,7 @@ let package = Package(
         .executable(name: "FieldGuideImport", targets: ["FieldGuideImport"])
     ],
     dependencies: [
-        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.11.0")
+        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.13.0")
     ],
     targets: [
         .target(name: "FieldGuideKit"),
