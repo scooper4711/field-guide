@@ -66,6 +66,18 @@ import Testing
         #expect(AreaDiagrams.shade(1, of: 1) == "area-1")
     }
 
+    @Test func outlinesFollowTheAreasEdge() {
+        let square: Set = [GridSquare(column: 0, row: 0)]
+        let bounds = (columns: 0..<1, rows: 0..<1)
+        #expect(AreaDiagrams.outline(square, in: bounds)
+                == "<path class=\"outline\" d=\"M0 0h16M0 16h16M0 0v16M16 0v16\"/>")
+        let pair: Set = [GridSquare(column: 0, row: 0), GridSquare(column: 1, row: 0)]
+        let edges = AreaDiagrams.outline(pair, in: (columns: 0..<2, rows: 0..<1)).components(separatedBy: "M")
+        #expect(edges.count - 1 == 6)
+        let burst = AreaDiagram.all[0]
+        #expect(AreaDiagrams.svg(burst).components(separatedBy: "class=\"outline\"").count - 1 == burst.sizes.count)
+    }
+
     @Test func originsAreMarked() throws {
         let line = try #require(AreaDiagram.all.last)
         #expect(AreaDiagrams.svg(line).components(separatedBy: "class=\"origin\"").count - 1 == 3)
