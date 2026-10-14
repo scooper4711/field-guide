@@ -1,4 +1,4 @@
-.PHONY: build test lint coverage import update run ipad-install ipad-simulator icon clean
+.PHONY: build test lint coverage import update app dmg run ipad-install ipad-simulator icon clean
 
 build:
 	swift build
@@ -13,13 +13,21 @@ lint:
 coverage:
 	scripts/coverage.sh
 
-# Imports both systems from ~/git/pf2e into Generated/ (see scripts/import.sh for the sources).
+# Imports both systems from the pf2e release in pf2e.release into Generated/ (see scripts/import.sh for the
+# sources).
 import:
 	scripts/import.sh
 
-# Updates ~/git/pf2e from the official repository, imports and installs on the iPad.
+# Switches to pf2e's newest release, imports and installs on the iPad. GitHub switches weekly too.
 update:
 	scripts/update.sh
+
+# Builds "build/Field Guide.app" with Generated/ inside, and its disk image build/Field-Guide-<VERSION>.dmg.
+app:
+	scripts/build-app.sh
+
+dmg: app
+	scripts/make-dmg.sh
 
 # Runs the Mac build against Generated/.
 run:

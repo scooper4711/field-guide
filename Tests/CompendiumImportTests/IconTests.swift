@@ -115,6 +115,35 @@ import Testing
         #expect(IconMap.slug("Alchemist's Fire (Lesser)") == "alchemists-fire-lesser")
     }
 
+    @Test func savedMatchesStandInForIconsNotOnThisMachine() throws {
+        let fixture = try IconFixture()
+        defer { fixture.remove() }
+        let sword = IconFixture.document("ls", "Longsword", type: "weapon", img: "icons/weapons/sword.webp")
+        let axe = IconFixture.document("ax", "Axe", type: "weapon", img: "icons/weapons/axe.webp")
+        var sources = fixture.sources()
+        sources.savedMatches = ["icons/weapons/sword.webp": IconMatch(file: "Potions/red.png", distance: 9),
+                                "icons/weapons/axe.webp": IconMatch(file: "Misc/stripes.png", distance: 4),
+                                "icons/unused.webp": IconMatch(file: "Potions/red.png", distance: 1)]
+        let map = IconMap(documents: [sword, axe], sources: sources)
+        // The sword's file is here, so it's compared again; the axe's isn't, so its saved match stands.
+        #expect(map.choice(for: sword)?.file == "Weapons/sword.png")
+        #expect(map.choice(for: axe)?.file == "Misc/stripes.png" && map.choice(for: axe)?.detail == "4")
+        #expect(Set(map.matches.keys) == ["icons/weapons/sword.webp", "icons/weapons/axe.webp"])
+    }
+
+    @Test func readsBackTheMatchTable() throws {
+        let fixture = try IconFixture()
+        defer { fixture.remove() }
+        let url = fixture.root.appendingPathComponent("icon-matches.tsv")
+        #expect(try IconMatch.matches(in: url).isEmpty)
+        let matches = ["icons/b.webp": IconMatch(file: "B.png", distance: 3),
+                       "icons/a.webp": IconMatch(file: "A.png", distance: 0)]
+        let table = IconMatch.table(matches)
+        #expect(table == "foundry\trexard\tdistance\nicons/a.webp\tA.png\t0\nicons/b.webp\tB.png\t3\n")
+        try (table + "broken line\n").write(to: url, atomically: true, encoding: .utf8)
+        #expect(try IconMatch.matches(in: url) == matches)
+    }
+
     @Test func readsOverrides() throws {
         let fixture = try IconFixture()
         defer { fixture.remove() }

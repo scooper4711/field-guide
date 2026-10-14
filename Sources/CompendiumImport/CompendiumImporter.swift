@@ -8,6 +8,9 @@ public struct ImportOptions: Sendable {
     public var rexardPacks: URL?
     /// Rexard files by Foundry path or entry id, for icons the rules pick badly.
     public var iconOverrides: [String: String] = [:]
+    /// The table of icon matches (`IconMatch.table(_:)`): read for Foundry icons not on this machine and
+    /// rewritten after an import with the Rexard packs; nil for none.
+    public var iconMatchesFile: URL?
     /// The deities' religious symbols from the Community Use Package; none unless set.
     public var religiousSymbols = ReligiousSymbols()
     /// Paizo's Pathfinder-Icons font for the action icons, copied unaltered; nil (or a missing file) for none.
@@ -43,7 +46,7 @@ public struct CompendiumImporter {
         var links = LinkIndex(documents: documents)
         journalPages.forEach { links.add($0, target: details.linkTarget(of: $0)) }
         let enricher = Enricher(localizer: localizer, links: links)
-        let images = ImageCollector(icons: IconMap(documents: documents, sources: iconSources()),
+        let images = ImageCollector(icons: IconMap(documents: documents, sources: try iconSources()),
                                     packs: options.rexardPacks, output: options.output.appendingPathComponent("Images"))
         images.symbols = options.religiousSymbols
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
@@ -56,21 +59,31 @@ public struct CompendiumImporter {
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
         try copyFonts()
-        try FileManager.default.createDirectory(at: options.workFolder, withIntermediateDirectories: true)
-        try images.icons.table(of: documents).write(to: options.workFolder.appendingPathComponent("icon-map.tsv"),
-                                                    atomically: true, encoding: .utf8)
+        try writeIconTables(images.icons, documents: documents)
         let report = ImportReport(rows: rows, enricher: enricher, images: images)
         try report.markdown.write(to: options.output.appendingPathComponent("import-report.md"), atomically: true,
                                   encoding: .utf8)
         return report
     }
 
-    /// The Rexard packs' pictures, hashed, with the overrides.
-    private func iconSources() -> IconSources {
+    /// Each entry's icon and why, in the work folder, and the matches to keep for machines without the Foundry
+    /// app, when the Rexard packs were there to match against.
+    private func writeIconTables(_ icons: IconMap, documents: [SourceDocument]) throws {
+        try FileManager.default.createDirectory(at: options.workFolder, withIntermediateDirectories: true)
+        try icons.table(of: documents).write(to: options.workFolder.appendingPathComponent("icon-map.tsv"),
+                                             atomically: true, encoding: .utf8)
+        if let url = options.iconMatchesFile, options.rexardPacks != nil {
+            try IconMatch.table(icons.matches).write(to: url, atomically: true, encoding: .utf8)
+        }
+    }
+
+    /// The Rexard packs' pictures, hashed, with the overrides and the saved matches.
+    private func iconSources() throws -> IconSources {
         let rexard = options.rexardPacks.map {
             RexardIcons.load(folder: $0, cache: options.workFolder.appendingPathComponent("rexard-hashes.json"))
         }
-        return IconSources(paths: options.paths, rexard: rexard, overrides: options.iconOverrides)
+        return IconSources(paths: options.paths, rexard: rexard, overrides: options.iconOverrides,
+                           savedMatches: try options.iconMatchesFile.map(IconMatch.matches(in:)) ?? [:])
     }
 
     /// Both systems' documents, with the Pathfinder ones the Starfinder build copies into its packs.

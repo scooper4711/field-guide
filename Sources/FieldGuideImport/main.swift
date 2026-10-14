@@ -10,7 +10,8 @@ import Foundation
 /// `~/git/community-use-artwork`, the `Artwork` submodule (for Paizo's Pathfinder-Icons font), `Generated` and
 /// `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each entry's icon and why)
 /// out of the app. Entries show the user's Rexard icons in place
-/// of Foundry's; `icon-overrides.json` corrects them. Also writes the creatures for the battle cards to
+/// of Foundry's; `icon-overrides.json` corrects them, and `icon-matches.tsv` keeps the matches for machines
+/// without the Foundry app. Also writes the creatures for the battle cards to
 /// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
 /// user's own PDFs on the device.
 let home = FileManager.default.homeDirectoryForCurrentUser
@@ -57,6 +58,7 @@ let creatures = ImportConfiguration(repository: options.paths.repository,
                                     configurationDirectory: URL(fileURLWithPath: "."))
 do {
     options.iconOverrides = try IconSources.overrides(in: URL(fileURLWithPath: "icon-overrides.json"))
+    options.iconMatchesFile = URL(fileURLWithPath: "icon-matches.tsv")
     let report = try CompendiumImporter(options: options).run()
     print(report.summary)
     try FileManager.default.createDirectory(at: creatures.outputDirectory, withIntermediateDirectories: true)

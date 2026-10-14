@@ -131,8 +131,27 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - About: Tabletop Kit's `AppNotices`, with `AboutInfo.fieldGuide` (`About.swift`): `AboutCommands` on the Mac and
   an `AboutSheet` from the sidebar's toolbar on the iPad.
 
-## Updating
-- `scripts/update.sh`: fetches the pf2e repository's `upstream` remote and fast-forwards the checked-out
-  branch to `upstream/<branch>`; then `make import` and `make ipad-install`.
-- `make import` builds and runs `FieldGuideImport`; `make ipad-install` builds the iPad app and installs it,
-  as Turnkeeper does.
+## Updating and releasing
+- `pf2e.release` holds a pf2e commit and the system release tags on it. `make import` fetches that one commit
+  from `foundryvtt/pf2e` into `build/pf2e` (`scripts/fetch-pf2e.sh`) and runs `FieldGuideImport` on it.
+  `scripts/update.sh` (`make update`) writes pf2e's newest `pf2e-*` or `sf2e-*` release
+  (`scripts/latest-pf2e-release.sh`) to `pf2e.release`, imports and installs on the iPad.
+- `IconMap` compares the Foundry icons whose files are on this machine and takes the matches saved in
+  `icon-matches.tsv` (Foundry path, Rexard file, distance) for the rest; an import with the Rexard packs
+  rewrites that table. `make import` also writes `import.sha256` (`scripts/fingerprint.sh`): a SHA-256 of the
+  catalog's entries and traits and the battle cards' creatures; fonts and pictures are left out, since tool
+  versions change their bytes.
+- `scripts/build-app.sh` builds `build/Field Guide.app`: the `FieldGuide` executable, the SwiftPM resource
+  bundles, an icon made from the iPad's, and `Generated/` (found through `Bundle.main`), signed ad hoc.
+  `scripts/make-dmg.sh` packages it (`make dmg`).
+- **Release workflow** (on `v*` tags, or called): fetches the `Artwork` submodule with the `ARTWORK_SSH_KEY`
+  deploy key, installs `cwebp`, imports with `REXARD_PACKS=Artwork/rexard` and
+  `COMMUNITY_USE=Artwork/community-use`, warns when `import.sha256` or `icon-matches.tsv` differs from the
+  committed one, tests, builds the universal app and attaches `Field-Guide-<version>.dmg` to the release,
+  creating a draft if there is none. Run by hand, it keeps the disk image as a workflow artifact instead.
+- **pf2e update workflow** (Mondays, or by hand): when pf2e has a newer release, a Linux job lists the files
+  changed between the two commits (fetched without their contents). If none is under `packs` or `static`, it
+  commits `pf2e.release` alone. Otherwise a macOS job imports the new release; an unchanged fingerprint commits
+  `pf2e.release` alone, and a changed one commits it with `import.sha256` and `icon-matches.tsv` and, if the
+  app has a `v*` tag, tags the next patch version and calls the release workflow. Commits go through the
+  GraphQL API (`scripts/commit-to-github.sh`) so GitHub signs them.

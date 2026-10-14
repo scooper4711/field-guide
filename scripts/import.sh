@@ -1,8 +1,9 @@
 #!/bin/sh
 # Imports both systems from the pf2e repository into Generated/.
 #
-# PF2E_REPO      the pf2e system repository (default ~/git/pf2e)
-# FOUNDRY_APP    the Foundry app's public folder, for core icons
+# PF2E_REPO      a pf2e system repository to read instead of the release in pf2e.release, which is fetched
+#                into build/pf2e (scripts/fetch-pf2e.sh); release builds always use that release
+# FOUNDRY_APP    the Foundry app's public folder, for core icons; without it, icon-matches.tsv stands in
 # REXARD_PACKS   the folder holding the user's Rexard packs, for the entries' icons and the battle cards' art
 #                (default ~/git/rexard-packs)
 # COMMUNITY_USE  the folder holding Paizo's Community Use Package, for the deities' religious symbols
@@ -14,7 +15,12 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-PF2E_REPO="${PF2E_REPO:-$HOME/git/pf2e}"
+if [ -z "${PF2E_REPO:-}" ]; then
+    scripts/fetch-pf2e.sh build/pf2e
+    PF2E_REPO=build/pf2e
+else
+    echo "Reading $PF2E_REPO; release builds read $(cut -d ' ' -f 2- pf2e.release) instead." >&2
+fi
 FOUNDRY_APP="${FOUNDRY_APP:-/Applications/Foundry Virtual Tabletop.app/Contents/Resources/app/public}"
 REXARD_PACKS="${REXARD_PACKS:-$HOME/git/rexard-packs}"
 COMMUNITY_USE="${COMMUNITY_USE:-$HOME/git/community-use-artwork}"
@@ -30,4 +36,6 @@ swift build -c release --product FieldGuideImport
     --artwork "$ARTWORK" --out Generated
 echo "Copying the battle cards' art from $REXARD_PACKS..."
 swift run -c release CardArtImport "$REXARD_PACKS" Generated/CardArt
+# The weekly pf2e update compares this to decide whether a new pf2e release changes anything Field Guide shows.
+scripts/fingerprint.sh > import.sha256
 echo "See Generated/import-report.md for what could not be converted."
