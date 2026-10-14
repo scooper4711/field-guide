@@ -144,9 +144,23 @@ struct AreaDiagrams {
     }
 
     /// Each size's outline in its own color, the largest first so the smaller ones draw over shared edges.
+    /// Each is clipped to its own squares, so it lies inside its size and never overlaps a neighbor's at a corner.
     static func outlines(_ diagram: AreaDiagram, in bounds: Bounds) -> String {
-        diagram.sizes.enumerated().reversed().map { index, feet in
-            outline(diagram.squares(feet), in: bounds, tone: tone(index + 1, of: diagram.sizes.count))
+        let name = diagram.title.lowercased().components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }.joined(separator: "-")
+        return diagram.sizes.enumerated().reversed().map { index, feet in
+            let squares = diagram.squares(feet), tone = tone(index + 1, of: diagram.sizes.count)
+            let clip = "area-\(name)-\(tone)"
+            return "<clipPath id=\"\(clip)\"><path d=\"\(fill(squares, in: bounds))\"/></clipPath>"
+                + "<g clip-path=\"url(#\(clip))\">\(outline(squares, in: bounds, tone: tone))</g>"
+        }.joined()
+    }
+
+    /// A path covering the squares, for clipping.
+    static func fill(_ squares: Set<GridSquare>, in bounds: Bounds) -> String {
+        squares.sorted { ($0.row, $0.column) < ($1.row, $1.column) }.map { square in
+            let (left, top) = position(of: square, in: bounds)
+            return "M\(left) \(top)h\(squareSize)v\(squareSize)h-\(squareSize)z"
         }.joined()
     }
 

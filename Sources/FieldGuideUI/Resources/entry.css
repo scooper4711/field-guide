@@ -127,17 +127,13 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .area figcaption { margin-bottom: 6px; }
 .area-grid { display: block; width: 100%; max-width: 480px; height: auto; }
 .area-grid .grid { stroke: var(--area-grid); stroke-width: 0.5; fill: none; }
-/* Shaded squares draw their own grid lines in their outline's color, which shows on every shade. */
-.area-grid rect[class^="area-"] { stroke-width: 0.75; stroke-opacity: 0.6; }
-.area-grid rect.area-1 { stroke: var(--outline-1); }
-.area-grid rect.area-2 { stroke: var(--outline-2); }
-.area-grid rect.area-3 { stroke: var(--outline-3); }
-.area-grid rect.area-4 { stroke: var(--outline-4); }
-.area-grid rect.area-5 { stroke: var(--outline-5); }
+/* Shaded squares draw their own grid lines in a neutral tint, so only the outlines carry color. */
+.area-grid rect[class^="area-"] { stroke: rgba(255, 255, 255, 0.45); stroke-width: 0.75; }
 @media (prefers-color-scheme: dark) {
-    .area-grid rect[class^="area-"] { stroke: rgba(10, 14, 30, 0.5); }
+    .area-grid rect[class^="area-"] { stroke: rgba(10, 14, 30, 0.45); }
 }
-.area-grid .outline { stroke-width: 1.5; stroke-linecap: square; fill: none; }
+/* Clipped to its own squares, so half the width shows, inside the edge. */
+.area-grid .outline { stroke-width: 3.5; stroke-linecap: square; fill: none; }
 .area-grid .outline-1 { stroke: var(--outline-1); }
 .area-grid .outline-2 { stroke: var(--outline-2); }
 .area-grid .outline-3 { stroke: var(--outline-3); }

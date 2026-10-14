@@ -78,6 +78,10 @@ import Testing
         let svg = AreaDiagrams.svg(burst)
         #expect((1...5).allSatisfy { svg.contains("class=\"outline outline-\($0)\"") })
         #expect(svg.range(of: "outline-5")!.lowerBound < svg.range(of: "outline-1")!.lowerBound)
+        #expect(svg.contains("<clipPath id=\"area-burst-1\"><path d=\""))
+        #expect(svg.contains("clip-path=\"url(#area-burst-1)\""))
+        let corner = AreaDiagrams.fill([GridSquare(column: 0, row: 0)], in: (columns: 0..<1, rows: 0..<1))
+        #expect(corner == "M0 0h16v16h-16z")
     }
 
     @Test func originsAreMarked() throws {
