@@ -61,9 +61,8 @@ import Testing
         #expect(levels[GridSquare(column: 1, row: 0)] == 2)
         #expect(levels[GridSquare(column: 5, row: 0)] == 5)
         #expect(AreaDiagrams.key(burst).contains("<span class=\"swatch area-5\"></span>30 feet"))
-        #expect([1, 2, 3].map { AreaDiagrams.tone($0, of: 3) } == [1, 3, 5])
-        #expect([1, 2].map { AreaDiagrams.tone($0, of: 2) } == [1, 5])
-        #expect(AreaDiagrams.tone(1, of: 1) == 1)
+        let cone = AreaDiagrams.svg(AreaDiagram.all[3])
+        #expect((1...3).allSatisfy { cone.contains("class=\"area-\($0)\"") } && !cone.contains("class=\"area-4\""))
     }
 
     @Test func outlinesFollowTheAreasEdge() {
