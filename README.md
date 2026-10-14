@@ -76,7 +76,7 @@ Pathfinder and Starfinder are registered trademarks and copyrights of Paizo Inc.
 The compendium text comes from the [pf2e system for Foundry VTT](https://github.com/foundryvtt/pf2e) and is used
 under the ORC License and the Open Game License 1.0a. The deities' religious symbols are from Paizo's Community
 Use Package. The same notices and credits are in the app's About screen (the app menu on the Mac, the sidebar's
-About button on the iPad). Contact: [scooper4711 on GitHub](https://github.com/scooper4711).
+About button on the iPad). Contact: [Field Guide's issues on GitHub](https://github.com/scooper4711/field-guide/issues).
 
 ## Test
 `make test`, `make lint` and `make coverage` (80% of lines and regions in `FieldGuideKit` and
