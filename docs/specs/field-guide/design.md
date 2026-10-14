@@ -40,11 +40,11 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   cones at the middle of its side (a square counts when its column is no farther out than its row), and lines
   take the squares a ray from a corner passes through, within the burst of the same size.
 - `AreaDiagrams` draws each kind as an inline `<svg>` in a `<figure>`: each square shaded by the smallest size that
-  covers it (`area-1`…`area-5`, colored by `entry.css` for light and dark mode), the grid, an outline along the
-  edge of each size (`outline-1`…`outline-5`: darker than its shade, lighter in dark mode; clipped to its own
-  squares so it lies inside its size and never overlaps a neighbor's; shaded squares draw their grid lines in a
-  neutral tint, so only the outlines carry color), the origin (a dot, or the creature's space lettered M or L) and
-  a key.
+  covers it (`area-1`…`area-5` in order of size, colored by `entry.css` for light and dark mode), the grid, an
+  outline along the edge of each size (`outline-1`…`outline-5`: darker than its color, lighter in dark mode;
+  clipped to its own squares so it lies inside its size and never overlaps a neighbor's; shaded squares draw their
+  grid lines in a neutral tint, so only the outlines carry color), the origin (a dot, or the creature's space
+  lettered M or L) and a key.
 - `LinkIndex` maps every imported document's `Compendium.<system>.<pack>.Item|Actor.<id or name>` to its
   ID, so links can be checked and rewritten.
 - `Enricher` replaces `@UUID`, `@Check`, `@Damage`, `@Template`, `@Localize`, `@Embed` and `[[/r …]]` in
