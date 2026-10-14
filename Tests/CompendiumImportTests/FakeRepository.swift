@@ -146,21 +146,4 @@ extension FakeRepository {
                     [Page(id: "reS", name: "Spells", text: "Renamed spells.")])
         try journal("hero-point-deck", "he1", "Hero Point Deck", [Page(id: "heC", name: "Last Stand", text: "A card.")])
     }
-
-    /// A two-page PDF in Scrollkeeper's layout; the second page is labeled "2".
-    func writePlayerCore(folder: String) throws -> URL {
-        let url = root.appendingPathComponent("Files/\(folder)/Book.pdf")
-        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-        var box = CGRect(x: 0, y: 0, width: 200, height: 300)
-        let context = CGContext(url as CFURL, mediaBox: &box, nil)!
-        for gray in [0.2, 0.6] {
-            context.beginPDFPage(nil)
-            context.setFillColor(CGColor(gray: gray, alpha: 1))
-            context.fill(box)
-            context.endPDFPage()
-        }
-        context.closePDF()
-        try write("Files/\(folder)/Extract.pdf", in: root, text: "small")
-        return url
-    }
 }
