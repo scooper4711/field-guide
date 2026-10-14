@@ -64,10 +64,10 @@ licensed and not redistributable. Without access to it, the build still works an
 artwork. The action icons are Paizo's Pathfinder-Icons font, used unaltered under the
 [Paizo Compatibility License](https://paizo.com/licenses/compatibility).
 
-## Society Toolkit
+## Tableside Toolkit
 
-Field Guide is part of the Society Toolkit, free apps for Pathfinder and Starfinder players and GMs, for the Mac
-and (Turnkeeper and Field Guide) the iPad. Like the toolkits in the game, each one grants a +1 item bonus to game
+Field Guide is part of the Tableside Toolkit, free apps for running Pathfinder and Starfinder games in person, for
+the Mac and (Turnkeeper and Field Guide) the iPad. Like any good toolkit, each one grants a +1 item bonus to game
 prep.
 
 - [Scrollkeeper](https://github.com/scooper4711/scrollkeeper) keeps your Paizo library in order and downloads your
