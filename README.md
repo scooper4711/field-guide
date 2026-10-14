@@ -88,3 +88,8 @@ About button on the iPad). Contact: [scooper4711 on GitHub](https://github.com/s
 - `Sources/FieldGuideUI`: SwiftUI shared by the iPad and the Mac; the battle cards, bestiary and creature art
   store come from [Tabletop Kit](https://github.com/scooper4711/tabletop-kit); `Sources/FieldGuide`: the Mac app;
   `ios/`: the iPad project
+
+## License
+
+The code is under the [MIT License](LICENSE). The game text, art and fonts the app imports or bundles keep their
+own licenses; see Paizo notices above.
