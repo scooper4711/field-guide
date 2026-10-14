@@ -32,8 +32,8 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
 - R3.5 GM Screen also has an Areas entry per system: grid diagrams the import draws from the rules for
   measuring areas (every second diagonal counts as 10 feet), one each for bursts, emanations from a Medium
   and from a Large creature, orthogonal and diagonal cones, and lines (straight, at a slant and diagonal).
-  Each diagram nests its common sizes on one grid, shaded from the smallest outward, with a key. The diagrams
-  are inline SVG that follows light and dark mode, and use no Paizo art.
+  Each diagram nests its common sizes on one grid, shaded from the smallest outward and each outlined, with a
+  key. The diagrams are inline SVG that follows light and dark mode, and use no Paizo art.
 - R3.6 Journals: the rest of the rules journals, filterable by journal: the Hero Point Deck, and the pages of
   the Ancestries and Classes journals that no ancestry or class is named for (Index, Versatile Heritages,
   Draconic Sorcerer Bloodlines). Links to skill-action macros open the action they run.
