@@ -29,9 +29,11 @@ Foundry VTT's compendium browser. It is not distributed: the data and art it car
   Simple DCs and Encounter Budget) is an entry, filterable by its section (Playing the Game, Running the
   Game, Subsystems and Variant Rules). Section headings with no content of their own are left out, and links
   between pages work.
-- R3.5 GM Screen also has an Areas entry per system: the area diagrams (emanation, burst, cone, line) from
-  page 429 of the Pathfinder Player Core and page 421 of the Starfinder Player Core, taken from the PDFs
-  Scrollkeeper downloaded. Without the PDF, the entry is left out.
+- R3.5 GM Screen also has an Areas entry per system: grid diagrams the import draws from the rules for
+  measuring areas (every second diagonal counts as 10 feet), one each for bursts, emanations from a Medium
+  and from a Large creature, orthogonal and diagonal cones, and lines (straight, at a slant and diagonal).
+  Each diagram nests its common sizes on one grid, shaded from the smallest outward, with a key. The diagrams
+  are inline SVG that follows light and dark mode, and use no Paizo art.
 - R3.6 Journals: the rest of the rules journals, filterable by journal: the Hero Point Deck, and the pages of
   the Ancestries and Classes journals that no ancestry or class is named for (Index, Versatile Heritages,
   Draconic Sorcerer Bloodlines). Links to skill-action macros open the action they run.

@@ -12,8 +12,6 @@ public struct ImportOptions: Sendable {
     public var religiousSymbols = ReligiousSymbols()
     /// Paizo's Pathfinder-Icons font for the action icons, copied unaltered; nil (or a missing file) for none.
     public var actionIconsFont: URL?
-    /// Scrollkeeper's `Files` folder, for the area diagrams in the Player Core PDFs; nil to leave them out.
-    public var scrollkeeperFiles: URL?
     public var output: URL
     /// Where the import keeps what the app doesn't need: the Rexard hash cache and `icon-map.tsv`. The output
     /// goes into the app whole.
@@ -50,7 +48,7 @@ public struct CompendiumImporter {
         images.symbols = options.religiousSymbols
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
         let builder = PageBuilder(context: context)
-        let diagrams = areaDiagrams()
+        let diagrams = AreaDiagrams().rows()
         let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
         let journalRows = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
         let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
@@ -65,13 +63,6 @@ public struct CompendiumImporter {
         try report.markdown.write(to: options.output.appendingPathComponent("import-report.md"), atomically: true,
                                   encoding: .utf8)
         return report
-    }
-
-    /// The GM Screen's area diagrams, from the Player Core PDFs Scrollkeeper downloaded; none without them.
-    private func areaDiagrams() -> [EntryRow] {
-        options.scrollkeeperFiles.map {
-            AreaDiagrams(scrollkeeperFiles: $0, images: options.output.appendingPathComponent("Images")).rows()
-        } ?? []
     }
 
     /// The Rexard packs' pictures, hashed, with the overrides.

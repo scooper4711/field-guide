@@ -34,9 +34,14 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `JournalDetails` makes each page of the Ancestries and Classes journals the Details of the ancestry or class
   of the same name in its system: the row's `details` column (also searched), with links to the page leading to
   `entry:<id>#details` (`EntryLink`). Pages without such an entry stay in Journals.
-- `AreaDiagrams` renders a region of a Player Core page with PDFKit (the PDF is the largest one in
-  Scrollkeeper's `Files/<Pathfinder|Starfinder> Player Core` folder; the page is found by its label) at
-  three times the page's resolution and stores it as WebP in `Images/gm-screen/`.
+- `AreaGeometry` lists the squares an area covers, by the rules: a square counts when the squares moved to
+  reach its far side, `max + min / 2` (rounded down), times 5 feet is within the area's size. Bursts start at
+  a grid corner, emanations at the edges of the creature's space, diagonal cones at its corner, orthogonal
+  cones at the middle of its side (a square counts when its column is no farther out than its row), and lines
+  take the squares a ray from a corner passes through, within the burst of the same size.
+- `AreaDiagrams` draws each kind as an inline `<svg>` in a `<figure>`: each square shaded by the smallest
+  size that covers it (`area-1`…`area-5`, colored by `entry.css` for light and dark mode), the grid, the
+  origin (a dot, or the creature's space lettered M or L) and a key.
 - `LinkIndex` maps every imported document's `Compendium.<system>.<pack>.Item|Actor.<id or name>` to its
   ID, so links can be checked and rewritten.
 - `Enricher` replaces `@UUID`, `@Check`, `@Damage`, `@Template`, `@Localize`, `@Embed` and `[[/r …]]` in
@@ -70,7 +75,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `ImageCollector` writes each chosen Rexard file once as a WebP of at most 256 pixels to
   `Generated/Images/rexard/<path in the packs>`. No Foundry or pf2e icon file is copied. A creature's or
   hazard's image is `creature/<system>.<pack link name>.<id>`, the bestiary key, drawn by the app; its
-  `<img>` removes itself when the app has no art for it. The area diagrams are shrunk with `cwebp`.
+  `<img>` removes itself when the app has no art for it.
 - `ReligiousSymbols` lists the PNGs in the Community Use Package's Religious Symbols folders by name
   (`--symbols`, `--starfinder-symbols`; default `~/git/community-use-artwork/Community Use Package- …`).
   A deity takes the picture named as it is, or whose name starts with its name and a space ("Thamir Gixx"

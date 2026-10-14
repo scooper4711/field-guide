@@ -96,7 +96,7 @@ public final class ImageCollector {
     }
 }
 
-/// Scales the area diagrams with `cwebp`, which reads WebP, PNG and JPEG and writes WebP.
+/// Scales pictures with `cwebp`, which reads WebP, PNG and JPEG and writes WebP.
 enum ArtScaler {
     static let tool = ["/opt/homebrew/bin/cwebp", "/usr/local/bin/cwebp"].first {
         FileManager.default.isExecutableFile(atPath: $0)

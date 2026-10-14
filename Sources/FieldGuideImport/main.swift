@@ -2,11 +2,11 @@ import CompendiumImport
 import CreatureImport
 import Foundation
 
-/// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--scrollkeeper DIR] [--symbols DIR]
+/// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--symbols DIR]
 /// [--starfinder-symbols DIR] [--artwork DIR] [--out DIR] [--work DIR]`
 ///
-/// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, Scrollkeeper's downloads,
-/// the Community Use Package's Religious Symbols and Starfinder Religious Symbols in
+/// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, the
+/// Community Use Package's Religious Symbols and Starfinder Religious Symbols in
 /// `~/git/community-use-artwork`, the `Artwork` submodule (for Paizo's Pathfinder-Icons font), `Generated` and
 /// `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each entry's icon and why)
 /// out of the app. Entries show the user's Rexard icons in place
@@ -18,7 +18,6 @@ var settings = [
     "--pf2e": home.appendingPathComponent("git/pf2e").path,
     "--foundry-app": "/Applications/Foundry Virtual Tabletop.app/Contents/Resources/app/public",
     "--rexard": home.appendingPathComponent("git/rexard-packs").path,
-    "--scrollkeeper": home.appendingPathComponent("Library/Application Support/Scrollkeeper/Files").path,
     "--symbols": home.appendingPathComponent(
         "git/community-use-artwork/Community Use Package- Religious Symbols").path,
     "--starfinder-symbols": home.appendingPathComponent(
@@ -49,7 +48,6 @@ var options = ImportOptions(
     workFolder: URL(fileURLWithPath: settings["--work"]!)
 )
 options.rexardPacks = existingFolder(settings["--rexard"])
-options.scrollkeeperFiles = existingFolder(settings["--scrollkeeper"])
 options.actionIconsFont = existingFolder(settings["--artwork"])?
     .appendingPathComponent("pathfinder-icons/Pathfinder-Icons.ttf")
 options.religiousSymbols = ReligiousSymbols(pathfinder: existingFolder(settings["--symbols"]),

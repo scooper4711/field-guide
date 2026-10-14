@@ -1,100 +1,165 @@
-import AppKit
 import FieldGuideKit
 import Foundation
-import PDFKit
 
-/// The Player Core page of area diagrams for a system: which book, which page and the region to keep.
-struct AreaDiagramPage: Sendable {
-    var system: GameSystem
-    /// The folder in Scrollkeeper's `Files` holding the book.
-    var folder: String
-    var pageLabel: String
-    /// The region to keep, as fractions of the page from its top left.
-    var region: CGRect
-    var source: String
+/// One diagram of the Areas entry: an area's common sizes, nested on one grid.
+struct AreaDiagram: Sendable {
+    /// What starts the area: grid corners, or a creature's space with its size letter.
+    enum Origin: Sendable {
+        case corners([GridSquare])
+        case creature(letter: String, square: GridSquare, space: Int)
+    }
+
+    var title: String
+    var caption: String
+    var sizes: [Int]
+    var origin: Origin
+    var squares: @Sendable (Int) -> Set<GridSquare>
+
+    static let corner = Origin.corners([GridSquare(column: 0, row: 0)])
+    static let medium = creature("M", column: 0, row: 0, space: 1)
+    static let emanationSizes = [5, 10, 15, 20, 30]
+    static let coneSizes = [15, 30, 60]
 
     static let all = [
-        AreaDiagramPage(system: .pathfinder, folder: "Pathfinder Player Core", pageLabel: "429",
-                        region: CGRect(x: 0.09, y: 0.08, width: 0.775, height: 0.85),
-                        source: "Pathfinder Player Core"),
-        AreaDiagramPage(system: .starfinder, folder: "Starfinder Player Core", pageLabel: "421",
-                        region: CGRect(x: 0.095, y: 0.055, width: 0.78, height: 0.855),
-                        source: "Starfinder Player Core")
+        AreaDiagram(title: "Burst", caption: "From a corner of a square, within range.", sizes: emanationSizes,
+                    origin: corner) { AreaGeometry.burst(feet: $0) },
+        AreaDiagram(title: "Emanation, Medium or smaller creature",
+                    caption: "From every side of the creature's space.", sizes: emanationSizes, origin: medium) {
+            AreaGeometry.emanation(feet: $0, space: 1)
+        },
+        AreaDiagram(title: "Emanation, Large creature", caption: "From every side of the creature's space.",
+                    sizes: emanationSizes, origin: creature("L", column: 0, row: 0, space: 2)) {
+            AreaGeometry.emanation(feet: $0, space: 2)
+        },
+        AreaDiagram(title: "Cone, orthogonal", caption: "From the middle of one side of the creature's space.",
+                    sizes: coneSizes, origin: creature("M", column: 0, row: -1, space: 1)) {
+            AreaGeometry.orthogonalCone(feet: $0)
+        },
+        AreaDiagram(title: "Cone, diagonal", caption: "From a corner of the creature's space.", sizes: coneSizes,
+                    origin: creature("M", column: -1, row: -1, space: 1)) {
+            AreaGeometry.diagonalCone(feet: $0)
+        },
+        AreaDiagram(title: "Line", caption: "From a corner of a square: straight, at a slant and diagonal.",
+                    sizes: [30, 60], origin: .corners(lineStarts.map(\.corner))) { feet in
+            lineStarts.reduce(into: Set<GridSquare>()) { squares, start in
+                squares.formUnion(AreaGeometry.line(feet: feet, across: start.across, down: start.down)
+                    .map { GridSquare(column: $0.column, row: $0.row + start.corner.row) })
+            }
+        }
     ]
+
+    static func creature(_ letter: String, column: Int, row: Int, space: Int) -> Origin {
+        .creature(letter: letter, square: GridSquare(column: column, row: row), space: space)
+    }
+
+    /// The Line diagram's three lines, each from its own corner, far enough apart for 60 feet.
+    static let lineStarts = [(corner: GridSquare(column: 0, row: 0), across: 1, down: 0),
+                             (corner: GridSquare(column: 0, row: 2), across: 2, down: 1),
+                             (corner: GridSquare(column: 0, row: 10), across: 1, down: 1)]
 }
 
-/// Renders the area diagrams from the Player Core PDFs into images and GM Screen entries.
+/// The GM Screen's Areas entry for each system, drawn from the rules as inline SVG.
 struct AreaDiagrams {
-    let scrollkeeperFiles: URL
-    let images: URL
-    var pages = AreaDiagramPage.all
-    /// Rendering at three times the page's resolution keeps the labels sharp on a large iPad.
-    static let scale: CGFloat = 3
+    typealias Bounds = (columns: Range<Int>, rows: Range<Int>)
+
+    var diagrams = AreaDiagram.all
+    static let squareSize = 16
 
     func rows() -> [EntryRow] {
-        pages.compactMap { page in
-            guard let pdf = book(in: scrollkeeperFiles.appendingPathComponent(page.folder)),
-                  let stored = render(page, from: pdf) else { return nil }
-            return row(page, image: stored)
-        }
+        GameSystem.allCases.map(row(for:))
     }
 
-    /// The largest PDF in the folder: the single-file book rather than any extract.
-    func book(in folder: URL) -> URL? {
-        let manager = FileManager.default
-        let files = (try? manager.contentsOfDirectory(at: folder, includingPropertiesForKeys: [.fileSizeKey])) ?? []
-        return files.filter { $0.pathExtension.lowercased() == "pdf" }.max { size(of: $0) < size(of: $1) }
-    }
-
-    private func size(of url: URL) -> Int {
-        (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-    }
-
-    /// The page region at `scale` times the page's resolution, stored as `gm-screen/areas-<system>.webp` (or PNG
-    /// without `cwebp`); nil when the page isn't in the book.
-    func render(_ diagram: AreaDiagramPage, from pdf: URL) -> String? {
-        guard let document = PDFDocument(url: pdf),
-              let page = (0..<document.pageCount).lazy.compactMap(document.page(at:))
-                .first(where: { $0.label == diagram.pageLabel }),
-              let png = Self.png(of: page, region: diagram.region, scale: Self.scale) else { return nil }
-        let folder = images.appendingPathComponent("gm-screen")
-        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let name = "areas-\(diagram.system.rawValue)"
-        let pngURL = folder.appendingPathComponent("\(name).png")
-        guard (try? png.write(to: pngURL)) != nil else { return nil }
-        let webp = folder.appendingPathComponent("\(name).webp")
-        guard ArtScaler.scale(pngURL, to: webp, maximumSize: .max) else { return "gm-screen/\(name).png" }
-        try? FileManager.default.removeItem(at: pngURL)
-        return "gm-screen/\(name).webp"
-    }
-
-    static func png(of page: PDFPage, region: CGRect, scale: CGFloat) -> Data? {
-        let bounds = page.bounds(for: .cropBox)
-        let crop = CGRect(x: bounds.minX + region.minX * bounds.width,
-                          y: bounds.maxY - region.maxY * bounds.height,
-                          width: region.width * bounds.width, height: region.height * bounds.height)
-        let width = Int(crop.width * scale), height = Int(crop.height * scale)
-        guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
-                                      space: CGColorSpaceCreateDeviceRGB(),
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
-        context.setFillColor(.white)
-        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        context.scaleBy(x: scale, y: scale)
-        context.translateBy(x: -crop.minX, y: -crop.minY)
-        page.draw(with: .cropBox, to: context)
-        guard let image = context.makeImage() else { return nil }
-        return NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
-    }
-
-    private func row(_ page: AreaDiagramPage, image: String) -> EntryRow {
+    private func row(for system: GameSystem) -> EntryRow {
         let html = "<header class=\"entry-header\"><div><h1>Areas</h1><p class=\"subtitle\">Playing the Game</p></div>"
-            + "</header><section class=\"description\"><img class=\"diagram\" src=\"\(HTML.imageURL(image))\" "
-            + "alt=\"Emanation, burst, cone and line areas\"></section>"
-            + "<footer class=\"source\">\(HTML.escape(page.source)) page \(page.pageLabel)</footer>"
+            + "</header><section class=\"description\"><p>Every second diagonal square counts as 10 feet. Each "
+            + "diagram shades its sizes from the smallest outward.</p>"
+            + diagrams.map(Self.figure).joined() + "</section>"
         return EntryRow(
-            id: "fieldguide.\(page.system.rawValue).areas", system: page.system, category: .gmScreen, name: "Areas",
-            level: nil, subtitle: "Playing the Game", image: image, facets: [.section: ["Playing the Game"]],
+            id: "fieldguide.\(system.rawValue).areas", system: system, category: .gmScreen, name: "Areas",
+            level: nil, subtitle: "Playing the Game", image: "", facets: [.section: ["Playing the Game"]],
             html: html, text: "Areas emanation burst cone line diagrams", traitSlugs: []
         )
+    }
+
+    static func figure(_ diagram: AreaDiagram) -> String {
+        "<figure class=\"area\"><figcaption><strong>\(HTML.escape(diagram.title)).</strong> "
+            + "\(HTML.escape(diagram.caption))</figcaption>\(svg(diagram))\(key(diagram))</figure>"
+    }
+
+    /// Each square shaded by the smallest size that covers it, the grid over them, then the origin.
+    static func svg(_ diagram: AreaDiagram) -> String {
+        let shaded = shading(diagram)
+        let bounds = gridBounds(Set(shaded.keys), origin: diagram.origin)
+        let squares = shaded.sorted { ($0.key.row, $0.key.column) < ($1.key.row, $1.key.column) }
+            .map { rect($0.key, size: 1, in: bounds, class: shade($0.value, of: diagram.sizes.count)) }
+        let width = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
+        return "<svg class=\"area-grid\" viewBox=\"0 0 \(width) \(height)\" role=\"img\" "
+            + "aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
+            + gridLines(width: width, height: height) + originMarks(diagram.origin, in: bounds) + "</svg>"
+    }
+
+    /// The smallest size, as its place in the list counting from 1, that covers each square.
+    static func shading(_ diagram: AreaDiagram) -> [GridSquare: Int] {
+        var levels: [GridSquare: Int] = [:]
+        for (index, feet) in diagram.sizes.enumerated().reversed() {
+            diagram.squares(feet).forEach { levels[$0] = index + 1 }
+        }
+        return levels
+    }
+
+    static func key(_ diagram: AreaDiagram) -> String {
+        "<ul class=\"area-key\">" + diagram.sizes.enumerated().map { index, feet in
+            "<li><span class=\"swatch \(shade(index + 1, of: diagram.sizes.count))\"></span>\(feet) feet</li>"
+        }.joined() + "</ul>"
+    }
+
+    /// The color class of the `level`th of `count` sizes, spread over the five shades so a few sizes stay apart.
+    static func shade(_ level: Int, of count: Int) -> String {
+        let shades = 5
+        guard count > 1 else { return "area-1" }
+        return "area-\(1 + ((level - 1) * (shades - 1) + (count - 1) / 2) / (count - 1))"
+    }
+
+    /// The squares shown: every shaded one and the creature's space, with one square of margin.
+    private static func gridBounds(_ squares: Set<GridSquare>, origin: AreaDiagram.Origin) -> Bounds {
+        var all = squares
+        if case let .creature(_, square, space) = origin {
+            all.insert(square)
+            all.insert(GridSquare(column: square.column + space - 1, row: square.row + space - 1))
+        }
+        let columns = all.map(\.column), rows = all.map(\.row)
+        return ((columns.min() ?? 0) - 1..<(columns.max() ?? 0) + 2, (rows.min() ?? 0) - 1..<(rows.max() ?? 0) + 2)
+    }
+
+    private static func rect(_ square: GridSquare, size: Int, in bounds: Bounds, class name: String) -> String {
+        let (left, top) = position(of: square, in: bounds)
+        return "<rect class=\"\(name)\" x=\"\(left)\" y=\"\(top)\" width=\"\(size * squareSize)\" "
+            + "height=\"\(size * squareSize)\"/>"
+    }
+
+    /// The top left corner of a square, in the drawing's units.
+    private static func position(of square: GridSquare, in bounds: Bounds) -> (x: Int, y: Int) {
+        ((square.column - bounds.columns.lowerBound) * squareSize, (square.row - bounds.rows.lowerBound) * squareSize)
+    }
+
+    private static func gridLines(width: Int, height: Int) -> String {
+        let columns = stride(from: 0, through: width, by: squareSize).map { "M\($0) 0V\(height)" }
+        let rows = stride(from: 0, through: height, by: squareSize).map { "M0 \($0)H\(width)" }
+        return "<path class=\"grid\" d=\"\((columns + rows).joined())\"/>"
+    }
+
+    private static func originMarks(_ origin: AreaDiagram.Origin, in bounds: Bounds) -> String {
+        switch origin {
+        case let .corners(corners):
+            return corners.map { corner in
+                let point = position(of: corner, in: bounds)
+                return "<circle class=\"origin\" cx=\"\(point.x)\" cy=\"\(point.y)\" r=\"4\"/>"
+            }.joined()
+        case let .creature(letter, square, space):
+            let (left, top) = position(of: square, in: bounds)
+            let middle = space * squareSize / 2
+            return rect(square, size: space, in: bounds, class: "creature")
+                + "<text class=\"creature\" x=\"\(left + middle)\" y=\"\(top + middle)\">\(letter)</text>"
+        }
     }
 }
