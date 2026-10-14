@@ -87,7 +87,7 @@ enum ItemLines {
         let reload = system[path: "reload.value"].string
         return [
             HTML.line("Damage", HTML.escape(damageText)),
-            HTML.line("Category", HTML.escape(Words.title(system["category"].string))),
+            category(system),
             HTML.line("Group", HTML.escape(Words.title(system["group"].string))),
             HTML.line("Range", HTML.escape(range)),
             HTML.line("Reload", HTML.escape(reload))
@@ -104,7 +104,7 @@ enum ItemLines {
             HTML.line("Check Penalty", HTML.escape(penalty(system["checkPenalty"].int))),
             HTML.line("Speed Penalty",
                       HTML.escape(system["speedPenalty"].int == 0 ? "" : "\(system["speedPenalty"].int) feet")),
-            HTML.line("Category", HTML.escape(Words.title(system["category"].string))),
+            category(system),
             HTML.line("Group", HTML.escape(Words.title(system["group"].string)))
         ]
     }
@@ -117,6 +117,11 @@ enum ItemLines {
             HTML.line("Hardness", HTML.escape(String(system["hardness"].int))),
             HTML.line("HP", HTML.escape(hitPoints > 0 ? "\(hitPoints) (BT \(brokenThreshold))" : ""))
         ]
+    }
+
+    /// A weapon's or armor's category line, such as "Category Martial".
+    private static func category(_ system: JSONValue) -> String {
+        HTML.line("Category", HTML.escape(Words.title(system["category"].string)))
     }
 
     private static func penalty(_ value: Int) -> String { value == 0 ? "" : Words.modifier(value) }
