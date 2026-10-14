@@ -38,6 +38,15 @@ import Testing
         let enricher = enricher()
         #expect(enricher.enrich("[[/r 2d6 #damage]] [[/br 1d20+5]]{attack} [[/act tumble-through skill=acrobatics]]")
                 == "2d6 attack Tumble Through")
+        #expect(enricher.enrich("regains [[/r 4d8[healing] #Treat Wounds]] Hit Points") == "regains 4d8 Hit Points")
+        #expect(enricher.enrich("plus [[/r (2[splash])[bludgeoning]]]{2 bludgeoning splash damage}.")
+                == "plus 2 bludgeoning splash damage.")
+    }
+
+    @Test func enrichersMissingTheirClosingBracketEndAtTheFirstSpace() {
+        #expect(enricher().enrich("@Check[thievery|dc:28 (expert) to pick") == "<span class=\"check\">DC 28 Thievery "
+            + "check</span> (expert) to pick")
+        #expect(enricher().enrich("an @Check[ alone") == "an @Check[ alone")
     }
 
     @Test func linksLeadToImportedEntriesByIDOrName() throws {
