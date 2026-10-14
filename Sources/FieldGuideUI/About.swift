@@ -16,8 +16,8 @@ extension AboutInfo {
             "The action icons are Paizo's Pathfinder-Icons font, used unaltered under the Paizo Compatibility "
                 + "License."
         ],
-        // A literal URL that is known to parse. The repository is private, so this is the author's profile.
+        // A literal URL that is known to parse.
         // swiftlint:disable:next force_unwrapping
-        contactURL: URL(string: "https://github.com/scooper4711")!
+        contactURL: URL(string: "https://github.com/scooper4711/field-guide/issues")!
     )
 }
