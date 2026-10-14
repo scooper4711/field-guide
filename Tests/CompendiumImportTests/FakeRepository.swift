@@ -4,7 +4,7 @@ import ImageIO
 import UniformTypeIdentifiers
 @testable import CompendiumImport
 
-/// A small pf2e repository, Foundry install and Combat Pad output in a temporary folder.
+/// A small pf2e repository, Foundry install and Turnkeeper output in a temporary folder.
 struct FakeRepository {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent("FieldGuideTests-\(UUID().uuidString)")
     var repository: URL { root.appendingPathComponent("pf2e") }
