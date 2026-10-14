@@ -94,6 +94,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
     --area-4: #62cf86;
     --area-5: #c6e766;
     --area-grid: rgba(30, 40, 70, 0.22);
+    --area-outline: rgba(20, 24, 60, 0.85);
     --area-origin: #e8364a;
     --area-creature: #1c1c1c;
     --area-creature-text: #ffffff;
@@ -107,6 +108,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
         --area-4: #2f86c9;
         --area-5: #3d4db7;
         --area-grid: rgba(220, 230, 255, 0.16);
+        --area-outline: rgba(255, 255, 255, 0.85);
         --area-origin: #ff5c6c;
         --area-creature: #e8e2d8;
         --area-creature-text: #1c1c1c;
@@ -117,6 +119,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .area figcaption { margin-bottom: 6px; }
 .area-grid { display: block; width: 100%; max-width: 480px; height: auto; }
 .area-grid .grid { stroke: var(--area-grid); stroke-width: 0.5; fill: none; }
+.area-grid .outline { stroke: var(--area-outline); stroke-width: 1.5; stroke-linecap: square; fill: none; }
 .area-grid .origin { fill: var(--area-origin); }
 .area-grid rect.creature { fill: var(--area-creature); }
 .area-grid text.creature { fill: var(--area-creature-text); font: bold 11px "Roboto Condensed", sans-serif;

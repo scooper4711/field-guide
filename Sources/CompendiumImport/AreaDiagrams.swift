@@ -95,7 +95,9 @@ struct AreaDiagrams {
         let width = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
         return "<svg class=\"area-grid\" viewBox=\"0 0 \(width) \(height)\" role=\"img\" "
             + "aria-label=\"\(HTML.escape(diagram.title))\">" + squares.joined()
-            + gridLines(width: width, height: height) + originMarks(diagram.origin, in: bounds) + "</svg>"
+            + gridLines(width: width, height: height) + diagram.sizes.map { outline(diagram.squares($0), in: bounds) }
+                .joined()
+            + originMarks(diagram.origin, in: bounds) + "</svg>"
     }
 
     /// The smallest size, as its place in the list counting from 1, that covers each square.
@@ -140,6 +142,21 @@ struct AreaDiagrams {
     /// The top left corner of a square, in the drawing's units.
     private static func position(of square: GridSquare, in bounds: Bounds) -> (x: Int, y: Int) {
         ((square.column - bounds.columns.lowerBound) * squareSize, (square.row - bounds.rows.lowerBound) * squareSize)
+    }
+
+    /// A path along every edge where a square of the area meets one outside it.
+    static func outline(_ squares: Set<GridSquare>, in bounds: Bounds) -> String {
+        let size = squareSize
+        let edges = squares.sorted { ($0.row, $0.column) < ($1.row, $1.column) }.flatMap { square in
+            let (left, top) = position(of: square, in: bounds)
+            func isOutside(_ column: Int, _ row: Int) -> Bool {
+                !squares.contains(GridSquare(column: square.column + column, row: square.row + row))
+            }
+            return [(isOutside(0, -1), "M\(left) \(top)h\(size)"), (isOutside(0, 1), "M\(left) \(top + size)h\(size)"),
+                    (isOutside(-1, 0), "M\(left) \(top)v\(size)"), (isOutside(1, 0), "M\(left + size) \(top)v\(size)")]
+                .filter(\.0).map(\.1)
+        }
+        return "<path class=\"outline\" d=\"\(edges.joined())\"/>"
     }
 
     private static func gridLines(width: Int, height: Int) -> String {
