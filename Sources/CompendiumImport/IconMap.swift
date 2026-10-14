@@ -8,17 +8,50 @@ public struct IconSources: Sendable {
     public var rexard: RexardIcons?
     /// Rexard files (paths in the packs) by Foundry path or entry id, for icons the rules pick badly.
     public var overrides: [String: String]
+    /// The matches of an earlier import, by Foundry path, used for Foundry icons not on this machine, such as
+    /// the Foundry app's on GitHub.
+    public var savedMatches: [String: IconMatch]
 
-    public init(paths: FoundryPaths, rexard: RexardIcons?, overrides: [String: String] = [:]) {
+    public init(paths: FoundryPaths, rexard: RexardIcons?, overrides: [String: String] = [:],
+                savedMatches: [String: IconMatch] = [:]) {
         self.paths = paths
         self.rexard = rexard
         self.overrides = overrides
+        self.savedMatches = savedMatches
     }
 
     /// The overrides in a JSON object of Foundry paths or entry ids to Rexard files; none when there is no file.
     public static func overrides(in url: URL) throws -> [String: String] {
         guard FileManager.default.fileExists(atPath: url.path) else { return [:] }
         return try JSONDecoder().decode([String: String].self, from: Data(contentsOf: url))
+    }
+}
+
+/// The Rexard picture a Foundry icon matched, and how many hash bits (of 256) differ.
+public struct IconMatch: Equatable, Sendable {
+    public var file: String
+    public var distance: Int
+
+    public init(file: String, distance: Int) {
+        self.file = file
+        self.distance = distance
+    }
+
+    /// Matches as tab-separated lines of Foundry path, Rexard file and distance, sorted, under a header.
+    public static func table(_ matches: [String: IconMatch]) -> String {
+        let lines = matches.sorted { $0.key < $1.key }.map { "\($0.key)\t\($0.value.file)\t\($0.value.distance)" }
+        return (["foundry\trexard\tdistance"] + lines).joined(separator: "\n") + "\n"
+    }
+
+    /// The matches in a table written by `table(_:)`; none when there is no file.
+    public static func matches(in url: URL) throws -> [String: IconMatch] {
+        guard FileManager.default.fileExists(atPath: url.path) else { return [:] }
+        let rows = try String(contentsOf: url, encoding: .utf8).split(separator: "\n").dropFirst()
+            .map { $0.split(separator: "\t", omittingEmptySubsequences: false).map(String.init) }
+        return Dictionary(rows.compactMap { fields in
+            guard fields.count == 3, let distance = Int(fields[2]) else { return nil }
+            return (fields[0], IconMatch(file: fields[1], distance: distance))
+        }, uniquingKeysWith: { first, _ in first })
     }
 }
 
@@ -45,11 +78,13 @@ final class IconMap {
     private(set) var choices: [String: Choice] = [:]
     /// The Foundry icons of entries left without one, with how many entries use each.
     private(set) var unresolved: [String: Int] = [:]
+    /// The Rexard picture each Foundry icon matched, compared here or saved by an earlier import.
+    private(set) var matches: [String: IconMatch] = [:]
 
     init(documents: [SourceDocument], sources: IconSources) {
         guard let rexard = sources.rexard else { return }
         let documents = documents.filter { !$0.category.isCreature }
-        let matches = Self.matches(of: documents, paths: sources.paths, rexard: rexard)
+        matches = Self.matches(of: documents, sources: sources, rexard: rexard)
         for document in documents {
             let path = document.json["img"].string
             if let file = sources.overrides[document.uuid] ?? sources.overrides[path] {
@@ -85,16 +120,23 @@ final class IconMap {
         return (["id\tname\tfoundry\trexard\trule\tdetail"] + lines).joined(separator: "\n") + "\n"
     }
 
-    /// The nearest Rexard picture of each Foundry icon the documents use, when near enough.
-    private static func matches(of documents: [SourceDocument], paths: FoundryPaths,
-                                rexard: RexardIcons) -> [String: (file: String, distance: Int)] {
+    /// The nearest Rexard picture of each Foundry icon the documents use, when near enough. Icons whose files
+    /// aren't on this machine take their saved match.
+    private static func matches(of documents: [SourceDocument], sources: IconSources,
+                                rexard: RexardIcons) -> [String: IconMatch] {
         let icons = Set(documents.map { $0.json["img"].string }).filter { !$0.isEmpty && !$0.hasSuffix(".svg") }
-        let candidates = icons.compactMap { path in paths.file(for: path).map { (path, $0) } }
-        let found = parallelMap(candidates) { path, file in (path, rexard.bestMatch(for: file)) }
-        return Dictionary(uniqueKeysWithValues: found.compactMap { path, match in
+        let files = Dictionary(uniqueKeysWithValues: icons.map { ($0, sources.paths.file(for: $0)) })
+        let present = files.compactMap { path, file in
+            file.flatMap { FileManager.default.fileExists(atPath: $0.path) ? (path, $0) : nil }
+        }
+        let found = parallelMap(present) { path, file in (path, rexard.bestMatch(for: file)) }
+        let compared = found.compactMap { path, match -> (String, IconMatch)? in
             guard let match, match.distance <= maximumDistance else { return nil }
-            return (path, match)
-        })
+            return (path, IconMatch(file: match.file, distance: match.distance))
+        }
+        let saved = icons.subtracting(present.map(\.0))
+            .compactMap { path in sources.savedMatches[path].map { (path, $0) } }
+        return Dictionary(uniqueKeysWithValues: compared + saved)
     }
 
     /// The icons of base items (a longsword's for a +1 longsword), by system and slug.
