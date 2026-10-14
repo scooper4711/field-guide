@@ -67,6 +67,26 @@ enum AreaGeometry {
         }).intersection(reach)
     }
 
+    /// The row each line starts on, stacked in order: the first row where none of its squares is beside (or
+    /// diagonal to) a square of the lines above, so a clear square always separates them.
+    static func packedRows(_ lines: [Set<GridSquare>]) -> [Int] {
+        var taken = Set<GridSquare>(), rows: [Int] = [], row = 0
+        for line in lines {
+            func touches(at row: Int) -> Bool {
+                line.contains { square in
+                    (-1...1).contains { column in
+                        (-1...1).contains { taken.contains(GridSquare(column: square.column + column,
+                                                                      row: square.row + row + $0)) }
+                    }
+                }
+            }
+            while touches(at: row) { row += 1 }
+            rows.append(row)
+            taken.formUnion(line.map { GridSquare(column: $0.column, row: $0.row + row) })
+        }
+        return rows
+    }
+
     /// The squares moved, from the corner (0, 0), to cover square `index` along one axis.
     private static func steps(_ index: Int) -> Int {
         index < 0 ? -index : index + 1

@@ -44,8 +44,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   covers it (`area-1`…`area-5` in order of size, colored by `entry.css` for light and dark mode), the grid, an
   outline along the edge of each size (`outline-1`…`outline-5`: darker than its color, lighter in dark mode;
   clipped to its own squares so it lies inside its size and never overlaps a neighbor's; shaded squares draw their
-  grid lines in a neutral tint, so only the outlines carry color), the origin (a dot, or the creature's space
-  lettered M or L) and a key.
+  grid lines in a neutral tint, so only the outlines carry color), the origin (a dot, labeled in a left margin for
+  the lines, or the creature's space lettered M, L or H) and a key.
 - `LinkIndex` maps every imported document's `Compendium.<system>.<pack>.Item|Actor.<id or name>` to its
   ID, so links can be checked and rewritten.
 - `Enricher` replaces `@UUID`, `@Check`, `@Damage`, `@Template`, `@Localize`, `@Embed` and `[[/r …]]` in
