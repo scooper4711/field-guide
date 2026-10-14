@@ -6,7 +6,7 @@ import Testing
 @Suite struct FormattingTests {
     @Test func formatsPricesBulkAndFrequencies() {
         #expect(Formatting.price(.object(["value": .object(["pp": .number(1),
-                                                            "gp": .number(1500)])])) == "1 pp, \(1500.formatted()) gp")
+                                                            "gp": .number(1500)])])) == "1 pp, 1,500 gp")
         #expect(Formatting.bulk(.number(0)) == "—" && Formatting.bulk(.number(0.1)) == "L"
             && Formatting.bulk(.number(2)) == "2")
         #expect(Formatting.frequency(.object(["max": .number(2), "per": .string("day")])) == "twice per day")
