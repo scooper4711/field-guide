@@ -34,7 +34,7 @@ import Testing
                      "<strong>Bulk</strong> 1",
                      "<strong>Damage</strong> 1d8 slashing", "<strong>Group</strong> Sword", "<strong>Range</strong> " +
                          "30 feet",
-                     "<strong>Reload</strong> 1", "Deadly d10"] {
+                     "<strong>Reload</strong> 1", "<strong>Category</strong> Martial", "Deadly d10"] {
             #expect(sword.contains(line), "\(line)")
         }
         let armor = try imported.page("Compendium.pf2e.equipment-srd.Item.la1")
@@ -87,6 +87,6 @@ import Testing
             #expect(abadar.contains(line), "\(line)")
         }
         // The deity's kind is its subtitle, not a line of its details.
-        #expect(abadar.contains("<p class=\"subtitle\">Deity</p>") && !abadar.contains("EntryCategory"))
+        #expect(abadar.contains("<p class=\"subtitle\">Deity</p>") && !abadar.contains(">Category<"))
     }
 }

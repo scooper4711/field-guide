@@ -87,7 +87,7 @@ enum ItemLines {
         let reload = system[path: "reload.value"].string
         return [
             HTML.line("Damage", HTML.escape(damageText)),
-            HTML.line("EntryCategory", HTML.escape(Words.title(system["category"].string))),
+            HTML.line("Category", HTML.escape(Words.title(system["category"].string))),
             HTML.line("Group", HTML.escape(Words.title(system["group"].string))),
             HTML.line("Range", HTML.escape(range)),
             HTML.line("Reload", HTML.escape(reload))
@@ -104,7 +104,7 @@ enum ItemLines {
             HTML.line("Check Penalty", HTML.escape(penalty(system["checkPenalty"].int))),
             HTML.line("Speed Penalty",
                       HTML.escape(system["speedPenalty"].int == 0 ? "" : "\(system["speedPenalty"].int) feet")),
-            HTML.line("EntryCategory", HTML.escape(Words.title(system["category"].string))),
+            HTML.line("Category", HTML.escape(Words.title(system["category"].string))),
             HTML.line("Group", HTML.escape(Words.title(system["group"].string)))
         ]
     }
