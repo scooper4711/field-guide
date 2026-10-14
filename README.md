@@ -3,9 +3,9 @@
 Looking up a rule, a spell or a monster at the table usually means a laptop, a website that needs a signal,
 or a stack of books.
 
-Field Guide is an iPad app that carries the Pathfinder and Starfinder compendium, offline: actions, creatures,
-equipment, feats, hazards, spells, conditions, ancestries, classes, deities and more. Search as you type,
-filter by level, rarity, traits and source, and follow the links from one entry to the next. Creatures can be
+Field Guide is an iPad and Mac app that carries the Pathfinder and Starfinder compendium, offline: actions,
+creatures, equipment, feats, hazards, spells, conditions, ancestries, classes, deities and more. Search as you
+type, filter by level, rarity, traits and source, and follow the links from one entry to the next. Creatures can be
 shown as battle cards with art from your own pawn and Battle Cards PDFs, and equipment with art from your item
 decks.
 
@@ -63,6 +63,27 @@ Clone with `git clone --recursive`, or run `git submodule update --init` after c
 licensed and not redistributable. Without access to it, the build still works and falls back to built-in
 artwork. The action icons are Paizo's Pathfinder-Icons font, used unaltered under the
 [Paizo Compatibility License](https://paizo.com/licenses/compatibility).
+
+## Society Toolkit
+
+Field Guide is part of the Society Toolkit, free apps for Pathfinder and Starfinder players and GMs, for the Mac
+and (Turnkeeper and Field Guide) the iPad. Like the toolkits in the game, each one grants a +1 item bonus to game
+prep.
+
+- [Scrollkeeper](https://github.com/scooper4711/scrollkeeper) keeps your Paizo library in order and downloads your
+  purchases.
+- [Pluck](https://github.com/scooper4711/pluck) gets the art, text and stat blocks out of a PDF.
+- [Pawn Shop](https://github.com/scooper4711/pawn-shop) prints just the pawns you need, single-sided, from your
+  pawn PDFs.
+- [Mapsmith](https://github.com/scooper4711/mapsmith) prints battle maps at true scale on ordinary paper.
+- [Turnkeeper](https://github.com/scooper4711/turnkeeper) builds encounters and runs initiative at the table, with
+  the battle card of whoever's turn it is, on the iPad and the Mac.
+- **Field Guide** carries the Pathfinder and Starfinder compendium, offline, on the iPad and the Mac.
+
+## Supporting the project
+
+The app is free and always will be. If it saves you time and you would like to say thanks, you can leave a
+tip on [Ko-fi](https://ko-fi.com/coop207627). A donation is entirely optional and unlocks nothing.
 
 ## Paizo notices
 
