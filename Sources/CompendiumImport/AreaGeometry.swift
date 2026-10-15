@@ -70,7 +70,9 @@ enum AreaGeometry {
     /// The row each line starts on, stacked in order: the first row where none of its squares is beside (or
     /// diagonal to) a square of the lines above, so a clear square always separates them.
     static func packedRows(_ lines: [Set<GridSquare>]) -> [Int] {
-        var taken = Set<GridSquare>(), rows: [Int] = [], row = 0
+        var taken = Set<GridSquare>()
+        var rows: [Int] = []
+        var row = 0
         for line in lines {
             while line.contains(where: { isBeside(GridSquare(column: $0.column, row: $0.row + row), taken) }) {
                 row += 1

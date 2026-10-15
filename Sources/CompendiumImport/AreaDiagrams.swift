@@ -135,7 +135,8 @@ struct AreaDiagrams {
         let bounds = gridBounds(Set(shaded.keys), origin: diagram.origin)
         let squares = shaded.sorted { ($0.key.row, $0.key.column) < ($1.key.row, $1.key.column) }
             .map { rect($0.key, size: 1, in: bounds, class: "area-\($0.value)") }
-        let gridWidth = bounds.columns.count * squareSize, height = bounds.rows.count * squareSize
+        let gridWidth = bounds.columns.count * squareSize
+        let height = bounds.rows.count * squareSize
         let margin = labels(diagram.origin, in: bounds).isEmpty ? 0 : labelMargin
         let width = gridWidth + margin
         // Every diagram shows its squares at the same size, up to the page's width.
@@ -168,7 +169,8 @@ struct AreaDiagrams {
             all.insert(square)
             all.insert(GridSquare(column: square.column + space - 1, row: square.row + space - 1))
         }
-        let columns = all.map(\.column), rows = all.map(\.row)
+        let columns = all.map(\.column)
+        let rows = all.map(\.row)
         return ((columns.min() ?? 0) - 1..<(columns.max() ?? 0) + 2, (rows.min() ?? 0) - 1..<(rows.max() ?? 0) + 2)
     }
 
@@ -189,7 +191,8 @@ struct AreaDiagrams {
         let name = diagram.title.lowercased().components(separatedBy: CharacterSet.alphanumerics.inverted)
             .filter { !$0.isEmpty }.joined(separator: "-")
         return diagram.sizes.enumerated().reversed().map { index, feet in
-            let squares = diagram.squares(feet), tone = index + 1
+            let squares = diagram.squares(feet)
+            let tone = index + 1
             let clip = "area-\(name)-\(tone)"
             return "<clipPath id=\"\(clip)\"><path d=\"\(fill(squares, in: bounds))\"/></clipPath>"
                 + "<g clip-path=\"url(#\(clip))\">\(outline(squares, in: bounds, tone: tone))</g>"

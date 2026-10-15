@@ -1,5 +1,13 @@
 # Field Guide
 
+[![CI](https://github.com/scooper4711/field-guide/actions/workflows/ci.yml/badge.svg)](https://github.com/scooper4711/field-guide/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=scooper4711_field-guide&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=scooper4711_field-guide)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=scooper4711_field-guide&metric=coverage)](https://sonarcloud.io/summary/new_code?id=scooper4711_field-guide)
+[![GitHub Release](https://img.shields.io/github/v/release/scooper4711/field-guide)](https://github.com/scooper4711/field-guide/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/scooper4711/field-guide/total)](https://github.com/scooper4711/field-guide/releases)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%2015%2B%20%7C%20iPadOS%2018%2B-informational)](./Package.swift)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 Looking up a rule, a spell or a monster at the table usually means a laptop, a website that needs a signal,
 or a stack of books.
 
