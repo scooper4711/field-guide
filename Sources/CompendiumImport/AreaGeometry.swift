@@ -72,19 +72,23 @@ enum AreaGeometry {
     static func packedRows(_ lines: [Set<GridSquare>]) -> [Int] {
         var taken = Set<GridSquare>(), rows: [Int] = [], row = 0
         for line in lines {
-            func touches(at row: Int) -> Bool {
-                line.contains { square in
-                    (-1...1).contains { column in
-                        (-1...1).contains { taken.contains(GridSquare(column: square.column + column,
-                                                                      row: square.row + row + $0)) }
-                    }
-                }
+            while line.contains(where: { isBeside(GridSquare(column: $0.column, row: $0.row + row), taken) }) {
+                row += 1
             }
-            while touches(at: row) { row += 1 }
             rows.append(row)
             taken.formUnion(line.map { GridSquare(column: $0.column, row: $0.row + row) })
         }
         return rows
+    }
+
+    /// Whether `square` or any of the eight squares around it is in `taken`.
+    private static func isBeside(_ square: GridSquare, _ taken: Set<GridSquare>) -> Bool {
+        for column in -1...1 {
+            for row in -1...1 where taken.contains(GridSquare(column: square.column + column, row: square.row + row)) {
+                return true
+            }
+        }
+        return false
     }
 
     /// The squares moved, from the corner (0, 0), to cover square `index` along one axis.

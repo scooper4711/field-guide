@@ -19,13 +19,7 @@ struct StarfinderDuplicates {
     init(repository: URL) {
         let file = repository.appendingPathComponent("build/duplicates.json")
         let groups = (try? JSONValue(contentsOf: file))?.array ?? []
-        listings = groups.flatMap { group in
-            let publication = group["publication"].string
-            return group["entries"].object.flatMap { folder, names in
-                names.strings.map { Listing(folder: folder, name: $0,
-                                            publication: publication.isEmpty ? nil : publication) }
-            }
-        }
+        listings = groups.flatMap(Self.listings(in:))
     }
 
     /// Starfinder copies of the listed Pathfinder documents, in the Starfinder pack of the same folder.
@@ -43,6 +37,15 @@ struct StarfinderDuplicates {
                 json = json.setting("system.publication.title", to: .string(publication))
             }
             return SourceDocument(pack: pack, json: json, category: source.category)
+        }
+    }
+
+    /// The listings of one group in `duplicates.json`: its entries by folder, under its publication.
+    private static func listings(in group: JSONValue) -> [Listing] {
+        let publication = group["publication"].string
+        return group["entries"].object.flatMap { folder, names in
+            names.strings.map { Listing(folder: folder, name: $0,
+                                        publication: publication.isEmpty ? nil : publication) }
         }
     }
 }

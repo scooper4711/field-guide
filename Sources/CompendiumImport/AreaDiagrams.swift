@@ -63,15 +63,7 @@ struct AreaDiagram: Sendable {
             AreaGeometry.diagonalCone(feet: $0)
         },
         AreaDiagram(title: "Line", caption: "From a corner of a square, at five slopes.", sizes: lineSizes,
-                    origin: .corners(zip(lineSlopes, lineRows).map { slope, row in
-                        Corner(square: GridSquare(column: 0, row: row), label: slope.label)
-                    })) { feet in
-            zip(lineSlopes, lineRows).reduce(into: Set<GridSquare>()) { squares, start in
-                let (slope, row) = start
-                squares.formUnion(AreaGeometry.line(feet: feet, across: slope.across, down: slope.down)
-                    .map { GridSquare(column: $0.column, row: $0.row + row) })
-            }
-        }
+                    origin: .corners(lineCorners)) { lineSquares(feet: $0) }
     ]
 
     static func creature(_ letter: String, column: Int, row: Int, space: Int) -> Origin {
@@ -89,6 +81,20 @@ struct AreaDiagram: Sendable {
     static let lineRows = AreaGeometry.packedRows(lineSlopes.map {
         AreaGeometry.line(feet: lineSizes.max() ?? 0, across: $0.across, down: $0.down)
     })
+    /// Where each line starts, labeled with its slope.
+    static let lineCorners = zip(lineSlopes, lineRows).map { slope, row in
+        Corner(square: GridSquare(column: 0, row: row), label: slope.label)
+    }
+
+    /// The squares of every line at `feet`, each shifted down to its row.
+    static func lineSquares(feet: Int) -> Set<GridSquare> {
+        var squares = Set<GridSquare>()
+        for (slope, row) in zip(lineSlopes, lineRows) {
+            squares.formUnion(AreaGeometry.line(feet: feet, across: slope.across, down: slope.down)
+                .map { GridSquare(column: $0.column, row: $0.row + row) })
+        }
+        return squares
+    }
 }
 
 /// The GM Screen's Areas entry for each system, drawn from the rules as inline SVG.
