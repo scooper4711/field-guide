@@ -12,8 +12,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `FieldGuideImport`: the command-line importer.
 - `FieldGuideUI` (iOS, macOS): the SwiftUI app. It uses Tabletop Kit's `BattleCards`, `Bestiary` and
   `CreatureArt`; `FieldGuideImport` uses its `CreatureImport`.
-- `FieldGuide`: the Mac app, for trying things out; the iPad app lives in `ios/FieldGuide.xcodeproj`
-  (scheme FieldGuide-iPad) and includes `Generated/` as a folder of resources.
+- `FieldGuide`: the Mac app, built into `Field Guide.app` by `scripts/build-app.sh`; the iPad app lives in
+  `ios/FieldGuide.xcodeproj` (scheme FieldGuide-iPad) and includes `Generated/` as a folder of resources.
 
 ## Import
 - `PackScanner` reads `system.pf2e.json` and `system.sf2e.json` for each Item and Actor pack's folder and
@@ -119,7 +119,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Turnkeeper's creature art settings adapted (a second
   copy; a third would move to Tabletop Kit).
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
-  category in user defaults. Prices follow the Mac's number format at import, as the import runs there.
+  category in user defaults. Prices are formatted in American English at import, whatever the Mac's locale.
 - Search Everything: `GlobalSearch` (FieldGuideKit) holds every entry of the system, read once with
   `Catalog.summaries(in:)`, and ranks names in memory: names starting with the text, then names with each word
   at a word's start, then the rest. Text searches run on `TextSearcher`, an actor with its own connection, using
@@ -128,6 +128,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   the entry column's toolbar button shows the sidebar with the search focused.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
   folder, for trying pages out from a script.
+- Mac menus: `FieldGuideCommands` adds the Go menu and Art from PDFs… to File. The store is the app's, so
+  the system commands set it directly; Back and Search Everything reach the window through focused scene
+  values (`entryPath`, the detail column's navigation path, and `searchEverything`, `RootView`'s action), and
+  `SidebarView` shows Art from PDFs for `showArtFromPDFs`.
 - About: Tabletop Kit's `AppNotices`, with `AboutInfo.fieldGuide` (`About.swift`): `AboutCommands` on the Mac and
   an `AboutSheet` from the sidebar's toolbar on the iPad.
 

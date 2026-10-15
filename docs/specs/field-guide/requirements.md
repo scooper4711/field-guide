@@ -120,3 +120,7 @@ Foundry VTT's compendium browser.
   author. It also lists the full texts of the licenses the bundled content requires: the Open Game License and the
   ORC License (the compendium text), the Apache License for Roboto Condensed and the SIL Open Font License for
   Gelasio. The README carries the same notices.
+- R7.4 The Mac app is a full Mac app, not only a developer build. Its window opens at 1280 by 820 points. A Go
+  menu has Search Everything (⌘F), Back (⌘[, returning from a followed link) and Pathfinder (⌘1) and
+  Starfinder (⌘2); File has Art from PDFs… (⇧⌘A). The README says how to install the disk image from a
+  release and get past macOS's warning about an app that isn't notarized.
