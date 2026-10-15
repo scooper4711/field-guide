@@ -41,9 +41,12 @@ enum ImageHashing {
     /// The parts of a source picture that are hashed, since Foundry crops some of its icons: the whole, centered
     /// crops, and the corners.
     static let crops: [Crop] = [1, 0.9, 0.8, 0.7, 0.6].map { Crop(scale: $0, horizontal: 0.5, vertical: 0.5) }
-        + [0.8, 0.65].flatMap { scale in
-            [0.0, 1].flatMap { left in [0.0, 1].map { Crop(scale: scale, horizontal: left, vertical: $0) } }
-        }
+        + [0.8, 0.65].flatMap(cornerCrops)
+
+    /// The four corner crops at `scale`.
+    private static func cornerCrops(scale: Double) -> [Crop] {
+        [(0.0, 0.0), (0, 1), (1, 0), (1, 1)].map { Crop(scale: scale, horizontal: $0.0, vertical: $0.1) }
+    }
 
     private static let hashWidth = 16
 

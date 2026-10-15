@@ -44,7 +44,7 @@ struct EntryWebView {
             self.onLink = onLink
         }
 
-        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+        func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void) {
             guard let url = navigationAction.request.url, navigationAction.navigationType == .linkActivated else {
                 decisionHandler(.allow)
@@ -100,7 +100,7 @@ final class ResourceSchemeHandler: NSObject, WKURLSchemeHandler {
         self.pdfArt = pdfArt
     }
 
-    func webView(_ webView: WKWebView, start task: any WKURLSchemeTask) {
+    func webView(_: WKWebView, start task: any WKURLSchemeTask) {
         guard let url = task.request.url else { return }
         let path = url.path.removingPercentEncoding ?? url.path
         if path.hasPrefix(Self.creaturePrefix) {
@@ -132,7 +132,7 @@ final class ResourceSchemeHandler: NSObject, WKURLSchemeHandler {
                mimeType: icon.map(Self.mimeType(of:)) ?? "")
     }
 
-    func webView(_ webView: WKWebView, stop task: any WKURLSchemeTask) {
+    func webView(_: WKWebView, stop task: any WKURLSchemeTask) {
         stopped.insert(ObjectIdentifier(task))
     }
 

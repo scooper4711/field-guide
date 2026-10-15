@@ -41,8 +41,7 @@ enum Formatting {
         let max = frequency["max"].int
         guard max > 0 else { return "" }
         let period = periods[frequency["per"].string] ?? frequency["per"].string
-        let times = max == 1 ? "once" : max == 2 ? "twice" : "\(max) times"
-        return "\(times) per \(period)"
+        return "\(times(max)) per \(period)"
     }
 
     /// The action glyph for an `actionType` and `actions` pair, or "" for passive.
@@ -78,6 +77,15 @@ enum Formatting {
         case "reaction": "Reaction"
         case "free": "Free Action"
         default: value.isEmpty ? "" : value.prefix(1).uppercased() + value.dropFirst()
+        }
+    }
+
+    /// "once", "twice", "3 times".
+    private static func times(_ count: Int) -> String {
+        switch count {
+        case 1: "once"
+        case 2: "twice"
+        default: "\(count) times"
         }
     }
 }
