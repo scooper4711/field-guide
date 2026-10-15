@@ -11,12 +11,13 @@ let package = Package(
         .executable(name: "FieldGuideImport", targets: ["FieldGuideImport"])
     ],
     dependencies: [
-        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.13.0")
+        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "0.14.2")
     ],
     targets: [
         .target(name: "FieldGuideKit"),
         .target(name: "CompendiumImport", dependencies: [
-            "FieldGuideKit", .product(name: "Bestiary", package: "tabletop-kit")
+            "FieldGuideKit", .product(name: "Bestiary", package: "tabletop-kit"),
+            .product(name: "CreatureImport", package: "tabletop-kit")
         ]),
         .executableTarget(name: "FieldGuideImport", dependencies: [
             "CompendiumImport", .product(name: "CreatureImport", package: "tabletop-kit")

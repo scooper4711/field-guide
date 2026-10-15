@@ -1,3 +1,4 @@
+import CreatureImport
 import FieldGuideKit
 import Foundation
 
@@ -6,7 +7,7 @@ enum CreatureBlock {
     static func html(_ document: SourceDocument, context: PageContext) -> String {
         let system = document.systemData
         let items = document.json["items"].array
-        let abilities = CreatureAbilities(items: items, context: context)
+        let abilities = CreatureAbilities(items: items, context: context, creature: values(system))
         return [
             "<section class=\"stat-block\">",
             top(system, items: items),
@@ -21,6 +22,11 @@ enum CreatureBlock {
             abilities.html(category: "offensive"),
             "</section>"
         ].joined()
+    }
+
+    /// What a creature's formulas know: its level (`@actor.level`).
+    static func values(_ system: JSONValue) -> FormulaValues {
+        FormulaValues(["@actor.level": Double(system[path: "details.level.value"].int)])
     }
 
     private static func top(_ system: JSONValue, items: [JSONValue]) -> String {

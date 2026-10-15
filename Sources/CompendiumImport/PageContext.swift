@@ -1,3 +1,4 @@
+import CreatureImport
 import FieldGuideKit
 import Foundation
 
@@ -15,7 +16,9 @@ final class PageContext {
         self.images = images
     }
 
-    func enrich(_ html: String) -> String { enricher.enrich(html) }
+    func enrich(_ html: String, values: FormulaValues = FormulaValues()) -> String {
+        enricher.enrich(html, values: values)
+    }
 
     /// Enriches text that may be plain or HTML, for one-line fields such as triggers.
     func inline(_ text: String) -> String {

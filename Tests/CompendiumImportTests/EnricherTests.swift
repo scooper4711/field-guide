@@ -18,7 +18,11 @@ import Testing
 
     @Test func damageListsEachPart() {
         #expect(DamageText.text("(2d6+4)[fire],1d6[persistent,bleed]") == "2d6+4 fire plus 1d6 persistent bleed")
-        #expect(DamageText.text("(1d4+(@item.level)[splash])[acid]|options:x") == "(1d4+(@item.level)[splash]) acid")
+        #expect(DamageText.text("(1d4+(@item.level)[splash])[acid]|options:x", values: .level(3))
+            == "(1d4+3[splash]) acid")
+        #expect(DamageText.text("floor(@item.level/2)d6[persistent,acid]", values: .level(2)) == "1d6 persistent acid")
+        #expect(DamageText.text("(@actor.level)d6[fire]") == "1d6 fire per level")
+        #expect(DamageText.text("9d6[@actor.flags.system.dragonDisciple.energyType]") == "9d6")
         #expect(DamageText.text("5") == "5")
         #expect(TemplateText.text("cone|distance:15") == "15-foot cone"
             && TemplateText.text("emanation") == "emanation")
