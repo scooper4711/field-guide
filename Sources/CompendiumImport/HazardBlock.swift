@@ -7,7 +7,8 @@ enum HazardBlock {
         let system = document.systemData
         let attributes = system["attributes"]
         let details = system["details"]
-        let abilities = CreatureAbilities(items: document.json["items"].array, context: context)
+        let abilities = CreatureAbilities(items: document.json["items"].array, context: context,
+                                          creature: CreatureBlock.values(document.systemData))
         let stealth = attributes[path: "stealth.value"].optionalInt.map { "DC \($0 + 10)" } ?? ""
         let stealthDetails = context.inline(attributes[path: "stealth.details"].string)
         return [

@@ -1,3 +1,4 @@
+import CreatureImport
 import Foundation
 
 /// Replaces Foundry text enrichers in description HTML with readable HTML: `@UUID` links become `entry:`
@@ -15,8 +16,11 @@ public final class Enricher {
         self.links = links
     }
 
-    public func enrich(_ html: String) -> String {
-        ActionGlyphs.convertSpans(in: replaceEnrichers(in: replaceInlineRolls(in: expandLocalizations(html, depth: 0))))
+    /// The HTML enriched, its formulas worked out from `values` (a spell's rank, an item's level, a creature's
+    /// level) or described when they depend on something only known in play.
+    public func enrich(_ html: String, values: FormulaValues = FormulaValues()) -> String {
+        let rolled = replaceInlineRolls(in: expandLocalizations(html, depth: 0), values: values)
+        return ActionGlyphs.convertSpans(in: replaceEnrichers(in: rolled, values: values))
     }
 
     private func expandLocalizations(_ html: String, depth: Int) -> String {
@@ -27,19 +31,19 @@ public final class Enricher {
         return expandLocalizations(expanded, depth: depth + 1)
     }
 
-    private func replaceEnrichers(in html: String) -> String {
+    private func replaceEnrichers(in html: String, values: FormulaValues) -> String {
         EnricherScanner.replace(in: html) { match in
-            if let converted = convert(match) { return converted }
+            if let converted = convert(match, values: values) { return converted }
             unconverted[match.name, default: 0] += 1
             return match.label.map(HTML.escape) ?? ""
         }
     }
 
-    private func convert(_ match: EnricherMatch) -> String? {
+    private func convert(_ match: EnricherMatch, values: FormulaValues) -> String? {
         switch match.name {
         case "UUID": link(match)
         case "Check": HTML.span("check", match.label ?? CheckText.text(match.argument))
-        case "Damage": HTML.span("damage", match.label ?? DamageText.text(match.argument))
+        case "Damage": HTML.span("damage", match.label ?? DamageText.text(match.argument, values: values))
         case "Template": match.label ?? TemplateText.text(match.argument)
         case "Embed", "Compendium", "Trait": match.label ?? ""
         default: nil
@@ -76,7 +80,7 @@ public final class Enricher {
 
     /// `[[/r 1d4 #Recharge]]{1d4 rounds}` becomes "1d4 rounds", `[[/r 4d8[healing] #Treat Wounds]]` "4d8", and
     /// `[[/act demoralize]]` "Demoralize". A body may hold one level of brackets, such as damage types.
-    private func replaceInlineRolls(in text: String) -> String {
+    private func replaceInlineRolls(in text: String, values: FormulaValues) -> String {
         let pattern = /\[\[\/(?<command>\w+) (?<body>(?:[^\[\]]|\[[^\[\]]*\])*)\]\](?:\{(?<label>[^}]*)\})?/
         return text.replacing(pattern) { match in
             if let label = match.output.label { return String(label) }
@@ -86,7 +90,8 @@ public final class Enricher {
                 return action.split(separator: "-").map(\.capitalized).joined(separator: " ")
             }
             let formula = body.split(separator: "#").first.map(String.init) ?? body
-            return formula.replacing(/\[[^\]]*\]/, with: "").trimmingCharacters(in: .whitespaces)
+            let unflavored = formula.replacing(/\[[^\]]*\]/, with: "").trimmingCharacters(in: .whitespaces)
+            return FormulaWording(unflavored, values: values).text()
         }
     }
 }
@@ -120,23 +125,28 @@ enum TemplateText {
     }
 }
 
-/// Prose for `@Damage[…]`: "2d6+4 fire plus 1d6 persistent bleed".
+/// Prose for `@Damage[…]`: "2d6+4 fire plus 1d6 persistent bleed", with formulas worked out from `values`
+/// ("1d6 persistent acid") or described ("1d6 fire per level").
 enum DamageText {
-    static func text(_ argument: String) -> String {
+    static func text(_ argument: String, values: FormulaValues = FormulaValues()) -> String {
         let formula = EnricherScanner.splitTopLevel(argument, separator: "|").first ?? ""
         return EnricherScanner.splitTopLevel(formula, separator: ",")
-            .map(part)
+            .map { part($0, values: values) }
             .filter { !$0.isEmpty }
             .joined(separator: " plus ")
     }
 
     /// One part such as `(2d6+4)[persistent,fire]` or `1d6[bleed]`.
-    static func part(_ text: String) -> String {
+    static func part(_ text: String, values: FormulaValues = FormulaValues()) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
-        guard trimmed.hasSuffix("]"), let open = typeBracketStart(trimmed) else { return clean(trimmed) }
+        guard !trimmed.isEmpty else { return "" }
+        guard trimmed.hasSuffix("]"), let open = typeBracketStart(trimmed) else {
+            return FormulaWording(clean(trimmed), values: values).text()
+        }
+        // A type the player chooses (`@actor.flags.system.dragonDisciple.energyType`) is left for the text to name.
         let tags = trimmed[trimmed.index(after: open)..<trimmed.index(before: trimmed.endIndex)]
-            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-        return ([clean(String(trimmed[..<open]))] + tags.map(Words.label)).joined(separator: " ")
+            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.hasPrefix("@") }
+        return FormulaWording(clean(String(trimmed[..<open])), values: values).text(following: tags.map(Words.label))
     }
 
     /// The `[` that opens the trailing type list, skipping brackets nested inside the formula.

@@ -1,3 +1,4 @@
+import CreatureImport
 import FieldGuideKit
 import Foundation
 
@@ -72,19 +73,21 @@ struct PageBuilder {
         switch document.category {
         case .bestiary:
             return CreatureBlock.html(document, context: context)
-                + description(system[path: "details.publicNotes"].string)
+                + description(system[path: "details.publicNotes"].string, values: CreatureBlock.values(system))
         case .hazards:
             return HazardBlock.html(document, context: context)
         default:
             let details = DetailLines.html(document, context: context)
             return (details.isEmpty ? "" : "<section class=\"details\">\(details)</section>")
-                + description(system[path: "description.value"].string)
+                + description(system[path: "description.value"].string,
+                              values: .level(system[path: "level.value"].int))
         }
     }
 
-    private func description(_ html: String) -> String {
+    /// The description, its formulas worked out from the entry's rank or level (`@item.level`, `@item.rank`).
+    private func description(_ html: String, values: FormulaValues) -> String {
         let trimmed = html.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? "" : "<hr>" + PageDescription.section(context.enrich(trimmed))
+        return trimmed.isEmpty ? "" : "<hr>" + PageDescription.section(context.enrich(trimmed, values: values))
     }
 
     private func footer(_ document: SourceDocument) -> String {

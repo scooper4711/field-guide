@@ -1,3 +1,4 @@
+import CreatureImport
 import FieldGuideKit
 import Foundation
 
@@ -5,6 +6,8 @@ import Foundation
 struct CreatureAbilities {
     let items: [JSONValue]
     let context: PageContext
+    /// The creature's formula values, its level.
+    let creature: FormulaValues
 
     /// The `action` items of one stat-block section: interaction, defensive or offensive.
     func html(category: String) -> String {
@@ -19,7 +22,9 @@ struct CreatureAbilities {
                                            count: system[path: "actions.value"].optionalInt)
         let traits = system[path: "traits.value"].strings.map { HTML.escape(Words.label($0)) }
         let traitText = traits.isEmpty ? "" : " (\(traits.joined(separator: ", ")))"
-        let description = context.enrich(system[path: "description.value"].string)
+        var values = creature
+        values.values.merge(FormulaValues.level(system[path: "level.value"].int).values) { creature, _ in creature }
+        let description = context.enrich(system[path: "description.value"].string, values: values)
         return "<div class=\"ability\"><p class=\"ability-name\"><strong>\(HTML.escape(item["name"].string))</strong>"
             + " \(glyph)\(traitText)</p>\(description)</div>"
     }
