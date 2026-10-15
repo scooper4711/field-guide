@@ -3,6 +3,25 @@ import Testing
 @testable import CompendiumImport
 
 @Suite struct ImageTests {
+    @Test func searchesPathBeforeHomebrew() {
+        #expect(ArtScaler.searchFolders(path: "/custom/bin:/usr/bin")
+            == ["/custom/bin", "/usr/bin"] + ArtScaler.homebrewFolders)
+        #expect(ArtScaler.searchFolders(path: nil) == ArtScaler.homebrewFolders)
+    }
+
+    @Test func findsTheFirstExecutableOfThatName() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("ArtScalerTests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let folders = ["empty", "tool", "not-executable"].map { root.appendingPathComponent($0) }
+        for folder in folders { try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true) }
+        let tool = folders[1].appendingPathComponent("cwebp")
+        try Data().write(to: tool)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: tool.path)
+        try Data().write(to: folders[2].appendingPathComponent("cwebp"))
+        #expect(ArtScaler.executable(named: "cwebp", in: folders.map(\.path)) == tool.path)
+        #expect(ArtScaler.executable(named: "missing", in: folders.map(\.path)) == nil)
+    }
+
     @Test func resolvesFoundryPaths() {
         let paths = FoundryPaths(repository: URL(fileURLWithPath: "/r"), appPublic: URL(fileURLWithPath: "/a"))
         #expect(paths.file(for: "systems/sf2e/icons/x.webp")?.path == "/r/static/icons/x.webp")
