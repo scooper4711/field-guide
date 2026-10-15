@@ -12,6 +12,20 @@ decks.
 The content comes from the Foundry VTT pf2e system repository, under the ORC License and the Open Game License.
 See `docs/specs/field-guide/` for the requirements and design.
 
+## Installing a release
+
+On the Mac, download the disk image from the [releases page](https://github.com/scooper4711/field-guide/releases),
+open it and drag Field Guide to Applications.
+
+The app is not notarized by Apple, so macOS blocks it the first time:
+
+1. Open Field Guide once. macOS says it cannot be opened; click Done.
+2. Open System Settings › Privacy & Security and scroll down to the message about Field Guide.
+3. Click Open Anyway and confirm.
+
+After that it opens normally. The iPad app is not in the App Store yet; build it yourself with
+`make ipad-install` (see Updating).
+
 ## Use
 - Pick Pathfinder or Starfinder at the top of the sidebar, then a category: Actions, Bestiary, Campaign
   Features, Equipment, Feats, Hazards, Spells, Conditions, Ancestries, Heritages, Backgrounds, Classes or
@@ -29,6 +43,9 @@ See `docs/specs/field-guide/` for the requirements and design.
   Scrollkeeper), and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
   were deleted from Scrollkeeper are listed as missing, and creatures that lose their art say which PDF it
   needs.
+- On the Mac, the Go menu has Search Everything (⌘F), Back (⌘[) and Pathfinder and Starfinder (⌘1, ⌘2), and
+  File has Art from PDFs… (⇧⌘A). Import from Scrollkeeper reads Scrollkeeper's downloads without asking where
+  they are.
 
 ## Updating
 `make update` switches `pf2e.release` to pf2e's newest release, imports again and installs on the iPad. GitHub
@@ -51,7 +68,7 @@ release, it builds the next patch version into a draft release. Commit `pf2e.rel
 - `make ipad-install` builds the iPad app with `Generated/` inside and installs it on a connected iPad. Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
-- `make run` opens the Mac build on `Generated/`, for trying things out. `FIELD_GUIDE_SELECT=<entry id>`
+- `make run` opens the Mac app on `Generated/` without building the app bundle. `FIELD_GUIDE_SELECT=<entry id>`
   opens an entry at launch. `make dmg` builds `build/Field Guide.app` and `build/Field-Guide-<version>.dmg`.
   Pushing a `v*` tag builds the universal app on GitHub from the same pf2e release and the `Artwork`
   submodule, and attaches its disk image to the release.
