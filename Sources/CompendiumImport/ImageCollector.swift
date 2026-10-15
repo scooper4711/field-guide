@@ -98,8 +98,20 @@ public final class ImageCollector {
 
 /// Scales pictures with `cwebp`, which reads WebP, PNG and JPEG and writes WebP.
 enum ArtScaler {
-    static let tool = ["/opt/homebrew/bin/cwebp", "/usr/local/bin/cwebp"].first {
-        FileManager.default.isExecutableFile(atPath: $0)
+    /// Homebrew's folders on Apple silicon and Intel, searched after `PATH` since Xcode runs the importer with a
+    /// `PATH` that leaves them out.
+    static let homebrewFolders = ["/opt/homebrew/bin", "/usr/local/bin"]
+    static let tool = executable(named: "cwebp", in: searchFolders(path: ProcessInfo.processInfo.environment["PATH"]))
+
+    /// The folders to look for a tool in: `PATH`'s, then Homebrew's.
+    static func searchFolders(path: String?) -> [String] {
+        (path ?? "").split(separator: ":").map(String.init) + homebrewFolders
+    }
+
+    /// The first executable called `name` in `folders`.
+    static func executable(named name: String, in folders: [String]) -> String? {
+        folders.lazy.map { URL(fileURLWithPath: $0).appendingPathComponent(name).path }
+            .first { FileManager.default.isExecutableFile(atPath: $0) }
     }
 
     static func scale(_ source: URL, to destination: URL, maximumSize: Int) -> Bool {
