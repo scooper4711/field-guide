@@ -137,8 +137,8 @@ public final class CatalogStore {
     }
 }
 
-/// Where the imported data lives: in the app bundle on the iPad, in the repository's `Generated` folder on
-/// the Mac (or wherever `FIELD_GUIDE_DATA` points).
+/// Where the imported data lives: wherever `FIELD_GUIDE_DATA` points, else in the app bundle, else (for
+/// `make run`) in the current folder's `Generated`.
 public struct DataLocation: Sendable {
     public let folder: URL
 
