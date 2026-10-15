@@ -26,7 +26,7 @@ enum EntryTab: CaseIterable, Identifiable {
 /// The chosen entry, with links followed on a navigation stack so Back returns.
 struct EntryDetailView: View {
     let rootID: String
-    @State private var path: [PageLink] = []
+    @Binding var path: [PageLink]
 
     var body: some View {
         NavigationStack(path: $path) {

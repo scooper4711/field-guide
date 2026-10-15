@@ -22,9 +22,13 @@ public struct FieldGuideApp: App {
                 .environment(pdfArt)
                 .task { await pdfArt.refresh(addingNew: true) }
         }
-        #if os(macOS)
-        .commands { AboutCommands(info: .fieldGuide) }
-        #endif
+        .defaultSize(width: 1280, height: 820)
+        .commands {
+            FieldGuideCommands(store: store)
+            #if os(macOS)
+            AboutCommands(info: .fieldGuide)
+            #endif
+        }
     }
 }
 
@@ -34,6 +38,8 @@ struct RootView: View {
     /// `FIELD_GUIDE_SELECT` opens an entry at launch, for trying pages out from a script.
     @State private var selection = ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"]
     @State private var columns = NavigationSplitViewVisibility.automatic
+    /// The links followed from the chosen entry.
+    @State private var path: [PageLink] = []
     @State private var isSearchingEverything = false
     /// Whether Search Everything brought the sidebar out, so opening a match puts it away again.
     @State private var searchShowedSidebar = false
@@ -48,7 +54,7 @@ struct RootView: View {
         } detail: {
             Group {
                 if let selection {
-                    EntryDetailView(rootID: selection)
+                    EntryDetailView(rootID: selection, path: $path)
                         .id(selection)
                 } else {
                     ContentUnavailableView("Choose an Entry", systemImage: "book",
@@ -67,6 +73,12 @@ struct RootView: View {
             if !store.results.contains(where: { $0.id == selection }) { selection = nil }
         }
         .onChange(of: store.system) { selection = nil }
+        .onChange(of: selection) { path = [] }
+        // Only while there is a page to go back to, so the menu sees Back become available.
+        .focusedSceneValue(\.entryPath, path.isEmpty ? nil : $path)
+        .focusedSceneValue(\.isSearchingEverything, Binding(get: { isSearchingEverything }, set: { isOn in
+            if isOn { searchEverything() } else { isSearchingEverything = false }
+        }))
         // On the Mac, battle cards shown full screen fill this window.
         .battleCardFullScreenHost()
     }
@@ -114,6 +126,7 @@ struct SidebarView: View {
             Button("About", systemImage: "info.circle") { isShowingAbout = true }
             #endif
         }
+        .focusedSceneValue(\.isShowingArtFromPDFs, $isShowingPDFArt)
         .sheet(isPresented: $isShowingPDFArt) { PDFArtView() }
         .sheet(isPresented: $isShowingAbout) { AboutSheet(info: .fieldGuide) }
     }
