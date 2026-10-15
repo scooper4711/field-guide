@@ -8,7 +8,7 @@ enum DetailLines {
         let system = document.systemData
         switch document.category {
         case .spells: return spell(system, context: context)
-        case .equipment: return ItemLines.html(document, context: context)
+        case .equipment: return ItemLines.html(document)
         case .feats, .actions, .campaignFeatures: return ability(system, context: context)
         case .ancestries, .heritages, .backgrounds, .classes, .deities:
             return CharacterOptionLines.html(document, context: context)
@@ -62,7 +62,7 @@ enum DetailLines {
 
 /// Price, usage, Bulk and the numbers of weapons, armor and shields.
 enum ItemLines {
-    static func html(_ document: SourceDocument, context: PageContext) -> String {
+    static func html(_ document: SourceDocument) -> String {
         let system = document.systemData
         let usage = Words.label(system[path: "usage.value"].string)
         var lines = [

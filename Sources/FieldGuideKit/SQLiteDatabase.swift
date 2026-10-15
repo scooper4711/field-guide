@@ -27,13 +27,18 @@ public final class SQLiteDatabase {
 
     deinit { sqlite3_close(handle) }
 
+    /// The default row handler, for statements whose rows (if any) are not needed.
+    public static func ignoreRow(_: SQLiteRow) {
+        // Nothing to do: the caller only runs the statement.
+    }
+
     /// Runs statements that return no rows.
     public func execute(_ sql: String) throws {
         guard sqlite3_exec(handle, sql, nil, nil, nil) == SQLITE_OK else { throw error("Running SQL") }
     }
 
     /// Runs `sql` with `values` bound to its parameters, calling `row` for each result row.
-    public func query(_ sql: String, _ values: [SQLiteValue] = [], row: (SQLiteRow) throws -> Void = { _ in }) throws {
+    public func query(_ sql: String, _ values: [SQLiteValue] = [], row: (SQLiteRow) throws -> Void = ignoreRow) throws {
         var statement: OpaquePointer?
         guard sqlite3_prepare_v2(handle, sql, -1, &statement, nil) == SQLITE_OK else { throw error("Preparing SQL") }
         defer { sqlite3_finalize(statement) }

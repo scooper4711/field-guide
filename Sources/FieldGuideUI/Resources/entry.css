@@ -20,6 +20,22 @@
     --unique: #54166e;
     --size: #478c42;
     --panel: rgba(120, 90, 60, 0.08);
+    /* The Areas entry's diagrams: each size its own color from the Okabe-Ito palette, which stays distinct with
+       color blindness, and an outline in a stronger tone of that color. */
+    --area-1: #0072b2;
+    --area-2: #e69f00;
+    --area-3: #009e73;
+    --area-4: #f0e442;
+    --area-5: #56b4e9;
+    --area-grid: rgba(30, 40, 70, 0.22);
+    --outline-1: #003f63;
+    --outline-2: #8a5f00;
+    --outline-3: #005a41;
+    --outline-4: #9a9200;
+    --outline-5: #1f6f9c;
+    --area-origin: #e8364a;
+    --area-creature: #1c1c1c;
+    --area-creature-text: #ffffff;
     color-scheme: light dark;
 }
 
@@ -30,6 +46,20 @@
         --rule: #b88e6f;
         --link: #f0a78f;
         --panel: rgba(255, 240, 220, 0.06);
+        --area-1: #2a8ad0;
+        --area-2: #e69f00;
+        --area-3: #14b386;
+        --area-4: #f0e442;
+        --area-5: #56b4e9;
+        --area-grid: rgba(220, 230, 255, 0.16);
+        --outline-1: #b3dcff;
+        --outline-2: #ffd98a;
+        --outline-3: #9cf0d4;
+        --outline-4: #fffab0;
+        --outline-5: #c9ebff;
+        --area-origin: #ff5c6c;
+        --area-creature: #e8e2d8;
+        --area-creature-text: #1c1c1c;
     }
 }
 
@@ -85,44 +115,6 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .journal table { width: 100%; }
 
 .source { margin-top: 18px; color: var(--muted); font-style: italic; font-size: 14px; }
-
-/* The Areas entry's diagrams: each size its own color from the Okabe-Ito palette, which stays distinct with
-   color blindness, and an outline in a stronger tone of that color. */
-:root {
-    --area-1: #0072b2;
-    --area-2: #e69f00;
-    --area-3: #009e73;
-    --area-4: #f0e442;
-    --area-5: #56b4e9;
-    --area-grid: rgba(30, 40, 70, 0.22);
-    --outline-1: #003f63;
-    --outline-2: #8a5f00;
-    --outline-3: #005a41;
-    --outline-4: #9a9200;
-    --outline-5: #1f6f9c;
-    --area-origin: #e8364a;
-    --area-creature: #1c1c1c;
-    --area-creature-text: #ffffff;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --area-1: #2a8ad0;
-        --area-2: #e69f00;
-        --area-3: #14b386;
-        --area-4: #f0e442;
-        --area-5: #56b4e9;
-        --area-grid: rgba(220, 230, 255, 0.16);
-        --outline-1: #b3dcff;
-        --outline-2: #ffd98a;
-        --outline-3: #9cf0d4;
-        --outline-4: #fffab0;
-        --outline-5: #c9ebff;
-        --area-origin: #ff5c6c;
-        --area-creature: #e8e2d8;
-        --area-creature-text: #1c1c1c;
-    }
-}
 
 .area { margin: 18px 0; }
 .area figcaption { margin-bottom: 6px; }

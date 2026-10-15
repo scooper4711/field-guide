@@ -65,14 +65,22 @@ struct CreatureAbilities {
             let category = roll["category"].string
             let text = [formula, category, Words.label(roll["damageType"].string)].filter { !$0.isEmpty }
                 .joined(separator: " ")
-            let rank = category == "persistent" ? 3 : category.isEmpty ? (formula.contains("+") ? 0 : 1) : 2
-            return (text, rank)
+            return (text, damageRank(category: category, formula: formula))
         }
         return parts.sorted { $0.rank < $1.rank }.map(\.text).joined(separator: " plus ")
     }
 
     func spellcasting(creatureLevel: Int) -> String {
         Spellcasting(items: items, context: context).html(creatureLevel: creatureLevel)
+    }
+
+    /// Where a damage part sorts: untyped with a modifier, untyped, typed, then persistent.
+    private static func damageRank(category: String, formula: String) -> Int {
+        switch category {
+        case "persistent": 3
+        case "": formula.contains("+") ? 0 : 1
+        default: 2
+        }
     }
 }
 
@@ -116,12 +124,9 @@ struct Spellcasting {
         for spell in spells {
             let (name, isConstant) = listedName(spell)
             let isCantrip = spell[path: "system.traits.value"].strings.contains("cantrip")
-            let rank = isCantrip ? cantripRank : spell[path: "system.location.heightenedLevel"].optionalInt
-                ?? spell[path: "system.level.value"].int
-            let label = isConstant ? "Constant (\(ordinal(rank)))" : isCantrip ? "Cantrips " +
-                "(\(ordinal(rank)))" : ordinal(rank)
-            let order = isConstant ? 200 + rank : isCantrip ? 100 : 10 - rank
-            groups[label, default: Group(order: order, label: label, spells: [])].spells.append(link(spell, name: name))
+            let rank = isCantrip ? cantripRank : listedRank(spell)
+            let empty = emptyGroup(rank: rank, isConstant: isConstant, isCantrip: isCantrip)
+            groups[empty.label, default: empty].spells.append(link(spell, name: name))
         }
         return groups.values.sorted { $0.order < $1.order }
     }
@@ -169,8 +174,27 @@ struct Spellcasting {
         return sourceID.isEmpty ? HTML.escape(name) : context.link(uuid: sourceID, name: name)
     }
 
+    private func listedRank(_ spell: JSONValue) -> Int {
+        spell[path: "system.location.heightenedLevel"].optionalInt ?? spell[path: "system.level.value"].int
+    }
+
+    /// The group a listed spell goes in: constants last, then cantrips, then the ranks from highest down.
+    private func emptyGroup(rank: Int, isConstant: Bool, isCantrip: Bool) -> Group {
+        if isConstant { return Group(order: 200 + rank, label: "Constant (\(ordinal(rank)))", spells: []) }
+        if isCantrip { return Group(order: 100, label: "Cantrips (\(ordinal(rank)))", spells: []) }
+        return Group(order: 10 - rank, label: ordinal(rank), spells: [])
+    }
+
     private func ordinal(_ rank: Int) -> String {
-        let suffix = rank == 1 ? "st" : rank == 2 ? "nd" : rank == 3 ? "rd" : "th"
-        return "\(rank)\(suffix)"
+        "\(rank)\(ordinalSuffix(rank))"
+    }
+
+    private func ordinalSuffix(_ rank: Int) -> String {
+        switch rank {
+        case 1: "st"
+        case 2: "nd"
+        case 3: "rd"
+        default: "th"
+        }
     }
 }
