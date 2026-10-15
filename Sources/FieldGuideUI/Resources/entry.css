@@ -65,7 +65,7 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 .size { background: var(--size); }
 
 /* Sized and lowered to match the pf2e action font that Pathfinder-Icons replaced, which was set at 1.1em. */
-.action-glyph { font-family: "Pathfinder-Icons"; font-weight: normal; font-size: 0.97em; line-height: 1;
+.action-glyph { font-family: "Pathfinder-Icons", sans-serif; font-weight: normal; font-size: 0.97em; line-height: 1;
     vertical-align: -0.075em; }
 .check, .damage { font-weight: bold; }
 
