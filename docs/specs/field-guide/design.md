@@ -50,7 +50,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   ID, so links can be checked and rewritten.
 - `Enricher` replaces `@UUID`, `@Check`, `@Damage`, `@Template`, `@Localize`, `@Embed` and `[[/r …]]` in
   description HTML. A link to an imported entry becomes `<a href="entry:<id>">`; any other becomes its
-  label. Checks and damage are wrapped in spans for styling. Last, `ActionGlyphs` rewrites Foundry's
+  label. Checks and damage are wrapped in spans for styling. Formulas in damage and inline rolls go through
+  Tabletop Kit's `FormulaWording` with the values `PageBuilder` passes: the entry's `level.value` as
+  `@item.level` and `@item.rank`, and on creature pages the creature's level as `@actor.level`
+  (`CreatureBlock.values`). A pf2e label still wins, and a damage type the player chooses is left out. Last, `ActionGlyphs` rewrites Foundry's
   `<span class="action-glyph">` (the pf2e action font's letters 1–3, A, D, T, F and R in either case, or ranges
   such as "1 - 3") as one span per icon holding Paizo's Pathfinder-Icons code point (Tabletop Kit's
   `ActionIcons`), with separators left as text, since that font draws letters and hyphens blank. The entry

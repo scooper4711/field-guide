@@ -64,7 +64,11 @@ Foundry VTT's compendium browser.
   of its kind (such as a spell's range, area, targets, defense and duration, or an item's price and bulk),
   and its description.
 - R5.2 Foundry's text enrichers become readable text: checks ("DC 20 basic Reflex save"), damage, areas,
-  inline rolls and localized text.
+  inline rolls and localized text. Damage formulas are worked out from the entry's rank or level (a rank 2
+  spell's `floor(@item.level/2)d6` reads "1d6") and a creature's level; ones that depend on the reader's
+  character are described as the books do ("1d6 per level", "1d6, increasing by 1d6 at 3rd level and every 2
+  levels after", "your Strength modifier"), counting from the entry's own level (Tabletop Kit's
+  `FormulaWording`).
 - R5.3 Links to other compendium entries open them in the app; Back returns. Links to entries the app
   doesn't hold read as plain text.
 - R5.4 Creatures show their battle card and lore (R8). Hazards, and creatures without a battle card, show a
