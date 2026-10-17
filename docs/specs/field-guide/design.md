@@ -149,7 +149,13 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   catalog's entries and traits and the battle cards' creatures; fonts and pictures are left out, since tool
   versions change their bytes.
 - `scripts/build-app.sh` builds `build/Field Guide.app`: the `FieldGuide` executable, the SwiftPM resource
-  bundles, an icon made from the iPad's, and `Generated/` (found through `Bundle.main`), signed ad hoc.
+  bundles, an icon made from the iPad's, and `Generated/` (found through `Bundle.main`), signed ad hoc with
+  `Resources/FieldGuide.entitlements` (R7.5): the App Sandbox, network client (WebKit's web content process won't
+  start without it, though pages are local), read-only access to files the user picks, and app-scoped bookmarks
+  for the art library's PDFs and watched folders. `Resources/container-migration.plist` goes into the bundle's
+  Resources; on the first sandboxed launch macOS moves `Application Support/Field Guide` and the preferences
+  into the container. On the Mac, "Import from Scrollkeeper…" then can't read Scrollkeeper's folder and opens
+  the folder picker instead.
   `scripts/make-dmg.sh` packages it (`make dmg`).
 - **Release workflow** (on `v*` tags, or called): fetches the `Artwork` submodule with the `ARTWORK_SSH_KEY`
   deploy key, installs `cwebp`, imports with `REXARD_PACKS=Artwork/rexard` and
