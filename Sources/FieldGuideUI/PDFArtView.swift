@@ -52,8 +52,7 @@ struct PDFArtView: View {
                 Task { await model.refresh(addingNew: true) }
             }
         }
-        // In a Form row a tap would trigger every button; borderless buttons each take only their own taps.
-        .buttonStyle(.borderless)
+        .formRowButtonStyle()
         .disabled(model.progress != nil)
     }
 
@@ -110,7 +109,7 @@ struct PDFArtView: View {
                     }
                     Spacer()
                     Button("Stop Watching") { Task { await model.stopWatching(folder) } }
-                        .buttonStyle(.borderless)
+                        .formRowButtonStyle()
                 }
             }
         }
@@ -155,5 +154,19 @@ private struct SourceRow: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
         }
+    }
+}
+
+private extension View {
+    /// Text buttons in a Form row.
+    @ViewBuilder
+    func formRowButtonStyle() -> some View {
+        #if os(macOS)
+        // Push buttons, as in System Settings: borderless ones draw gray on the Mac and look disabled.
+        buttonStyle(.bordered)
+        #else
+        // In a Form row a tap would trigger every button; borderless buttons each take only their own taps.
+        buttonStyle(.borderless)
+        #endif
     }
 }

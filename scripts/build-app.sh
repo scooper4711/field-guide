@@ -45,6 +45,8 @@ iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 rm -rf "$ICONSET"
 # The imported compendium (see "make import"), bundled as a folder like on the iPad.
 ditto Generated "$APP/Contents/Resources/Generated"
+# Moves the data an unsandboxed version kept into the sandbox on the first sandboxed launch.
+cp Resources/container-migration.plist "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -81,5 +83,5 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-codesign --force --sign - "$APP"
+codesign --force --sign - --entitlements Resources/FieldGuide.entitlements "$APP"
 echo "Built $APP ($VERSION)"
