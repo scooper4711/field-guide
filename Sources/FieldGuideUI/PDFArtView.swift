@@ -52,8 +52,7 @@ struct PDFArtView: View {
                 Task { await model.refresh(addingNew: true) }
             }
         }
-        // In a Form row a tap would trigger every button; borderless buttons each take only their own taps.
-        .buttonStyle(.borderless)
+        .formRowButtonStyle()
         .disabled(model.progress != nil)
     }
 
@@ -93,8 +92,9 @@ struct PDFArtView: View {
         } header: {
             Label("Missing PDFs", systemImage: "exclamationmark.triangle")
         } footer: {
-            Text("These PDFs were deleted or moved, so their art can't be shown. Download them again in Scrollkeeper "
-                 + "and choose Check Again, or remove them.")
+            Text("Field Guide can't reach these PDFs, so their art can't be shown. If they're still there, choose "
+                 + "Import from Scrollkeeper… and pick their folder again. If they were deleted or moved, download "
+                 + "them again in Scrollkeeper and choose Check Again, or remove them.")
         }
     }
 
@@ -110,7 +110,7 @@ struct PDFArtView: View {
                     }
                     Spacer()
                     Button("Stop Watching") { Task { await model.stopWatching(folder) } }
-                        .buttonStyle(.borderless)
+                        .formRowButtonStyle()
                 }
             }
         }
@@ -155,5 +155,19 @@ private struct SourceRow: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
         }
+    }
+}
+
+private extension View {
+    /// Text buttons in a Form row.
+    @ViewBuilder
+    func formRowButtonStyle() -> some View {
+        #if os(macOS)
+        // Push buttons, as in System Settings: borderless ones draw gray on the Mac and look disabled.
+        buttonStyle(.bordered)
+        #else
+        // In a Form row a tap would trigger every button; borderless buttons each take only their own taps.
+        buttonStyle(.borderless)
+        #endif
     }
 }

@@ -128,3 +128,7 @@ Foundry VTT's compendium browser.
   menu has Search Everything (⌘F), Back (⌘[, returning from a followed link) and Pathfinder (⌘1) and
   Starfinder (⌘2); File has Art from PDFs… (⇧⌘A). The README says how to install the disk image from a
   release and get past macOS's warning about an app that isn't notarized.
+- R7.5 The Mac app runs in the App Sandbox, without a paid Apple developer account. Its first sandboxed launch
+  moves the art library and settings an earlier version kept into the sandbox. PDFs added before show as missing
+  until their folder is picked again (Import from Scrollkeeper…), which restores them. It reads only the files and
+  folders the user picks, and remembers them across launches and updates.
