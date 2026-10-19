@@ -133,19 +133,34 @@ struct SidebarView: View {
 
     private var categories: some View {
         @Bindable var store = store
-        return List(selection: $store.category) {
-            Section {
-                ForEach(store.categories) { category in
-                    Label(category.title, systemImage: category.symbol).tag(category)
-                }
-            } header: {
-                Picker("System", selection: $store.system) {
-                    ForEach(GameSystem.allCases) { Text($0.title).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .padding(.bottom, 8)
+        #if os(macOS)
+        // Not a section header: on the Mac a sidebar's header makes room for its Hide button while the pointer is
+        // over it, which resized the picker's segments.
+        return List(selection: $store.category) { categoryRows }
+            .safeAreaInset(edge: .top) {
+                systemPicker
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
             }
+        #else
+        return List(selection: $store.category) {
+            Section { categoryRows } header: { systemPicker.padding(.bottom, 8) }
         }
+        #endif
+    }
+
+    private var categoryRows: some View {
+        ForEach(store.categories) { category in
+            Label(category.title, systemImage: category.symbol).tag(category)
+        }
+    }
+
+    private var systemPicker: some View {
+        @Bindable var store = store
+        return Picker("System", selection: $store.system) {
+            ForEach(GameSystem.allCases) { Text($0.title).tag($0) }
+        }
+        .pickerStyle(.segmented)
+        .labelsHidden()
     }
 }
