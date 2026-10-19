@@ -83,5 +83,6 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-codesign --force --sign - --entitlements Resources/FieldGuide.entitlements "$APP"
+# The entitlements turn on the App Sandbox.
+scripts/sign-app.sh "$APP" Resources/FieldGuide.entitlements
 echo "Built $APP ($VERSION)"
