@@ -58,6 +58,8 @@ struct SearchEverythingSheet: View {
     @Environment(CatalogStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @Binding var selection: String?
+    /// Shows the iPhone's screen for what was opened: the entry, or the list for Show All.
+    let show: (NavigationSplitViewColumn) -> Void
     @State private var isSearching = true
 
     var body: some View {
@@ -68,7 +70,8 @@ struct SearchEverythingSheet: View {
                     ContentUnavailableView("Search Everything", systemImage: "magnifyingglass",
                                            description: Text("Find spells, creatures, items and rules by name."))
                 } else {
-                    GlobalSearchResults(selection: $selection, opened: { dismiss() }, showedAll: { dismiss() })
+                    GlobalSearchResults(selection: $selection, opened: { close(showing: .detail) },
+                                        showedAll: { close(showing: .content) })
                 }
             }
             .searchable(text: $store.globalQuery.text, isPresented: $isSearching,
@@ -77,6 +80,11 @@ struct SearchEverythingSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
         }
+    }
+
+    private func close(showing column: NavigationSplitViewColumn) {
+        show(column)
+        dismiss()
     }
 }
 #endif

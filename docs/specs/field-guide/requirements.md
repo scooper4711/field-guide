@@ -134,5 +134,6 @@ Foundry VTT's compendium browser.
   until their folder is picked again (Import from Scrollkeeper…), which restores them. It reads only the files and
   folders the user picks, and remembers them across launches and updates.
 - R7.6 On the iPhone the app shows one screen at a time: categories (with the system switch and Search
-  Everything), the list, and the entry, each going back to the one before. The list's toolbar has Search
+  Everything), the list, and the entry, each going back to the one before. It starts on the categories, so a new
+  user sees them all, and switching the system stays there; tapping a category opens its list. The list's toolbar has Search
   Everything, which opens as a sheet that closes when a match or Show All is opened. Sheets have no minimum size.

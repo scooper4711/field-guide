@@ -131,7 +131,11 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   the entry column's toolbar button shows the sidebar with the search focused. In a compact width (the iPhone),
   where the split view shows one column at a time, the list's toolbar has the button too, and it opens
   `SearchEverythingSheet` instead: `GlobalSearchResults` in a sheet, dismissed when a match or Show All is
-  opened. The list hides its system switch there; the categories screen has it.
+  opened. The list hides its system switch there; the categories screen has it. `RootView` binds the split
+  view's `preferredCompactColumn`: the categories at launch (the entry with `FIELD_GUIDE_SELECT`), the list or
+  the entry when the search opens one. The categories are buttons there rather than the list's selection,
+  because a selected category opens its list by itself in a collapsed split view, also when switching the
+  system chooses one.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
   folder, for trying pages out from a script.
 - Mac menus: `FieldGuideCommands` adds the Go menu and Art from PDFs… to File. The store is the app's, so
