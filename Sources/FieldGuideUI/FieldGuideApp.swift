@@ -38,19 +38,37 @@ struct RootView: View {
     /// `FIELD_GUIDE_SELECT` opens an entry at launch, for trying pages out from a script.
     @State private var selection = ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"]
     @State private var columns = NavigationSplitViewVisibility.automatic
+    /// The one column an iPhone shows: the categories at launch, so a new user sees them all, or the entry that
+    /// `FIELD_GUIDE_SELECT` opens.
+    @State private var compactColumn: NavigationSplitViewColumn =
+        ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"] == nil ? .sidebar : .detail
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
     /// The links followed from the chosen entry.
     @State private var path: [PageLink] = []
     @State private var isSearchingEverything = false
     /// Whether Search Everything brought the sidebar out, so opening a match puts it away again.
     @State private var searchShowedSidebar = false
+    /// On an iPhone, which shows one column at a time, Search Everything is a sheet instead of the sidebar.
+    @State private var isShowingSearchSheet = false
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columns) {
-            SidebarView(selection: $selection, isSearching: $isSearchingEverything, opened: openedMatch)
+        NavigationSplitView(columnVisibility: $columns, preferredCompactColumn: $compactColumn) {
+            SidebarView(selection: $selection, isSearching: $isSearchingEverything, opened: openedMatch,
+                        showList: { compactColumn = .content })
                 .navigationSplitViewColumnWidth(min: 220, ideal: 250)
         } content: {
             EntryListView(selection: $selection)
                 .navigationSplitViewColumnWidth(min: 280, ideal: 340)
+                // The entry column with its button isn't on screen with the list on an iPhone.
+                .toolbar {
+                    if isCompact {
+                        ToolbarItem {
+                            Button("Search Everything", systemImage: "magnifyingglass", action: searchEverything)
+                        }
+                    }
+                }
         } detail: {
             Group {
                 if let selection {
@@ -79,18 +97,37 @@ struct RootView: View {
         .focusedSceneValue(\.isSearchingEverything, Binding(get: { isSearchingEverything }, set: { isOn in
             if isOn { searchEverything() } else { isSearchingEverything = false }
         }))
+        #if os(iOS)
+        .sheet(isPresented: $isShowingSearchSheet) {
+            SearchEverythingSheet(selection: $selection) { compactColumn = $0 }
+                .environment(store)
+        }
+        #endif
         // On the Mac, battle cards shown full screen fill this window.
         .battleCardFullScreenHost()
     }
 
-    /// Shows the sidebar, wherever it was, with its search ready to type in.
+    private var isCompact: Bool {
+        #if os(iOS)
+        sizeClass == .compact
+        #else
+        false
+        #endif
+    }
+
+    /// Shows the sidebar, wherever it was, with its search ready to type in; on an iPhone, the search sheet.
     private func searchEverything() {
+        if isCompact {
+            isShowingSearchSheet = true
+            return
+        }
         searchShowedSidebar = columns != .all
         columns = .all
         isSearchingEverything = true
     }
 
     private func openedMatch() {
+        compactColumn = .detail
         guard searchShowedSidebar else { return }
         columns = .automatic
         searchShowedSidebar = false
@@ -104,6 +141,11 @@ struct SidebarView: View {
     @Binding var isSearching: Bool
     /// Called when a match of the search is opened.
     let opened: () -> Void
+    /// Called when a category's list is to be shown: on an iPhone, the next screen.
+    let showList: () -> Void
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
     @State private var isShowingPDFArt = false
     @State private var isShowingAbout = false
 
@@ -113,7 +155,7 @@ struct SidebarView: View {
             if store.globalQuery.text.isEmpty {
                 categories
             } else {
-                GlobalSearchResults(selection: $selection, opened: opened)
+                GlobalSearchResults(selection: $selection, opened: opened, showedAll: showList)
             }
         }
         .searchable(text: $store.globalQuery.text, isPresented: $isSearching, placement: .sidebar,
@@ -143,7 +185,9 @@ struct SidebarView: View {
                     .padding(.vertical, 8)
             }
         #else
-        return List(selection: $store.category) {
+        // On an iPhone a selected row would open its list by itself, also when switching systems chooses a
+        // category, so the rows are buttons there.
+        return List(selection: sizeClass == .compact ? nil : $store.category) {
             Section { categoryRows } header: { systemPicker.padding(.bottom, 8) }
         }
         #endif
@@ -151,8 +195,22 @@ struct SidebarView: View {
 
     private var categoryRows: some View {
         ForEach(store.categories) { category in
+            #if os(iOS)
+            if sizeClass == .compact {
+                Button { open(category) } label: { CategoryButtonLabel(category: category) }
+                    .tint(.primary)
+            } else {
+                Label(category.title, systemImage: category.symbol).tag(category)
+            }
+            #else
             Label(category.title, systemImage: category.symbol).tag(category)
+            #endif
         }
+    }
+
+    private func open(_ category: EntryCategory) {
+        store.category = category
+        showList()
     }
 
     private var systemPicker: some View {
@@ -164,3 +222,21 @@ struct SidebarView: View {
         .labelsHidden()
     }
 }
+
+#if os(iOS)
+/// A category on an iPhone's categories screen, with the chevron of a row that opens the next screen.
+private struct CategoryButtonLabel: View {
+    let category: EntryCategory
+
+    var body: some View {
+        HStack {
+            Label(category.title, systemImage: category.symbol)
+            Spacer()
+            Image(systemName: "chevron.forward")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
+    }
+}
+#endif

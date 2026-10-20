@@ -40,7 +40,9 @@ struct PDFArtView: View {
             }
             .task { await model.refresh() }
         }
+        #if os(macOS)
         .frame(minWidth: 520, minHeight: 560)
+        #endif
     }
 
     private var importButtons: some View {

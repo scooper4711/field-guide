@@ -12,8 +12,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `FieldGuideImport`: the command-line importer.
 - `FieldGuideUI` (iOS, macOS): the SwiftUI app. It uses Tabletop Kit's `BattleCards`, `Bestiary` and
   `CreatureArt`; `FieldGuideImport` uses its `CreatureImport`.
-- `FieldGuide`: the Mac app, built into `Field Guide.app` by `scripts/build-app.sh`; the iPad app lives in
-  `ios/FieldGuide.xcodeproj` (scheme FieldGuide-iPad) and includes `Generated/` as a folder of resources.
+- `FieldGuide`: the Mac app, built into `Field Guide.app` by `scripts/build-app.sh`; the iPad and iPhone app lives
+  in `ios/FieldGuide.xcodeproj` (scheme FieldGuide-iPad, device family 1,2) and includes `Generated/` as a folder of resources.
 
 ## Import
 - `PackScanner` reads `system.pf2e.json` and `system.sf2e.json` for each Item and Actor pack's folder and
@@ -128,7 +128,14 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   at a word's start, then the rest. Text searches run on `TextSearcher`, an actor with its own connection, using
   `Catalog.rankedSearch` (bm25, the name weighted ten to one; the match materialized first so it runs once);
   a newer search cancels one still running. The sidebar shows `GlobalSearchResults` while its search has text;
-  the entry column's toolbar button shows the sidebar with the search focused.
+  the entry column's toolbar button shows the sidebar with the search focused. In a compact width (the iPhone),
+  where the split view shows one column at a time, the list's toolbar has the button too, and it opens
+  `SearchEverythingSheet` instead: `GlobalSearchResults` in a sheet, dismissed when a match or Show All is
+  opened. The list hides its system switch there; the categories screen has it. `RootView` binds the split
+  view's `preferredCompactColumn`: the categories at launch (the entry with `FIELD_GUIDE_SELECT`), the list or
+  the entry when the search opens one. The categories are buttons there rather than the list's selection,
+  because a selected category opens its list by itself in a collapsed split view, also when switching the
+  system chooses one.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
   folder, for trying pages out from a script.
 - Mac menus: `FieldGuideCommands` adds the Go menu and Art from PDFs… to File. The store is the app's, so
