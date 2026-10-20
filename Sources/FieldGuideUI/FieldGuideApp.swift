@@ -103,6 +103,8 @@ struct RootView: View {
                 .environment(store)
         }
         #endif
+        // The columns get a compact width on the iPad too, so they learn from here whether this is an iPhone.
+        .environment(\.showsOneColumn, isCompact)
         // On the Mac, battle cards shown full screen fill this window.
         .battleCardFullScreenHost()
     }
@@ -122,8 +124,18 @@ struct RootView: View {
             return
         }
         searchShowedSidebar = columns != .all
-        columns = .all
         isSearchingEverything = true
+        // From the entry alone iOS goes one step, to the list and the entry, so the sidebar is asked for once that
+        // step is done.
+        guard columns == .detailOnly else {
+            columns = .all
+            return
+        }
+        columns = .doubleColumn
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(400))
+            columns = .all
+        }
     }
 
     private func openedMatch() {
@@ -143,9 +155,7 @@ struct SidebarView: View {
     let opened: () -> Void
     /// Called when a category's list is to be shown: on an iPhone, the next screen.
     let showList: () -> Void
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    #endif
+    @Environment(\.showsOneColumn) private var showsOneColumn
     @State private var isShowingPDFArt = false
     @State private var isShowingAbout = false
 
@@ -187,7 +197,7 @@ struct SidebarView: View {
         #else
         // On an iPhone a selected row would open its list by itself, also when switching systems chooses a
         // category, so the rows are buttons there.
-        return List(selection: sizeClass == .compact ? nil : $store.category) {
+        return List(selection: showsOneColumn ? nil : $store.category) {
             Section { categoryRows } header: { systemPicker.padding(.bottom, 8) }
         }
         #endif
@@ -195,16 +205,12 @@ struct SidebarView: View {
 
     private var categoryRows: some View {
         ForEach(store.categories) { category in
-            #if os(iOS)
-            if sizeClass == .compact {
+            if showsOneColumn {
                 Button { open(category) } label: { CategoryButtonLabel(category: category) }
                     .tint(.primary)
             } else {
                 Label(category.title, systemImage: category.symbol).tag(category)
             }
-            #else
-            Label(category.title, systemImage: category.symbol).tag(category)
-            #endif
         }
     }
 
@@ -223,7 +229,12 @@ struct SidebarView: View {
     }
 }
 
-#if os(iOS)
+extension EnvironmentValues {
+    /// Whether the window shows one column at a time, as on an iPhone. A column's own size class can't tell: it is
+    /// compact on the iPad too.
+    @Entry var showsOneColumn = false
+}
+
 /// A category on an iPhone's categories screen, with the chevron of a row that opens the next screen.
 private struct CategoryButtonLabel: View {
     let category: EntryCategory
@@ -239,4 +250,3 @@ private struct CategoryButtonLabel: View {
         .contentShape(Rectangle())
     }
 }
-#endif

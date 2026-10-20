@@ -6,9 +6,7 @@ struct EntryListView: View {
     @Environment(CatalogStore.self) private var store
     @Binding var selection: String?
     @State private var showsFilters = false
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    #endif
+    @Environment(\.showsOneColumn) private var showsOneColumn
 
     var body: some View {
         @Bindable var store = store
@@ -36,7 +34,7 @@ struct EntryListView: View {
         @Bindable var store = store
         // The sidebar is hidden in portrait, so the system switch is here too; an iPhone, short of room, has it on
         // the categories screen only.
-        if !isCompact {
+        if !showsOneColumn {
             ToolbarItem(placement: .navigation) {
                 Picker("System", selection: $store.system) {
                     ForEach(GameSystem.allCases) { Text($0.title).tag($0) }
@@ -63,14 +61,6 @@ struct EntryListView: View {
                       ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
             }
         }
-    }
-
-    private var isCompact: Bool {
-        #if os(iOS)
-        sizeClass == .compact
-        #else
-        false
-        #endif
     }
 
     private var countBar: some View {
