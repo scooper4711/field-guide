@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-10-20
+
+### Added
+- Run the Mac app in the App Sandbox
+
+### Fixed
+- Keep the game picker's size steady under the pointer
+- Restore missing PDFs by picking their folder again
+- Bundle the universal binary from where SwiftPM built it
+
+### Changed
+- Run the weekly pf2e update off the hour
+- Specify the Mac app in the App Sandbox
+- Watch every pf2e file the import reads
+- Gate releases on the coverage check, as CI does
+
+[1.1.2]: https://github.com/scooper4711/field-guide/releases/tag/v1.1.2
+
 ## [1.1.1] - 2026-10-15
 
 ### Fixed
