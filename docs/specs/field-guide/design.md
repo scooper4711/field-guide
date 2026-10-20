@@ -128,11 +128,14 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   at a word's start, then the rest. Text searches run on `TextSearcher`, an actor with its own connection, using
   `Catalog.rankedSearch` (bm25, the name weighted ten to one; the match materialized first so it runs once);
   a newer search cancels one still running. The sidebar shows `GlobalSearchResults` while its search has text;
-  the entry column's toolbar button shows the sidebar with the search focused. In a compact width (the iPhone),
-  where the split view shows one column at a time, the list's toolbar has the button too, and it opens
-  `SearchEverythingSheet` instead: `GlobalSearchResults` in a sheet, dismissed when a match or Show All is
-  opened. The list hides its system switch there; the categories screen has it. `RootView` binds the split
-  view's `preferredCompactColumn`: the categories at launch (the entry with `FIELD_GUIDE_SELECT`), the list or
+  the entry column's toolbar button shows the sidebar with the search focused. From the entry alone (iPad
+  portrait), iOS turns a request for every column into the list and the entry, so the button asks for the list
+  and the entry first and every column a moment later. The columns get a compact width on the iPad too, so
+  `RootView` decides whether the window shows one column at a time and passes it down as `showsOneColumn`. In a
+  compact width (the iPhone), where the split view shows one column at a time, the list's toolbar has the button
+  too, and it opens `SearchEverythingSheet` instead: `GlobalSearchResults` in a sheet, dismissed when a match or
+  Show All is opened. The list hides its system switch there; the categories screen has it. `RootView` binds the
+  split view's `preferredCompactColumn`: the categories at launch (the entry with `FIELD_GUIDE_SELECT`), the list or
   the entry when the search opens one. The categories are buttons there rather than the list's selection,
   because a selected category opens its list by itself in a collapsed split view, also when switching the
   system chooses one.
