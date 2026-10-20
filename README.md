@@ -5,13 +5,13 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=scooper4711_field-guide&metric=coverage)](https://sonarcloud.io/summary/new_code?id=scooper4711_field-guide)
 [![GitHub Release](https://img.shields.io/github/v/release/scooper4711/field-guide)](https://github.com/scooper4711/field-guide/releases)
 [![GitHub Downloads](https://img.shields.io/github/downloads/scooper4711/field-guide/total)](https://github.com/scooper4711/field-guide/releases)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%2015%2B%20%7C%20iPadOS%2018%2B-informational)](./Package.swift)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%2015%2B%20%7C%20iPadOS%2018%2B%20%7C%20iOS%2018%2B-informational)](./Package.swift)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 Looking up a rule, a spell or a monster at the table usually means a laptop, a website that needs a signal,
 or a stack of books.
 
-Field Guide is an iPad and Mac app that carries the Pathfinder and Starfinder compendium, offline: actions,
+Field Guide is an iPad, iPhone and Mac app that carries the Pathfinder and Starfinder compendium, offline: actions,
 creatures, equipment, feats, hazards, spells, conditions, ancestries, classes, deities and more. Search as you
 type, filter by level, rarity, traits and source, and follow the links from one entry to the next. Creatures can be
 shown as battle cards with art from your own pawn and Battle Cards PDFs, and equipment with art from your item
@@ -74,7 +74,8 @@ release, it builds the next patch version into a draft release. Commit `pf2e.rel
   `icon-overrides.json`. `icon-matches.tsv` keeps each Foundry icon's match for imports without the Foundry
   app, such as GitHub's.
   `cwebp` (`brew install webp`) shrinks the icons.
-- `make ipad-install` builds the iPad app with `Generated/` inside and installs it on a connected iPad. Put
+- `make ipad-install` builds the iPad and iPhone app with `Generated/` inside and installs it on a connected
+  iPad (`IPAD=<name>` picks another device, such as an iPhone with Developer Mode on). Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
 - `make run` opens the Mac app on `Generated/` without building the app bundle. `FIELD_GUIDE_SELECT=<entry id>`

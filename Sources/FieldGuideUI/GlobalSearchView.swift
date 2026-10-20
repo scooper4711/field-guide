@@ -7,6 +7,7 @@ struct GlobalSearchResults: View {
     @Environment(CatalogStore.self) private var store
     @Binding var selection: String?
     let opened: () -> Void
+    let showedAll: () -> Void
 
     var body: some View {
         @Bindable var store = store
@@ -47,5 +48,35 @@ struct GlobalSearchResults: View {
         store.category = category
         store.query = EntryQuery(text: search.text, searchesText: search.searchesText)
         store.globalQuery.text = ""
+        showedAll()
     }
 }
+
+#if os(iOS)
+/// Search Everything on an iPhone: the matches in a sheet over the list, put away when one is opened.
+struct SearchEverythingSheet: View {
+    @Environment(CatalogStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    @Binding var selection: String?
+    @State private var isSearching = true
+
+    var body: some View {
+        @Bindable var store = store
+        NavigationStack {
+            Group {
+                if store.globalQuery.text.isEmpty {
+                    ContentUnavailableView("Search Everything", systemImage: "magnifyingglass",
+                                           description: Text("Find spells, creatures, items and rules by name."))
+                } else {
+                    GlobalSearchResults(selection: $selection, opened: { dismiss() }, showedAll: { dismiss() })
+                }
+            }
+            .searchable(text: $store.globalQuery.text, isPresented: $isSearching,
+                        placement: .navigationBarDrawer(displayMode: .always), prompt: "Search Everything")
+            .navigationTitle("Search Everything")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
+        }
+    }
+}
+#endif

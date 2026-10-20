@@ -38,11 +38,16 @@ struct RootView: View {
     /// `FIELD_GUIDE_SELECT` opens an entry at launch, for trying pages out from a script.
     @State private var selection = ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"]
     @State private var columns = NavigationSplitViewVisibility.automatic
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
     /// The links followed from the chosen entry.
     @State private var path: [PageLink] = []
     @State private var isSearchingEverything = false
     /// Whether Search Everything brought the sidebar out, so opening a match puts it away again.
     @State private var searchShowedSidebar = false
+    /// On an iPhone, which shows one column at a time, Search Everything is a sheet instead of the sidebar.
+    @State private var isShowingSearchSheet = false
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columns) {
@@ -51,6 +56,14 @@ struct RootView: View {
         } content: {
             EntryListView(selection: $selection)
                 .navigationSplitViewColumnWidth(min: 280, ideal: 340)
+                // The entry column with its button isn't on screen with the list on an iPhone.
+                .toolbar {
+                    if isCompact {
+                        ToolbarItem {
+                            Button("Search Everything", systemImage: "magnifyingglass", action: searchEverything)
+                        }
+                    }
+                }
         } detail: {
             Group {
                 if let selection {
@@ -79,12 +92,30 @@ struct RootView: View {
         .focusedSceneValue(\.isSearchingEverything, Binding(get: { isSearchingEverything }, set: { isOn in
             if isOn { searchEverything() } else { isSearchingEverything = false }
         }))
+        #if os(iOS)
+        .sheet(isPresented: $isShowingSearchSheet) {
+            SearchEverythingSheet(selection: $selection)
+                .environment(store)
+        }
+        #endif
         // On the Mac, battle cards shown full screen fill this window.
         .battleCardFullScreenHost()
     }
 
-    /// Shows the sidebar, wherever it was, with its search ready to type in.
+    private var isCompact: Bool {
+        #if os(iOS)
+        sizeClass == .compact
+        #else
+        false
+        #endif
+    }
+
+    /// Shows the sidebar, wherever it was, with its search ready to type in; on an iPhone, the search sheet.
     private func searchEverything() {
+        if isCompact {
+            isShowingSearchSheet = true
+            return
+        }
         searchShowedSidebar = columns != .all
         columns = .all
         isSearchingEverything = true
@@ -113,7 +144,7 @@ struct SidebarView: View {
             if store.globalQuery.text.isEmpty {
                 categories
             } else {
-                GlobalSearchResults(selection: $selection, opened: opened)
+                GlobalSearchResults(selection: $selection, opened: opened, showedAll: {})
             }
         }
         .searchable(text: $store.globalQuery.text, isPresented: $isSearching, placement: .sidebar,

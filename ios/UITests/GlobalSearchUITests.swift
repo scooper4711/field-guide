@@ -22,6 +22,10 @@ final class GlobalSearchUITests: XCTestCase {
     func testShowAllOpensTheCategorySearchedTheSameWay() {
         search("fire")
         let showAll = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Show All")).firstMatch
+        // On an iPhone the first group's matches fill the screen above the keyboard.
+        for _ in 0..<5 where !showAll.waitForExistence(timeout: 2) {
+            app.swipeUp()
+        }
         XCTAssertTrue(showAll.waitForExistence(timeout: 10), app.debugDescription)
         showAll.tap()
         XCTAssertTrue(app.searchFields["Search names"].waitForExistence(timeout: 10), app.debugDescription)

@@ -1,6 +1,6 @@
 # Field Guide: requirements
 
-An iPad and Mac app for looking up Pathfinder 2e and Starfinder 2e rules at the table, in the manner of
+An iPad, iPhone and Mac app for looking up Pathfinder 2e and Starfinder 2e rules at the table, in the manner of
 Foundry VTT's compendium browser.
 
 ## R1 Data
@@ -115,7 +115,7 @@ Foundry VTT's compendium browser.
   open their entries (R5.3).
 
 ## R7 The app
-- R7.1 iPadOS 18 or later, in every orientation, and macOS 15 or later. Pushing a version tag makes GitHub
+- R7.1 iPadOS 18 or later, in every orientation, iOS 18 or later on the iPhone, and macOS 15 or later. Pushing a version tag makes GitHub
   build the universal Mac app with the same data as a local build and attach its disk image to the release.
   The disk image is signed with the Developer ID and notarized, so macOS opens it without a warning.
 - R7.2 Everything works offline.
@@ -133,3 +133,6 @@ Foundry VTT's compendium browser.
   moves the art library and settings an earlier version kept into the sandbox. PDFs added before show as missing
   until their folder is picked again (Import from Scrollkeeper…), which restores them. It reads only the files and
   folders the user picks, and remembers them across launches and updates.
+- R7.6 On the iPhone the app shows one screen at a time: categories (with the system switch and Search
+  Everything), the list, and the entry, each going back to the one before. The list's toolbar has Search
+  Everything, which opens as a sheet that closes when a match or Show All is opened. Sheets have no minimum size.
