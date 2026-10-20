@@ -117,6 +117,7 @@ Foundry VTT's compendium browser.
 ## R7 The app
 - R7.1 iPadOS 18 or later, in every orientation, and macOS 15 or later. Pushing a version tag makes GitHub
   build the universal Mac app with the same data as a local build and attach its disk image to the release.
+  The disk image is signed with the Developer ID and notarized, so macOS opens it without a warning.
 - R7.2 Everything works offline.
 - R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad) shows
   the notice Paizo's Community Use Policy requires, the Paizo Compatibility License's trademark line, credits for
@@ -127,7 +128,7 @@ Foundry VTT's compendium browser.
 - R7.4 The Mac app is a full Mac app, not only a developer build. Its window opens at 1280 by 820 points. A Go
   menu has Search Everything (⌘F), Back (⌘[, returning from a followed link) and Pathfinder (⌘1) and
   Starfinder (⌘2); File has Art from PDFs… (⇧⌘A). The README says how to install the disk image from a
-  release and get past macOS's warning about an app that isn't notarized.
+  release, and how to open an older release, which isn't notarized.
 - R7.5 The Mac app runs in the App Sandbox, without a paid Apple developer account. Its first sandboxed launch
   moves the art library and settings an earlier version kept into the sandbox. PDFs added before show as missing
   until their folder is picked again (Import from Scrollkeeper…), which restores them. It reads only the files and

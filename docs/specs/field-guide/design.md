@@ -148,20 +148,27 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   rewrites that table. `make import` also writes `import.sha256` (`scripts/fingerprint.sh`): a SHA-256 of the
   catalog's entries and traits and the battle cards' creatures; fonts and pictures are left out, since tool
   versions change their bytes.
-- `scripts/build-app.sh` builds `build/Field Guide.app`: the `FieldGuide` executable, the SwiftPM resource
-  bundles, an icon made from the iPad's, and `Generated/` (found through `Bundle.main`), signed ad hoc with
-  `Resources/FieldGuide.entitlements` (R7.5): the App Sandbox, network client (WebKit's web content process won't
-  start without it, though pages are local), read-only access to files the user picks, and app-scoped bookmarks
-  for the art library's PDFs and watched folders. `Resources/container-migration.plist` goes into the bundle's
-  Resources; on the first sandboxed launch macOS moves `Application Support/Field Guide` and the preferences
-  into the container. On the Mac, "Import from Scrollkeeper…" then can't read Scrollkeeper's folder and opens
-  the folder picker instead.
-  `scripts/make-dmg.sh` packages it (`make dmg`).
+- `scripts/build-app.sh` builds `build/Field Guide.app`: the `FieldGuide` executable, the SwiftPM resource bundles,
+  an icon made from the iPad's, and `Generated/` (found through `Bundle.main`), signed by `scripts/sign-app.sh` (see
+  Signing) with `Resources/FieldGuide.entitlements` (R7.5): the App Sandbox, network client (WebKit's web content
+  process won't start without it, though pages are local), read-only access to files the user picks, and app-scoped
+  bookmarks for the art library's PDFs and watched folders. `Resources/container-migration.plist` goes into the
+  bundle's Resources; on the first sandboxed launch macOS moves `Application Support/Field Guide` and the
+  preferences into the container. On the Mac, "Import from Scrollkeeper…" then can't read Scrollkeeper's folder and
+  opens the folder picker instead. `scripts/make-dmg.sh` packages it (`make dmg`).
 - **Release workflow** (on `v*` tags, or called): fetches the `Artwork` submodule with the `ARTWORK_SSH_KEY`
   deploy key, installs `cwebp`, imports with `REXARD_PACKS=Artwork/rexard` and
   `COMMUNITY_USE=Artwork/community-use`, warns when `import.sha256` or `icon-matches.tsv` differs from the
   committed one, tests, builds the universal app and attaches `Field-Guide-<version>.dmg` to the release,
   creating a draft if there is none. Run by hand, it keeps the disk image as a workflow artifact instead.
+- **Signing.** `scripts/sign-app.sh` signs the app with the first Developer ID Application certificate in the
+  keychain, with the hardened runtime and a secure timestamp, or ad hoc when there is none (`SIGNING_IDENTITY`
+  overrides it). On GitHub, `scripts/add-signing-certificate.sh` puts the certificate from the
+  `DEVELOPER_ID_CERTIFICATE` and `DEVELOPER_ID_CERTIFICATE_PASSWORD` secrets into a temporary keychain; without it a
+  release fails and a trial build is signed ad hoc. For a release, `scripts/notarize.sh` signs the disk image, has
+  Apple's notary service check it (the `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID` and `NOTARY_PASSWORD` secrets, or a
+  notarytool keychain profile on a Mac) and staples the ticket to it. The team ID is kept only in the secrets and
+  the keychain.
 - **pf2e update workflow** (Mondays, or by hand): when pf2e has a newer release, a Linux job lists the files
   changed between the two commits (fetched without their contents). If none is under `packs` or `static`, it
   commits `pf2e.release` alone. Otherwise a macOS job imports the new release; an unchanged fingerprint commits

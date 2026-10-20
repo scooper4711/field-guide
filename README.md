@@ -25,7 +25,8 @@ See `docs/specs/field-guide/` for the requirements and design.
 On the Mac, download the disk image from the [releases page](https://github.com/scooper4711/field-guide/releases),
 open it and drag Field Guide to Applications.
 
-The app is not notarized by Apple, so macOS blocks it the first time:
+Releases are signed with the Developer ID and notarized by Apple, so macOS opens them like any other app. Older
+releases aren't, and macOS blocks them the first time:
 
 1. Open Field Guide once. macOS says it cannot be opened; click Done.
 2. Open System Settings › Privacy & Security and scroll down to the message about Field Guide.
