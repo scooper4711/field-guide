@@ -6,10 +6,12 @@ import Testing
 @Suite struct JournalDetailsTests {
     static let journalPage = "Compendium.pf2e.journals.JournalEntry"
 
-    private func importedCatalog(_ repository: FakeRepository) throws -> Catalog {
+    private func importedCatalog(_ repository: FakeRepository,
+                                 configure: (inout ImportOptions) -> Void = { _ in }) throws -> Catalog {
         try repository.writeRulesJournals()
-        let options = ImportOptions(paths: repository.paths, output: repository.output,
+        var options = ImportOptions(paths: repository.paths, output: repository.output,
                                     workFolder: repository.root.appendingPathComponent("work"))
+        configure(&options)
         _ = try CompendiumImporter(options: options).run()
         return try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
     }
@@ -49,5 +51,21 @@ import Testing
         #expect(journals.map(\.name) == ["Draconic Connections", "Index", "Last Stand"])
         #expect(journals.map { $0.values(of: .section) } == [["Classes"], ["Ancestries"], ["Hero Point Deck"]])
         #expect(try catalog.categories(in: .pathfinder).contains(.archetypes))
+    }
+
+    @Test func withoutLoreAncestriesAndClassesHaveNoDetails() throws {
+        let repository = try FakeRepository()
+        defer { repository.remove() }
+        let catalog = try importedCatalog(repository) { $0.includesLore = false }
+        let elf = try #require(try catalog.page(of: "Compendium.pf2e.ancestries.Item.el1"))
+        #expect(elf.details.isEmpty)
+        #expect(try catalog.page(of: "Compendium.pf2e.classes.Item.fi1")?.details.isEmpty == true)
+        #expect(try catalog.search("elves", in: .ancestries, of: .pathfinder).isEmpty)
+        #expect(try catalog.page(of: "\(Self.journalPage).an1.JournalEntryPage.anE") == nil)
+        // Links to a Details page open its entry, and the journals' other pages stay.
+        let index = try #require(try catalog.page(of: "\(Self.journalPage).an1.JournalEntryPage.anI"))
+        #expect(index.html.contains("<a href=\"entry:Compendium.pf2e.ancestries.Item.el1#details\">Elf</a>"))
+        #expect(try catalog.summaries(of: .journals, in: .pathfinder).map(\.name)
+            == ["Draconic Connections", "Index", "Last Stand"])
     }
 }

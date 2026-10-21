@@ -83,7 +83,7 @@ jobs:
           LATEST: ${{ needs.look.outputs.latest }}
         run: |
           echo "$LATEST" > pf2e.release
-          REXARD_PACKS=Artwork/rexard COMMUNITY_USE=Artwork/community-use scripts/import.sh
+          LORE=omit REXARD_PACKS=Artwork/rexard COMMUNITY_USE=Artwork/community-use scripts/import.sh
 
       - name: Switch, and tag the next version if the compendium changed
         id: switch
