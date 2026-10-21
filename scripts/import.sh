@@ -9,9 +9,10 @@
 # COMMUNITY_USE  the folder holding Paizo's Community Use Package, for the deities' religious symbols
 #                (default ~/git/community-use-artwork)
 # ARTWORK        the toolkit-artwork checkout, for Paizo's Pathfinder-Icons font (default the Artwork submodule)
-# LORE           "omit" leaves out the setting's lore (creatures' descriptions, deities' write-ups, the ancestries'
-#                and classes' Details), as the App Store build must; default "include". import.sha256 is only
-#                rewritten when lore is included, so it always describes the full import.
+# LORE           "include" keeps the setting's lore (creatures' descriptions, deities' write-ups, the ancestries'
+#                and classes' Details), for private builds only; default "omit", as the disk image and the App
+#                Store build must. import.sha256 is only rewritten when lore is left out, so it always describes
+#                the published import.
 #
 # Creature art isn't imported: the app reads it from the user's own PDFs (Creature Art in the sidebar).
 set -eu
@@ -28,7 +29,7 @@ FOUNDRY_APP="${FOUNDRY_APP:-/Applications/Foundry Virtual Tabletop.app/Contents/
 REXARD_PACKS="${REXARD_PACKS:-$HOME/git/rexard-packs}"
 COMMUNITY_USE="${COMMUNITY_USE:-$HOME/git/community-use-artwork}"
 ARTWORK="${ARTWORK:-Artwork}"
-LORE="${LORE:-include}"
+LORE="${LORE:-omit}"
 
 command -v cwebp >/dev/null || echo "cwebp is not installed (brew install webp); the icons will stay PNG."
 
@@ -48,7 +49,7 @@ cp Resources/Licenses/* Generated/Licenses/
 cp "$PF2E_REPO/static/licenses/OpenGameLicense.md" "Generated/Licenses/Open Game License.md"
 cp "$PF2E_REPO/static/licenses/ORCLicense.md" "Generated/Licenses/ORC License.md"
 # The weekly pf2e update compares this to decide whether a new pf2e release changes anything Field Guide shows.
-if [ "$LORE" = include ]; then
+if [ "$LORE" = omit ]; then
     scripts/fingerprint.sh > import.sha256
 fi
 echo "See Generated/import-report.md for what could not be converted."

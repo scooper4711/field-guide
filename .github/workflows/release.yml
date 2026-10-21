@@ -50,7 +50,7 @@ jobs:
         run: brew install webp
 
       - name: Import the compendium
-        run: REXARD_PACKS=Artwork/rexard COMMUNITY_USE=Artwork/community-use scripts/import.sh
+        run: LORE=omit REXARD_PACKS=Artwork/rexard COMMUNITY_USE=Artwork/community-use scripts/import.sh
 
       - name: Check the compendium matches a local import
         run: |
