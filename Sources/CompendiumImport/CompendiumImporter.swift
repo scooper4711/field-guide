@@ -15,6 +15,10 @@ public struct ImportOptions: Sendable {
     public var religiousSymbols = ReligiousSymbols()
     /// Paizo's Pathfinder-Icons font for the action icons, copied unaltered; nil (or a missing file) for none.
     public var actionIconsFont: URL?
+    /// Whether entries keep the setting's lore: creatures' descriptions, deities' write-ups and the ancestries' and
+    /// classes' Details (pages of the Ancestries and Classes journals). The App Store build leaves it out: it is
+    /// Paizo's Reserved Material, which neither the ORC License nor the Community Use Policy lets the app reproduce.
+    public var includesLore = true
     public var output: URL
     /// Where the import keeps what the app doesn't need: the Rexard hash cache and `icon-map.tsv`. The output
     /// goes into the app whole.
@@ -50,11 +54,14 @@ public struct CompendiumImporter {
                                     packs: options.rexardPacks, output: options.output.appendingPathComponent("Images"))
         images.symbols = options.religiousSymbols
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
-        let builder = PageBuilder(context: context)
+        let builder = PageBuilder(context: context, includesLore: options.includesLore)
         let diagrams = AreaDiagrams().rows()
         let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
         let journalRows = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
-        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
+        let documentRows = documents.map(builder.row(for:))
+        // Without lore, links to a Details page still open its ancestry or class.
+        let entryRows = options.includesLore ? details.attaching(to: documentRows, context: context) : documentRows
+        let rows = entryRows + journalRows + diagrams
         let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))

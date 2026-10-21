@@ -88,5 +88,20 @@ import Testing
         }
         // The deity's kind is its subtitle, not a line of its details.
         #expect(abadar.contains("<p class=\"subtitle\">Deity</p>") && !abadar.contains(">Category<"))
+        #expect(abadar.contains("Abadar keeps the First Vault."))
+    }
+
+    @Test func withoutLoreCreaturesAndDeitiesKeepOnlyTheirRules() throws {
+        let imported = try Imported { $0.includesLore = false }
+        defer { imported.repository.remove() }
+        let goblinID = "Compendium.pf2e.pathfinder-monster-core.Actor.goblin1"
+        let goblin = try #require(try imported.catalog.page(of: goblinID))
+        #expect(goblin.html.contains("Goblin Warrior") && goblin.lore.isEmpty)
+        #expect(!goblin.html.contains("Goblins fight in groups."))
+        let abadar = try imported.page("Compendium.pf2e.deities.Item.ab1")
+        #expect(abadar.contains("<strong>Favored Weapon</strong> crossbow"))
+        #expect(!abadar.contains("First Vault"))
+        // Other descriptions are rules text and stay.
+        #expect(try imported.page("Compendium.pf2e.spells-srd.Item.fb1").contains("damage"))
     }
 }

@@ -9,6 +9,9 @@
 # COMMUNITY_USE  the folder holding Paizo's Community Use Package, for the deities' religious symbols
 #                (default ~/git/community-use-artwork)
 # ARTWORK        the toolkit-artwork checkout, for Paizo's Pathfinder-Icons font (default the Artwork submodule)
+# LORE           "omit" leaves out the setting's lore (creatures' descriptions, deities' write-ups, the ancestries'
+#                and classes' Details), as the App Store build must; default "include". import.sha256 is only
+#                rewritten when lore is included, so it always describes the full import.
 #
 # Creature art isn't imported: the app reads it from the user's own PDFs (Creature Art in the sidebar).
 set -eu
@@ -25,6 +28,7 @@ FOUNDRY_APP="${FOUNDRY_APP:-/Applications/Foundry Virtual Tabletop.app/Contents/
 REXARD_PACKS="${REXARD_PACKS:-$HOME/git/rexard-packs}"
 COMMUNITY_USE="${COMMUNITY_USE:-$HOME/git/community-use-artwork}"
 ARTWORK="${ARTWORK:-Artwork}"
+LORE="${LORE:-include}"
 
 command -v cwebp >/dev/null || echo "cwebp is not installed (brew install webp); the icons will stay PNG."
 
@@ -33,7 +37,7 @@ swift build -c release --product FieldGuideImport
     --rexard "$REXARD_PACKS" \
     --symbols "$COMMUNITY_USE/Community Use Package- Religious Symbols" \
     --starfinder-symbols "$COMMUNITY_USE/Community Use Package- Starfinder Religious Symbols" \
-    --artwork "$ARTWORK" --out Generated
+    --artwork "$ARTWORK" --lore "$LORE" --out Generated
 echo "Copying the battle cards' art from $REXARD_PACKS..."
 swift run -c release CardArtImport "$REXARD_PACKS" Generated/CardArt
 echo "Copying the licenses the bundled content requires..."
@@ -44,5 +48,7 @@ cp Resources/Licenses/* Generated/Licenses/
 cp "$PF2E_REPO/static/licenses/OpenGameLicense.md" "Generated/Licenses/Open Game License.md"
 cp "$PF2E_REPO/static/licenses/ORCLicense.md" "Generated/Licenses/ORC License.md"
 # The weekly pf2e update compares this to decide whether a new pf2e release changes anything Field Guide shows.
-scripts/fingerprint.sh > import.sha256
+if [ "$LORE" = include ]; then
+    scripts/fingerprint.sh > import.sha256
+fi
 echo "See Generated/import-report.md for what could not be converted."

@@ -9,13 +9,15 @@ struct Imported {
     let report: ImportReport
     let catalog: Catalog
 
-    init() throws {
+    /// `configure` changes the options before the import, such as to leave out the lore.
+    init(configure: (inout ImportOptions) -> Void = { _ in }) throws {
         repository = try FakeRepository()
         var options = ImportOptions(paths: repository.paths, output: repository.output,
                                     workFolder: repository.root.appendingPathComponent("work"))
         options.rexardPacks = repository.rexardPacks
         options.actionIconsFont = repository.actionIconsFont
         options.religiousSymbols = ReligiousSymbols(pathfinder: repository.religiousSymbols, starfinder: nil)
+        configure(&options)
         report = try CompendiumImporter(options: options).run()
         catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
     }

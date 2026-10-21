@@ -27,6 +27,8 @@ struct PageBuilder {
     static let creatureArtPrefix = "creature/"
 
     let context: PageContext
+    /// Whether creatures' descriptions and deities' write-ups are kept (`ImportOptions.includesLore`).
+    var includesLore = true
 
     func row(for document: SourceDocument) -> EntryRow {
         let traitsJSON = document.systemData["traits"]
@@ -73,15 +75,21 @@ struct PageBuilder {
         switch document.category {
         case .bestiary:
             return CreatureBlock.html(document, context: context)
-                + description(system[path: "details.publicNotes"].string, values: CreatureBlock.values(system))
+                + lore(system[path: "details.publicNotes"].string, values: CreatureBlock.values(system))
         case .hazards:
             return HazardBlock.html(document, context: context)
         default:
             let details = DetailLines.html(document, context: context)
+            let text = system[path: "description.value"].string
+            let values = FormulaValues.level(system[path: "level.value"].int)
             return (details.isEmpty ? "" : "<section class=\"details\">\(details)</section>")
-                + description(system[path: "description.value"].string,
-                              values: .level(system[path: "level.value"].int))
+                + (document.category == .deities ? lore(text, values: values) : description(text, values: values))
         }
+    }
+
+    /// A description that is the setting's lore (a creature's, a deity's), or "" when the import leaves lore out.
+    private func lore(_ html: String, values: FormulaValues) -> String {
+        includesLore ? description(html, values: values) : ""
     }
 
     /// The description, its formulas worked out from the entry's rank or level (`@item.level`, `@item.rank`).
