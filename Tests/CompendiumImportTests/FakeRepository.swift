@@ -115,7 +115,9 @@ extension FakeRepository {
             page("p1", "Running the Game", level: 1, sort: 10, text: "<p>Sources</p>"),
             page("p2", "Simple DCs", level: 2, sort: 20,
                  text: "<table><tr><td>Trained</td><td>15</td></tr></table><p>\(filler)</p>"),
-            page("p4", "Empty", level: 2, sort: 40, text: "")
+            page("p4", "Empty", level: 2, sort: 40, text: ""),
+            page("p5", "Counteracting", level: 2, sort: 50,
+                 text: "<p>\(filler)</p><p><strong>Critical Failure</strong> You fail to counteract the target.</p>")
         ]])
     }
 

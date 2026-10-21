@@ -31,6 +31,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   their journal (Archetypes, Domains, Remaster Changes, else Journals, sectioned by journal name). Relative links
   (`@UUID[.<page>]`) are made absolute before enriching, and `LinkIndex` resolves page links (ignoring
   `#anchors`).
+- `RulesDiagrams` inserts the inline SVG diagrams (`DetectionDiagram`, `CounteractDiagram`) after an anchor
+  passage in the Detecting Creatures and Counteracting pages, when the page's text contains it.
 - `JournalDetails` makes each page of the Ancestries and Classes journals the Details of the ancestry or class
   of the same name in its system: the row's `details` column (also searched), with links to the page leading to
   `entry:<id>#details` (`EntryLink`). Pages without such an entry stay in Journals.

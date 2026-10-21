@@ -32,6 +32,8 @@ Foundry VTT's compendium browser.
   Simple DCs and Encounter Budget) is an entry, filterable by its section (Playing the Game, Running the
   Game, Subsystems and Variant Rules). Section headings with no content of their own are left out, and links
   between pages work.
+  The Detecting Creatures page shows a state diagram of the senses states (with its notes), and the Counteracting
+  page a flowchart of the counteract check, both styled for light and dark.
 - R3.5 GM Screen also has an Areas entry per system: grid diagrams the import draws from the rules for measuring
   areas (every second diagonal counts as 10 feet, except that 10-foot reach reaches 2 squares diagonally), one each
   for bursts, emanation and reach from a Medium creature, emanation and reach from a Large creature, emanation from
