@@ -101,6 +101,8 @@ import Testing
         let abadar = try imported.page("Compendium.pf2e.deities.Item.ab1")
         #expect(abadar.contains("<strong>Favored Weapon</strong> crossbow"))
         #expect(!abadar.contains("First Vault"))
+        // The Community Use Policy covers the Paizo Blog's text, so its lore stays.
+        #expect(try imported.page("Compendium.pf2e.deities.Item.sk1").contains("The Sky Keepers watch the heavens."))
         // Other descriptions are rules text and stay.
         #expect(try imported.page("Compendium.pf2e.spells-srd.Item.fb1").contains("damage"))
     }

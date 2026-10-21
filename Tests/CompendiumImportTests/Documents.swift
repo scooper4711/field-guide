@@ -100,6 +100,9 @@ enum SpellsAndItems {
                      "domains": ["primary": ["cities"], "alternate": ["wealth"]],
                      "spells": ["1": "Compendium.pf2e.spells-srd.Item.Light",
                                 "3": "Compendium.pf2e.spells-srd.Item.Fireball"]]),
+        "pf2e/deities/sky-keepers": Documents.item("sk1", "Sky Keepers", "deity",
+            system: ["description": ["value": "<p>The Sky Keepers watch the heavens.</p>"], "category": "pantheon",
+                     "publication": Documents.publication("Pathfinder Blog")]),
         "sf2e/conditions/glitching": Documents.item("gl1", "Glitching", "effect",
             system: ["traits": ["value": []], "description": ["value": "<p>Sparks.</p>"]])
     ]
