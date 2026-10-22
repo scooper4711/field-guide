@@ -41,9 +41,17 @@ public struct DeityWriteups {
         }
     }
 
-    private func name(of text: String) -> String? {
+    /// The deity a heading names: the name it spells, else the one name it shortens or lengthens ("Nivi" for
+    /// "Nivi Rhombodazzle", "Chaldira Zuzaristan" for "Chaldira").
+    func name(of text: String) -> String? {
         let key = TextRepair.matchKey(text)
-        return names.first { TextRepair.matchKey($0) == key }
+        guard key.count >= 4 else { return nil }
+        if let name = names.first(where: { TextRepair.matchKey($0) == key }) { return name }
+        let near = names.filter { name in
+            let other = TextRepair.matchKey(name)
+            return other.count >= 4 && (other.hasPrefix(key) || key.hasPrefix(other))
+        }
+        return near.count == 1 ? near[0] : nil
     }
 
     /// The lines after the heading at `start`, up to the next deity's heading (where `lines` ends) or the next
