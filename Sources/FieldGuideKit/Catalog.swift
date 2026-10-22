@@ -160,6 +160,12 @@ public enum PageDescription {
         opening + html + closing
     }
 
+    /// `page` without its description section, for a page whose lore shows in its own tab.
+    public static func removingSection(from page: String) -> String {
+        let section = section(in: page)
+        return section.isEmpty ? page : page.replacingOccurrences(of: section, with: "")
+    }
+
     /// The description section of `page`, which comes last before the source line; empty when it has none.
     public static func section(in page: String) -> String {
         guard let start = page.range(of: opening)?.lowerBound,

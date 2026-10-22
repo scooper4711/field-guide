@@ -1,12 +1,15 @@
 import CreatureArt
 import FieldGuideKit
+import SourcebookLore
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Where creature art comes from: the user's own Paizo PDFs, used where Scrollkeeper keeps them or copied
-/// in, with the ones that have gone missing.
-struct PDFArtView: View {
+/// Where art and deity lore come from: the user's own Paizo PDFs, used where Scrollkeeper keeps them or copied
+/// in. Lists the sourcebooks whose lore Field Guide reads, and the PDFs of art, with the ones that have gone missing.
+struct SourcebooksView: View {
     @Environment(ArtModel.self) private var model
+    @Environment(SourcebookModel.self) private var sourcebooks
+    @Environment(CatalogStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     // One file importer serves both buttons: SwiftUI presents only one of several on the same view.
     @State private var isChoosing = false
@@ -16,29 +19,36 @@ struct PDFArtView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("Creature art comes from your own Paizo pawn, token and Battle Cards PDFs, and item art "
-                         + "from your item decks (Potions & Talismans, Guns, Deck of Endless Treasure, …). Field "
-                         + "Guide uses the ones Scrollkeeper downloads where they are, without copying them.")
+                    Text("Deities' lore comes from your own Paizo sourcebooks, creature art from your pawn, token "
+                         + "and Battle Cards PDFs, and item art from your item decks (Potions & Talismans, Guns, Deck "
+                         + "of Endless Treasure, …). Field Guide uses the ones Scrollkeeper downloads where they are, "
+                         + "without copying them.")
                         .font(.callout).foregroundStyle(.secondary)
                     importButtons
-                    if let progress = model.progress {
+                    if let progress = sourcebooks.progress ?? model.progress {
                         HStack { ProgressView().controlSize(.small); Text(progress).font(.callout) }
-                    } else if let message = model.message {
-                        Text(message).font(.callout)
+                    } else {
+                        ForEach([sourcebooks.message, model.message].compactMap { $0 }, id: \.self) { message in
+                            Text(message).font(.callout)
+                        }
                     }
                 }
+                sourcebooksSection
                 if !model.catalog.missingSources.isEmpty { missingSection }
                 if !model.catalog.watchedFolders.isEmpty { foldersSection }
                 pdfsSection
             }
             .formStyle(.grouped)
-            .navigationTitle("Art from PDFs")
+            .navigationTitle("Sourcebooks")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
             .fileImporter(isPresented: $isChoosing, allowedContentTypes: choice.contentTypes,
                           allowsMultipleSelection: choice == .pdfs) { result in
                 if case .success(let urls) = result { chose(urls) }
             }
-            .task { await model.refresh() }
+            .task {
+                await model.refresh()
+                await sourcebooks.refresh(names: store.deityNames())
+            }
         }
         #if os(macOS)
         .frame(minWidth: 520, minHeight: 560)
@@ -51,11 +61,14 @@ struct PDFArtView: View {
             Button("Add PDFs…", systemImage: "doc.badge.plus") { choose(.pdfs) }
             Spacer()
             Button("Check Again", systemImage: "arrow.clockwise") {
-                Task { await model.refresh(addingNew: true) }
+                Task {
+                    await model.refresh(addingNew: true)
+                    await sourcebooks.refresh(addingNew: true, names: store.deityNames())
+                }
             }
         }
         .formRowButtonStyle()
-        .disabled(model.progress != nil)
+        .disabled(model.progress != nil || sourcebooks.progress != nil)
     }
 
     /// On the Mac, Scrollkeeper's folder is used straight away when it's there; on the iPad, the user picks it
@@ -64,7 +77,7 @@ struct PDFArtView: View {
         #if os(macOS)
         let folder = URL.applicationSupportDirectory.appendingPathComponent("Scrollkeeper/Files", isDirectory: true)
         if FileManager.default.fileExists(atPath: folder.path) {
-            Task { await model.importFolder(folder) }
+            importFolder(folder)
             return
         }
         #endif
@@ -80,9 +93,32 @@ struct PDFArtView: View {
         switch choice {
         case .folder:
             guard let folder = urls.first else { return }
-            Task { await model.importFolder(folder) }
+            importFolder(folder)
         case .pdfs:
-            Task { await model.addFiles(urls) }
+            Task {
+                await model.addFiles(urls)
+                await sourcebooks.addFiles(urls, names: store.deityNames())
+            }
+        }
+    }
+
+    private func importFolder(_ folder: URL) {
+        Task {
+            await model.importFolder(folder)
+            await sourcebooks.importFolder(folder, names: store.deityNames())
+        }
+    }
+
+    private var sourcebooksSection: some View {
+        Section {
+            ForEach(sourcebooks.rows) { row in
+                SourcebookRowView(row: row)
+            }
+        } header: {
+            Text("Sourcebooks")
+        } footer: {
+            Text("Each deity's lore comes from one book for its edicts, anathema and other lines, and one for its "
+                 + "write-up. The free Divine Mysteries Web Supplement gives nearly every deity's lines.")
         }
     }
 
@@ -119,7 +155,7 @@ struct PDFArtView: View {
     }
 
     private var pdfsSection: some View {
-        Section("PDFs") {
+        Section("PDFs of Art") {
             if model.catalog.sources.isEmpty {
                 Text("No PDFs yet.").foregroundStyle(.secondary)
             }
@@ -135,6 +171,31 @@ private enum ArtChoice {
     case folder, pdfs
 
     var contentTypes: [UTType] { self == .folder ? [.folder] : [.pdf] }
+}
+
+/// A sourcebook, what it supplies, and whether Field Guide has read it; a free one not yet read links to its
+/// download.
+private struct SourcebookRowView: View {
+    let row: SourcebookRow
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(row.book.title)
+                Text("Deity lore: \(row.deityCount) \(row.deityCount == 1 ? "deity" : "deities")")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            if row.isRead {
+                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    .accessibilityLabel("Read")
+            } else if let url = row.book.downloadURL {
+                Link("Get", destination: url).formRowButtonStyle()
+            } else {
+                Text("Not in your library").font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
 }
 
 /// A PDF of creature art, with how much art it gives, and a way to remove it.

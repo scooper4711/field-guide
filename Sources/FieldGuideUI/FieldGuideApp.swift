@@ -7,6 +7,7 @@ import SwiftUI
 public struct FieldGuideApp: App {
     @State private var store: CatalogStore
     @State private var pdfArt: ArtModel
+    @State private var sourcebooks = SourcebookModel.standard()
 
     public init() {
         let store = CatalogStore()
@@ -20,7 +21,11 @@ public struct FieldGuideApp: App {
             RootView()
                 .environment(store)
                 .environment(pdfArt)
-                .task { await pdfArt.refresh(addingNew: true) }
+                .environment(sourcebooks)
+                .task {
+                    await pdfArt.refresh(addingNew: true)
+                    await sourcebooks.refresh(addingNew: true, names: store.deityNames())
+                }
         }
         .defaultSize(width: 1280, height: 820)
         .commands {
@@ -156,7 +161,7 @@ struct SidebarView: View {
     /// Called when a category's list is to be shown: on an iPhone, the next screen.
     let showList: () -> Void
     @Environment(\.showsOneColumn) private var showsOneColumn
-    @State private var isShowingPDFArt = false
+    @State private var isShowingSourcebooks = false
     @State private var isShowingAbout = false
 
     var body: some View {
@@ -172,14 +177,14 @@ struct SidebarView: View {
                     prompt: "Search Everything")
         .navigationTitle("Field Guide")
         .toolbar {
-            Button("Art from PDFs", systemImage: "photo.on.rectangle.angled") { isShowingPDFArt = true }
+            Button("Sourcebooks", systemImage: "books.vertical") { isShowingSourcebooks = true }
             // The Mac has About in the app menu.
             #if os(iOS)
             Button("About", systemImage: "info.circle") { isShowingAbout = true }
             #endif
         }
-        .focusedSceneValue(\.isShowingArtFromPDFs, $isShowingPDFArt)
-        .sheet(isPresented: $isShowingPDFArt) { PDFArtView() }
+        .focusedSceneValue(\.isShowingSourcebooks, $isShowingSourcebooks)
+        .sheet(isPresented: $isShowingSourcebooks) { SourcebooksView() }
         .sheet(isPresented: $isShowingAbout) { AboutSheet(info: .fieldGuide) }
     }
 

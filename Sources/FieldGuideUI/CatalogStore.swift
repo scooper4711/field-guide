@@ -128,6 +128,12 @@ public final class CatalogStore {
         return globalSearch
     }
 
+    /// Every deity's name by entry ID, in both systems, for reading their lore from the user's books.
+    public func deityNames() -> [String: String] {
+        let deities = GameSystem.allCases.flatMap { (try? catalog?.summaries(of: .deities, in: $0)) ?? [] }
+        return Dictionary(deities.map { ($0.id, $0.name) }) { first, _ in first }
+    }
+
     public func page(_ id: String) -> EntryPage? {
         try? catalog?.page(of: id)
     }
