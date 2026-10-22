@@ -45,15 +45,19 @@ After that it opens normally. The iPad app is not in the App Store yet; build it
 - Links in an entry open the linked entry, and traits open their description; Back returns.
 - A creature's page switches between its stat block and its battle card (Card at the top); Turn Over shows
   the card's back with the creature's art.
-- **Art from PDFs** (sidebar toolbar) reads creature art from your own Paizo pawn, token and Battle Cards PDFs,
-  and item art from your item decks (Potions & Talismans, Magic Armaments, Alchemy, Guns, Gears, Relics, Deck
+- A deity's **Lore** tab shows its edicts, anathema and other lines, its write-up and its divine intercession,
+  read from your own Paizo sourcebooks: Divine Mysteries and other Lost Omens books, and Paizo's free Divine
+  Mysteries and Gods & Magic Web Supplements.
+- **Sourcebooks** (sidebar toolbar) lists the books lore comes from, with a check mark once read; on the Mac, a
+  book you own in Scrollkeeper can be downloaded from there. It also reads creature art from your own Paizo
+  pawn, token and Battle Cards PDFs, and item art from your item decks (Potions & Talismans, Magic Armaments, Alchemy, Guns, Gears, Relics, Deck
   of Endless Treasure, and Weapons & Armor, sold as pictures), shown on equipment in place of the Rexard icon:
   Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are (on the iPad, pick On My iPad ▸
   Scrollkeeper), and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
   were deleted from Scrollkeeper are listed as missing, and creatures that lose their art say which PDF it
   needs.
 - On the Mac, the Go menu has Search Everything (⌘F), Back (⌘[) and Pathfinder and Starfinder (⌘1, ⌘2), and
-  File has Art from PDFs… (⇧⌘A). Import from Scrollkeeper reads Scrollkeeper's downloads without asking where
+  File has Sourcebooks… (⇧⌘A). Import from Scrollkeeper reads Scrollkeeper's downloads without asking where
   they are.
 
 ## Updating
