@@ -1,4 +1,7 @@
 import Foundation
+#if os(macOS)
+import AppKit
+#endif
 import Testing
 @testable import FieldGuideUI
 
@@ -64,5 +67,21 @@ struct ScrollkeeperLinkTests {
         #expect(link.requested?.status == status)
         link.receiveStatus(try #require(URL(string: "fieldguide://handoff?sku=X&state=done")))
         #expect(link.requested == nil)
+    }
+}
+
+@Suite("Finding Scrollkeeper")
+@MainActor
+struct ScrollkeeperLinkStandardTests {
+    @Test("The app's link asks the system whether Scrollkeeper is installed")
+    func standard() {
+        let link = ScrollkeeperLink.standard()
+        #if os(macOS)
+        #expect(link.isInstalled == (NSWorkspace.shared.urlForApplication(
+            withBundleIdentifier: ScrollkeeperLink.bundleIdentifier) != nil))
+        #else
+        #expect(!link.isInstalled)
+        #endif
+        #expect(link.owned.isEmpty && link.requested == nil)
     }
 }

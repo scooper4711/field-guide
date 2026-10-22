@@ -30,6 +30,21 @@ import Testing
         #expect(LoreSources().books.isEmpty)
     }
 
+    @Test func shipsTheSurveyedList() throws {
+        let list = SourcebookList.bundled
+        let supplement = try #require(list.book(named: "Pathfinder Lost Omens Divine Mysteries Web Supplement"))
+        #expect(supplement.downloadURL != nil && supplement.sku == "PZO13003WS")
+        #expect(list.book(named: "PZO9303 Gods & Magic Web Supplement")?.isLegacy == true)
+        #expect(list.deities.count > 400)
+        #expect(list.deities.values.allSatisfy { sources in sources.books.allSatisfy { list.book(named: $0) != nil } })
+    }
+
+    @Test func readsAFileNameWithoutItsDecorations() {
+        #expect(Sourcebook.key("PZO13003E Pathfinder Lost Omens- Divine Mysteries PDF - Single File.pdf")
+                == Sourcebook.key("Pathfinder Lost Omens Divine Mysteries"))
+        #expect(Sourcebook.key("Divine Mysteries Single-File.PDF") == Sourcebook.key("Divine Mysteries"))
+    }
+
     @Test func roundTripsThroughJSON() throws {
         let data = try JSONEncoder().encode(Self.list)
         #expect(try JSONDecoder().decode(SourcebookList.self, from: data) == Self.list)
