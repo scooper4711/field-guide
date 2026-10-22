@@ -8,6 +8,7 @@ public struct FieldGuideApp: App {
     @State private var store: CatalogStore
     @State private var pdfArt: ArtModel
     @State private var sourcebooks = SourcebookModel.standard()
+    @State private var scrollkeeper = ScrollkeeperLink.standard()
 
     public init() {
         let store = CatalogStore()
@@ -22,17 +23,41 @@ public struct FieldGuideApp: App {
                 .environment(store)
                 .environment(pdfArt)
                 .environment(sourcebooks)
+                .environment(scrollkeeper)
                 .task {
                     await pdfArt.refresh(addingNew: true)
                     await sourcebooks.refresh(addingNew: true, names: store.deityNames())
                 }
+                .onOpenURL(perform: open)
+                // What Scrollkeeper hands over goes to the open window rather than opening another.
+                .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         }
         .defaultSize(width: 1280, height: 820)
+        .handlesExternalEvents(matching: ["*"])
         .commands {
             FieldGuideCommands(store: store)
             #if os(macOS)
             AboutCommands(info: .fieldGuide)
             #endif
+        }
+    }
+}
+
+extension FieldGuideApp {
+    /// Takes what Scrollkeeper hands over: its list of the user's titles, the PDFs of a title the user asked for,
+    /// which are read for art and lore, and links saying how a request is going.
+    private func open(_ url: URL) {
+        guard url.isFileURL else {
+            scrollkeeper.receiveStatus(url)
+            return
+        }
+        if url.pathExtension == ScrollkeeperLink.indexExtension {
+            scrollkeeper.receiveIndex(url)
+        } else if url.pathExtension.lowercased() == "pdf" {
+            Task {
+                await pdfArt.addFiles([url])
+                await sourcebooks.addFiles([url], names: store.deityNames())
+            }
         }
     }
 }

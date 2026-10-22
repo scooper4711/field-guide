@@ -10,6 +10,7 @@ struct SourcebooksView: View {
     @Environment(ArtModel.self) private var model
     @Environment(SourcebookModel.self) private var sourcebooks
     @Environment(CatalogStore.self) private var store
+    @Environment(ScrollkeeperLink.self) private var scrollkeeper
     @Environment(\.dismiss) private var dismiss
     // One file importer serves both buttons: SwiftUI presents only one of several on the same view.
     @State private var isChoosing = false
@@ -25,7 +26,7 @@ struct SourcebooksView: View {
                          + "without copying them.")
                         .font(.callout).foregroundStyle(.secondary)
                     importButtons
-                    if let progress = sourcebooks.progress ?? model.progress {
+                    if let progress = sourcebooks.progress ?? model.progress ?? scrollkeeper.requested?.status {
                         HStack { ProgressView().controlSize(.small); Text(progress).font(.callout) }
                     } else {
                         ForEach([sourcebooks.message, model.message].compactMap { $0 }, id: \.self) { message in
@@ -46,6 +47,7 @@ struct SourcebooksView: View {
                 if case .success(let urls) = result { chose(urls) }
             }
             .task {
+                scrollkeeper.requestIndex()
                 await model.refresh()
                 await sourcebooks.refresh(names: store.deityNames())
             }
@@ -173,10 +175,11 @@ private enum ArtChoice {
     var contentTypes: [UTType] { self == .folder ? [.folder] : [.pdf] }
 }
 
-/// A sourcebook, what it supplies, and whether Field Guide has read it; a free one not yet read links to its
-/// download.
+/// A sourcebook, what it supplies, and whether Field Guide has read it. One not read yet can be downloaded through
+/// Scrollkeeper when the user owns it there, or from Paizo when it's free; there is no link to buy one.
 private struct SourcebookRowView: View {
     let row: SourcebookRow
+    @Environment(ScrollkeeperLink.self) private var scrollkeeper
 
     var body: some View {
         HStack {
@@ -189,6 +192,8 @@ private struct SourcebookRowView: View {
             if row.isRead {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                     .accessibilityLabel("Read")
+            } else if let sku = row.book.sku, scrollkeeper.owns(sku: sku) {
+                Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
             } else if let url = row.book.downloadURL {
                 Link("Get", destination: url).formRowButtonStyle()
             } else {
