@@ -58,7 +58,7 @@ func runSurvey(pf2e: String, library: String, output: String) throws {
     for (index, argument) in arguments.enumerated() where argument == "--extra" && index + 1 < arguments.count {
         let parts = arguments[index + 1].split(separator: "=", maxSplits: 1).map(String.init)
         guard parts.count == 2 else { fail(usage, code: 2) }
-        books.append(LibraryBook(title: parts[0], folderName: parts[0], pdf: URL(filePath: parts[1])))
+        books.append(LibraryBook(title: parts[0], folderName: parts[0], pdf: URL(filePath: parts[1]), keepsTitle: true))
     }
     let survey = Survey(deities: deities, books: books)
     let findings = survey.findings { FileHandle.standardError.write(Data("\($0)\n".utf8)) }

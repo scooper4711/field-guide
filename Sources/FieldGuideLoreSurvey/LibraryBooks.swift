@@ -7,6 +7,8 @@ struct LibraryBook {
     var sku: String?
     var folderName: String
     var pdf: URL
+    /// True for a book named on the command line (`--extra`), whose title is used as given.
+    var keepsTitle = false
 
     var isStarfinder: Bool { title.hasPrefix("Starfinder") }
 }
@@ -14,10 +16,12 @@ struct LibraryBook {
 /// Finds the second-edition books in a library folder laid out as Scrollkeeper downloads them: a folder per
 /// product, holding a single-file PDF or a file per chapter.
 enum LibraryBooks {
-    /// Product lines and accessories that hold no deity write-ups: first-edition lines, maps, pawns and cards.
+    /// Product lines and accessories that hold no deity write-ups: first-edition lines, maps, pawns and cards; and
+    /// creature books, whose entries for creatures named as gods ("Demon", "Ydersius") describe creatures.
     static let skipped = [
         "Campaign Setting", "Chronicles", "Companion", "Roleplaying Game", "Pawn", "Flip-Mat", "Map", "Cards", "Deck",
-        "Token", "Poster", "Scenario", "Quest", "Card Guild", "Battlecry", "Bounty", "Interactive"
+        "Token", "Poster", "Scenario", "Quest", "Card Guild", "Battlecry", "Bounty", "Interactive", "Bestiary",
+        "Monster Core", "NPC Core"
     ]
 
     static func find(in folder: URL, scrollkeeperCatalog: URL?) throws -> [LibraryBook] {

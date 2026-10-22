@@ -12,6 +12,7 @@ struct Survey {
     var titledBooks: [LibraryBook] {
         let credited = Set(deities.map(\.facts.credited)).filter { !$0.isEmpty }
         return books.map { book in
+            guard !book.keepsTitle else { return book }
             var book = book
             let key = TextRepair.matchKey(book.title)
             let matches = credited.filter { key.contains(Self.distinctiveKey(of: $0)) }
