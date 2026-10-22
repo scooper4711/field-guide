@@ -54,6 +54,22 @@ import Testing
         #expect(LoreSourceChooser.proseSource(of: silent, findings: others) == nil)
     }
 
+    @Test func takesIntercessionsFromTheCreditedBookThenANewerOneThenALegacyOne() {
+        let withIntercession = { (book: String) in
+            Finding(book: book, lore: DeityLore(intercession: Intercession(effects: [
+                StatLine(label: "Minor Boon", text: "Luck.")])))
+        }
+        let legacy: Set = ["Gods & Magic Web Supplement"]
+        let findings = [withIntercession("Gods & Magic Web Supplement"), withIntercession("Player Core")]
+        #expect(LoreSourceChooser.intercessionSource(of: Self.abadar, findings: findings, legacyBooks: legacy)
+                == "Player Core")
+        #expect(LoreSourceChooser.intercessionSource(of: Self.abadar, findings: findings + [
+            withIntercession("Divine Mysteries")], legacyBooks: legacy) == "Divine Mysteries")
+        #expect(LoreSourceChooser.intercessionSource(of: Self.abadar, findings: [findings[0]], legacyBooks: legacy)
+                == "Gods & Magic Web Supplement")
+        #expect(LoreSourceChooser.sources(of: Self.abadar, findings: []).books.isEmpty)
+    }
+
     @Test func measuresHowManyWordsTwoTextsShare() {
         #expect(LoreSourceChooser.similarity("follow the law", "follow the law") == 1)
         #expect(LoreSourceChooser.similarity("a b", "c d") == 0)

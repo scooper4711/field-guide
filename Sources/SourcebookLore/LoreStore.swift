@@ -32,8 +32,16 @@ public actor LoreStore {
         guard let sources = list.deities[entryID] else { return nil }
         let stats = sources.stats.flatMap { stored.books[$0]?.deities[entryID]?.statLines } ?? []
         let prose = sources.prose.flatMap { stored.books[$0]?.deities[entryID]?.paragraphs } ?? []
-        let lore = DeityLore(statLines: stats, paragraphs: prose)
+        let intercession = sources.intercession.flatMap { stored.books[$0]?.deities[entryID]?.intercession }
+        let lore = DeityLore(statLines: stats, paragraphs: prose, intercession: intercession,
+                             intercessionNote: intercession == nil ? nil : legacyNote(for: sources.intercession))
         return lore.isEmpty ? nil : lore
+    }
+
+    /// The note an intercession from a book written for the rules before the remaster carries.
+    private func legacyNote(for title: String?) -> String? {
+        guard let book = list.books.first(where: { $0.title == title }), book.isLegacy == true else { return nil }
+        return "From \(book.title), written for the rules before the remaster."
     }
 
     /// Reads the sourcebooks among `files`, which the user chose; returns the titles read.

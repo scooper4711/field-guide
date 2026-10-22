@@ -8,9 +8,10 @@ import SourcebookLoreTestSupport
     typealias Fixture = PDFFixture
 
     static let book = Sourcebook(title: "Pathfinder Lost Omens Test Gods", sku: "PZO99999E",
-                                 aliases: ["Pathfinder Lost Omens- Test Gods"], supplies: [.deityLore])
+                                 aliases: ["Pathfinder Lost Omens- Test Gods"], supplies: [.deityLore],
+                                 isLegacy: true)
     static let list = SourcebookList(books: [book], deities: [
-        "id.abadar": LoreSources(stats: book.title, prose: book.title),
+        "id.abadar": LoreSources(stats: book.title, prose: book.title, intercession: book.title),
         "id.chavazvug": LoreSources(stats: "Web Supplement", prose: book.title)
     ])
     static let names = ["id.abadar": "Abadar", "id.chavazvug": "Chavazvug", "id.other": "Other"]
@@ -42,6 +43,9 @@ import SourcebookLoreTestSupport
         let abadar = try #require(await store.lore(of: "id.abadar"))
         #expect(abadar.statLines.first == StatLine(label: "Title", text: "Master of the First Vault"))
         #expect(abadar.paragraphs.count == 2)
+        #expect(abadar.intercession?.effects.count == 2)
+        #expect(abadar.intercessionNote == "From Pathfinder Lost Omens Test Gods, written for the rules before the "
+                + "remaster.")
         // Chavazvug's stat lines come from a book not read yet; its prose is there.
         #expect(await store.lore(of: "id.chavazvug")?.statLines == [])
         #expect(await store.lore(of: "id.chavazvug")?.paragraphs.count == 2)

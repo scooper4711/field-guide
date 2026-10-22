@@ -10,7 +10,7 @@ struct ParagraphReader {
     let bodySize: CGFloat
 
     func paragraphs() -> [String] {
-        let introduction = Array(lines.prefix { !isSubheading($0) })
+        let introduction = Array(lines.prefix { !isSubheading($0) && IntercessionReader.label(of: $0) == nil })
         var paragraphs: [[String]] = []
         for (index, line) in introduction.enumerated() {
             let text = Self.text(of: line, bodySize: bodySize)

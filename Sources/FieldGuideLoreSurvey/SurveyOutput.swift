@@ -10,6 +10,20 @@ struct SurveyOutput {
         downloadURL: URL(string: "https://downloads.paizo.com/PZO13003_SupplementalGodTable.pdf"),
         supplies: [.deityLore])
 
+    /// Paizo's free Gods & Magic Web Supplement: divine intercessions for twenty deities, written before the remaster.
+    static let godsAndMagicSupplement = Sourcebook(
+        title: "Pathfinder Lost Omens Gods & Magic Web Supplement", sku: "PZO9303WS",
+        aliases: ["PZO9303 Gods & Magic Web Supplement", "Gods & Magic Web Supplement"],
+        downloadURL: URL(string: "https://paizo-images.s3-us-west-2.amazonaws.com/image/download/"
+                         + "PZO9303+Gods+%26+Magic+Web+Supplement.pdf"),
+        supplies: [.deityLore], isLegacy: true)
+
+    /// Books written for the rules before the remaster: their intercessions are used only where no newer book has
+    /// one, and say so.
+    static let legacyBooks: Set<String> = [
+        "Pathfinder Lost Omens Gods & Magic", "Pathfinder Lost Omens Gods & Magic Web Supplement"
+    ]
+
     static let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
@@ -24,14 +38,15 @@ struct SurveyOutput {
         var sources: [String: LoreSources] = [:]
         for deity in deities {
             var chosen = LoreSourceChooser.sources(of: deity.facts, findings: findings[deity.id] ?? [],
-                                                   preferredTables: [Self.webSupplement.title])
+                                                   preferredTables: [Self.webSupplement.title],
+                                                   legacyBooks: Self.legacyBooks)
             // A credited book that isn't in the library is assumed to hold what is missing, so the app can name it.
             let credited = deity.facts.credited
             if !credited.isEmpty, !inLibrary.contains(credited), credited != "Pathfinder Blog" {
                 chosen.stats = chosen.stats ?? credited
                 chosen.prose = chosen.prose ?? credited
             }
-            if chosen.stats != nil || chosen.prose != nil { sources[deity.id] = chosen }
+            if !chosen.books.isEmpty { sources[deity.id] = chosen }
         }
         let used = Set(sources.values.flatMap(\.books))
         let sourcebooks = used.sorted().map { title in Self.sourcebook(titled: title, books: books) }
@@ -41,9 +56,11 @@ struct SurveyOutput {
 
     private static func sourcebook(titled title: String, books: [LibraryBook]) -> Sourcebook {
         if title == webSupplement.title { return webSupplement }
+        if title == godsAndMagicSupplement.title { return godsAndMagicSupplement }
         let book = books.first { $0.title == title }
         let aliases = [book?.folderName].compactMap { $0 }.filter { $0 != title }
-        return Sourcebook(title: title, sku: book?.sku, aliases: aliases, supplies: [.deityLore])
+        return Sourcebook(title: title, sku: book?.sku, aliases: aliases, supplies: [.deityLore],
+                          isLegacy: legacyBooks.contains(title) ? true : nil)
     }
 
     private static func report(deities: [FoundryDeity], sources: [String: LoreSources],

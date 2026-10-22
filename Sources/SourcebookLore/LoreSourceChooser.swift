@@ -38,9 +38,18 @@ public enum LoreSourceChooser {
 
     /// The deity's sources; `preferredTables` are the tables tried first, such as the free Web Supplement, which
     /// every user can have.
-    public static func sources(of deity: Deity, findings: [Finding], preferredTables: [String] = []) -> LoreSources {
+    public static func sources(of deity: Deity, findings: [Finding], preferredTables: [String] = [],
+                               legacyBooks: Set<String> = []) -> LoreSources {
         LoreSources(stats: statsSource(of: deity, findings: findings, preferredTables: preferredTables),
-                    prose: proseSource(of: deity, findings: findings))
+                    prose: proseSource(of: deity, findings: findings),
+                    intercession: intercessionSource(of: deity, findings: findings, legacyBooks: legacyBooks))
+    }
+
+    /// The credited book's intercession, else one written for the current rules, else one from `legacyBooks`.
+    static func intercessionSource(of deity: Deity, findings: [Finding], legacyBooks: Set<String> = []) -> String? {
+        let withIntercession = findings.filter { $0.lore.intercession != nil }
+        if let credited = withIntercession.first(where: { $0.book == deity.credited }) { return credited.book }
+        return (withIntercession.first { !legacyBooks.contains($0.book) } ?? withIntercession.first)?.book
     }
 
     static func statsSource(of deity: Deity, findings: [Finding], preferredTables: [String] = []) -> String? {

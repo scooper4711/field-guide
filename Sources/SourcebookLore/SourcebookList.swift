@@ -17,16 +17,19 @@ public struct Sourcebook: Codable, Equatable, Hashable, Sendable, Identifiable {
     /// Where a free product can be downloaded; nil for one that is sold.
     public var downloadURL: URL?
     public var supplies: [Supply]
+    /// True for a book written for the rules before the remaster, whose intercessions say so.
+    public var isLegacy: Bool?
 
     public var id: String { title }
 
     public init(title: String, sku: String? = nil, aliases: [String] = [], downloadURL: URL? = nil,
-                supplies: [Supply]) {
+                supplies: [Supply], isLegacy: Bool? = nil) {
         self.title = title
         self.sku = sku
         self.aliases = aliases
         self.downloadURL = downloadURL
         self.supplies = supplies
+        self.isLegacy = isLegacy
     }
 
     /// True when `name`, a file's or folder's name or a PDF's copyright line, names this product.
@@ -51,15 +54,18 @@ public struct LoreSources: Codable, Equatable, Sendable {
     public var stats: String?
     /// The title of the book whose write-up gives the prose.
     public var prose: String?
+    /// The title of the book that gives the divine intercession.
+    public var intercession: String?
 
-    public init(stats: String? = nil, prose: String? = nil) {
+    public init(stats: String? = nil, prose: String? = nil, intercession: String? = nil) {
         self.stats = stats
         self.prose = prose
+        self.intercession = intercession
     }
 
     /// The books named, without repeats.
     public var books: [String] {
-        [stats, prose].compactMap { $0 }.reduce(into: []) { books, book in
+        [stats, prose, intercession].compactMap { $0 }.reduce(into: []) { books, book in
             if !books.contains(book) { books.append(book) }
         }
     }

@@ -22,20 +22,36 @@ public struct DeityLore: Codable, Equatable, Sendable {
     public var statLines: [StatLine]
     /// The paragraphs of the write-up's introduction.
     public var paragraphs: [String]
+    public var intercession: Intercession?
+    /// Set when the intercession was written for the rules before the remaster, to say so under it.
+    public var intercessionNote: String?
 
-    public init(statLines: [StatLine] = [], paragraphs: [String] = []) {
+    public init(statLines: [StatLine] = [], paragraphs: [String] = [], intercession: Intercession? = nil,
+                intercessionNote: String? = nil) {
         self.statLines = statLines
         self.paragraphs = paragraphs
+        self.intercession = intercession
+        self.intercessionNote = intercessionNote
     }
 
-    public var isEmpty: Bool { statLines.isEmpty && paragraphs.isEmpty }
+    public var isEmpty: Bool { statLines.isEmpty && paragraphs.isEmpty && intercession == nil }
 
-    /// The lore as the Lore tab's HTML: the stat lines, then the write-up.
+    /// The lore as the Lore tab's HTML: the stat lines, the write-up, then the divine intercession.
     public var html: String {
-        let lines = Self.shownLabels.compactMap { label in statLines.first { $0.label == label } }
-            .map { "<p><strong>\(escape($0.label))</strong> \(escape($0.text))</p>" }
+        let lines = Self.shownLabels.compactMap { label in statLines.first { $0.label == label } }.map(line)
         let prose = paragraphs.map { "<p>\(escape($0))</p>" }
-        return "<section class=\"description\">" + (lines + prose).joined() + "</section>"
+        return "<section class=\"description\">" + (lines + prose).joined() + intercessionHTML + "</section>"
+    }
+
+    private var intercessionHTML: String {
+        guard let intercession else { return "" }
+        let note = intercessionNote.map { "<p class=\"note\"><em>\(escape($0))</em></p>" } ?? ""
+        return "<h3>Divine Intercession</h3>" + intercession.introduction.map { "<p>\(escape($0))</p>" }.joined()
+            + intercession.effects.map(line).joined() + note
+    }
+
+    private func line(_ line: StatLine) -> String {
+        "<p><strong>\(escape(line.label))</strong> \(escape(line.text))</p>"
     }
 
     /// The stat lines of `self`, with those `other` adds or replaces: a write-up's lines and a table's are merged so

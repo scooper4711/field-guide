@@ -34,7 +34,8 @@ struct WriteupReader {
         let descriptor = TextRepair.join(Self.descriptor(in: header, body: body).map(\.text))
         let prose = ParagraphReader(lines: Array(lines[headerEnd...]), bodySize: body.size).paragraphs()
         return DeityLore(statLines: statLines(of: header),
-                         paragraphs: (descriptor.isEmpty ? [] : [descriptor]) + prose)
+                         paragraphs: (descriptor.isEmpty ? [] : [descriptor]) + prose,
+                         intercession: IntercessionReader(lines: lines, bodySize: body.size).read())
     }
 
     /// Where the prose starts: the first line in the body font that doesn't continue a stat line and isn't

@@ -10,6 +10,11 @@ public struct PDFFixture: Sendable {
     public struct Piece: Sendable {
         public var runs: [TextRun]
         public var origin: CGPoint
+
+        public init(runs: [TextRun], origin: CGPoint) {
+            self.runs = runs
+            self.origin = origin
+        }
     }
 
     public static let regular = "Helvetica"

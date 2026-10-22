@@ -49,6 +49,7 @@ public struct BookReader: Sendable {
             var lore = deities[id] ?? DeityLore()
             if source.stats == book.title, lore.statLines.isEmpty { lore.statLines = writeup.statLines }
             if source.prose == book.title { lore.paragraphs = writeup.paragraphs }
+            if source.intercession == book.title { lore.intercession = writeup.intercession }
             if !lore.isEmpty { deities[id] = lore }
         }
         let modified = document.documentAttributes?[PDFDocumentAttribute.modificationDateAttribute] as? Date

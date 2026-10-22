@@ -14,6 +14,15 @@ import Testing
             + "<p>Abadar keeps the First Vault.</p><p>Taxes &amp; tithes &lt;both&gt;.</p></section>")
     }
 
+    @Test func showsTheDivineIntercessionLastWithItsNote() {
+        let lore = DeityLore(intercession: Intercession(introduction: ["Gifts of riches."],
+                                                        effects: [StatLine(label: "Minor Boon", text: "Luck.")]),
+                             intercessionNote: "From an older book.")
+        #expect(lore.html == "<section class=\"description\"><h3>Divine Intercession</h3><p>Gifts of riches.</p>"
+            + "<p><strong>Minor Boon</strong> Luck.</p><p class=\"note\"><em>From an older book.</em></p></section>")
+        #expect(!lore.isEmpty)
+    }
+
     @Test func isEmptyWithoutStatLinesOrProse() {
         #expect(DeityLore().isEmpty)
         #expect(!DeityLore(paragraphs: ["Prose."]).isEmpty)

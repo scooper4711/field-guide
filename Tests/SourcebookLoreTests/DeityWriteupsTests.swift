@@ -1,9 +1,11 @@
+import CoreGraphics
 import Testing
 import SourcebookLoreTestSupport
 @testable import SourcebookLore
 
 @Suite struct DeityWriteupsTests {
     typealias Fixture = PDFFixture
+    typealias Piece = PDFFixture.Piece
 
     /// A major deity's write-up as Divine Mysteries sets it, then a minor deity's in smaller capitals.
     static let pages: [[Fixture.Piece]] = [[
@@ -21,7 +23,16 @@ import SourcebookLoreTestSupport
         Fixture.text("city on Golarion.", at: 80, 514),
         Fixture.text("12", at: 30, 20, size: 10),
         Fixture.text("THE CHURCH", at: 80, 490, size: 14),
-        Fixture.text("The Abadaran church is highly regimented.", at: 80, 476)
+        Fixture.text("The Abadaran church is highly regimented.", at: 80, 476),
+        Fixture.text("DIVINE INTERCESSION", at: 80, 440, size: 14),
+        Fixture.text("Abadar’s gifts take the form of riches.", at: 80, 426),
+        Piece(runs: [TextRun(text: "Minor Boon:", font: Fixture.bold, size: 9),
+                     TextRun(text: " Abadar warns his favored", font: Fixture.regular, size: 9)],
+              origin: CGPoint(x: 89, y: 414)),
+        Fixture.text("against unfair deals.", at: 80, 402),
+        Fixture.text("Major Curse: Everyone is aware of your lies.", at: 89, 390),
+        Fixture.text("THE NEXT SECTION", at: 80, 360, size: 14),
+        Fixture.text("Not part of it.", at: 80, 346)
     ], [
         Fixture.text("CHAVAZVUG", at: 80, 700, font: Fixture.bold, size: 14),
         Fixture.text("Chavazvug is a towering mound of organs.", at: 80, 686),
@@ -48,6 +59,32 @@ import SourcebookLoreTestSupport
             "Abadar is worshipped among most as a god of commerce and order.",
             "His cathedral banks are found in every major city on Golarion."
         ])
+        #expect(abadar.intercession == Intercession(
+            introduction: ["Abadar’s gifts take the form of riches."],
+            effects: [StatLine(label: "Minor Boon", text: "Abadar warns his favored against unfair deals."),
+                      StatLine(label: "Major Curse", text: "Everyone is aware of your lies.")]))
+    }
+
+    @Test func takesTheIntercessionsOfAnEntryWithoutAHeadingForThem() throws {
+        let document = try #require(PDFFixture(pages: [[
+            Fixture.text("Nivi", at: 80, 700, size: 16),
+            Fixture.text("Nivi rewards the clever and the lucky.", at: 80, 686),
+            Fixture.text("Minor Boon: You find a lost gem.", at: 89, 674),
+            Fixture.text("Moderate Curse: Your luck runs out.", at: 89, 662)
+        ]]).document())
+        let writeups = DeityWriteups(names: ["Nivi Rhombodazzle", "Abadar"]).writeups(in: document)
+        let nivi = try #require(writeups["Nivi Rhombodazzle"])
+        #expect(nivi.paragraphs == ["Nivi rewards the clever and the lucky."])
+        #expect(nivi.intercession?.introduction == ["Nivi rewards the clever and the lucky."])
+        #expect(nivi.intercession?.effects.map(\.label) == ["Minor Boon", "Moderate Curse"])
+    }
+
+    @Test func matchesAHeadingToTheOneNameItShortensOrLengthens() {
+        let writeups = DeityWriteups(names: ["Chaldira", "Nivi Rhombodazzle", "Apsu", "Apsus Herald"])
+        #expect(writeups.name(of: "Chaldira Zuzaristan") == "Chaldira")
+        #expect(writeups.name(of: "NIVI") == "Nivi Rhombodazzle")
+        #expect(writeups.name(of: "Aps") == nil)
+        #expect(writeups.name(of: "Apsu") == "Apsu")
     }
 
     @Test func readsAMinorDeitysProseUpToTheNextDeity() throws {
