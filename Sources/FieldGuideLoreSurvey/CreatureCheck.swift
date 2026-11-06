@@ -15,9 +15,12 @@ struct CreatureCheck {
         var familiesMatching = 0
         var misses: [String] = []
         var mismatches: [String] = []
+        /// Faults in the text read (`TextQuality`), each with its creature's name.
+        var faults: [String] = []
 
         var line: String {
-            "| \(book) | \(creatures) | \(found) | \(matching) | \(familiesMatching)/\(familiesExpected) |"
+            "| \(book) | \(creatures) | \(found) | \(matching) | \(familiesMatching)/\(familiesExpected) | "
+                + "\(faults.count) |"
         }
     }
 
@@ -31,6 +34,7 @@ struct CreatureCheck {
         let credited = creatures.filter { $0.credited == title }
         guard let document = PDFDocument(url: pdf), !credited.isEmpty else { return result }
         let found = CreatureWriteups().writeups(in: document)
+        let quality = TextQuality(reference: credited.map { $0.prose + " " + $0.familyProse }.joined(separator: " "))
         for creature in credited {
             result.creatures += 1
             if !creature.familyProse.isEmpty { result.familiesExpected += 1 }
@@ -39,6 +43,9 @@ struct CreatureCheck {
                 continue
             }
             result.found += 1
+            let text = (lore.paragraphs + lore.familyParagraphs).joined(separator: "\n")
+            result.faults += (quality.problems(in: text) + TextQuality.splitParagraphs(lore.paragraphs)
+                + TextQuality.splitParagraphs(lore.familyParagraphs)).map { "\(creature.name): \($0)" }
             let own = Self.similarity(lore.paragraphs.joined(separator: " "), creature.prose)
             if own >= Self.matchThreshold {
                 result.matching += 1
