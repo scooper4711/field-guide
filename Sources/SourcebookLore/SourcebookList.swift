@@ -1,10 +1,11 @@
 import Foundation
 
-/// A product whose PDF supplies content Field Guide reads on the device: deity lore, creature art or item art.
+/// A product whose PDF supplies content Field Guide reads on the device: deity or creature lore, creature art or item
+/// art.
 public struct Sourcebook: Codable, Equatable, Hashable, Sendable, Identifiable {
     /// What a product supplies.
     public enum Supply: String, Codable, Sendable, CaseIterable {
-        case deityLore, creatureArt, itemArt
+        case deityLore, creatureLore, creatureArt, itemArt
     }
 
     /// The product's name as Foundry credits it, such as "Pathfinder Lost Omens Divine Mysteries".
@@ -71,23 +72,75 @@ public struct LoreSources: Codable, Equatable, Sendable {
     }
 }
 
-/// The sourcebooks Field Guide can read, and the books each deity's lore comes from (`sourcebooks.json`, written
-/// by FieldGuideLoreSurvey).
+/// A creature in a bestiary whose lore another creature's is: an adventure's "Hooktongue Hydra" has the hydra's.
+public struct CreatureSource: Codable, Equatable, Hashable, Sendable {
+    public var name: String
+    /// The book Foundry credits the bestiary creature to.
+    public var book: String
+
+    public init(name: String, book: String) {
+        self.name = name
+        self.book = book
+    }
+}
+
+/// The sourcebooks Field Guide can read, the books each deity's lore comes from, and the bestiary creatures whose
+/// lore adventures' creatures share (`sourcebooks.json`, written by FieldGuideLoreSurvey).
 public struct SourcebookList: Codable, Equatable, Sendable {
+    /// Monster Core and Monster Core 2 remaster the three Bestiaries: a creature from any of them takes its lore from
+    /// the first of these books the user has that prints it.
+    public static let pathfinderBestiaries = [
+        "Pathfinder Monster Core", "Pathfinder Monster Core 2", "Pathfinder Bestiary", "Pathfinder Bestiary 2",
+        "Pathfinder Bestiary 3"
+    ]
+    /// The sample sourcebook (`SampleSourcebook`): placeholder text under real creatures' and deities' names, for
+    /// App Review and anyone without Paizo's books to try reading lore. Its lore comes after any real book's.
+    public static let sample = Sourcebook(
+        title: "Field Guide Sample Monster Core",
+        downloadURL: URL(string: "https://github.com/scooper4711/field-guide/raw/main/Resources/Review/"
+                         + "Field%20Guide%20Sample%20Monster%20Core.pdf"),
+        supplies: [.deityLore, .creatureLore])
+
+    /// The new editions, which come first in `pathfinderBestiaries`.
+    static let newEditions: Set<String> = ["Pathfinder Monster Core", "Pathfinder Monster Core 2"]
+
     public var books: [Sourcebook]
     /// The sources of each deity's lore, by entry ID.
     public var deities: [String: LoreSources]
+    /// The bestiary creature whose lore each adventure creature shares, by entry ID.
+    public var creatures: [String: CreatureSource]
 
-    public init(books: [Sourcebook] = [], deities: [String: LoreSources] = [:]) {
+    public init(books: [Sourcebook] = [], deities: [String: LoreSources] = [:],
+                creatures: [String: CreatureSource] = [:]) {
         self.books = books
         self.deities = deities
+        self.creatures = creatures
     }
 
-    /// The list shipped with the app; empty when it is missing.
+    /// Reads a list, which a version before creature lore wrote without `creatures`.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        books = try container.decode([Sourcebook].self, forKey: .books)
+        deities = try container.decode([String: LoreSources].self, forKey: .deities)
+        creatures = try container.decodeIfPresent([String: CreatureSource].self, forKey: .creatures) ?? [:]
+    }
+
+    /// The books a creature Foundry credits to `credited` may take its lore from, best first: for a bestiary, the
+    /// new editions, then the book itself, then the other bestiaries; for any other book, that book.
+    public static func creatureBooks(for credited: String) -> [String] {
+        guard pathfinderBestiaries.contains(credited) else { return [credited, sample.title] }
+        let others = pathfinderBestiaries.filter { $0 != credited }
+        return others.filter(newEditions.contains) + [credited] + others.filter { !newEditions.contains($0) }
+            + [sample.title]
+    }
+
+    /// The list shipped with the app, with the sample sourcebook; only the sample when the list is missing.
     public static let bundled: SourcebookList = {
-        guard let url = Bundle.module.url(forResource: "sourcebooks", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return SourcebookList() }
-        return (try? JSONDecoder().decode(SourcebookList.self, from: data)) ?? SourcebookList()
+        let url = Bundle.module.url(forResource: "sourcebooks", withExtension: "json")
+        var list = url.flatMap { try? JSONDecoder().decode(SourcebookList.self, from: Data(contentsOf: $0)) }
+            ?? SourcebookList()
+        list.books.append(sample)
+        return list
     }()
 
     /// The book `name` (a file's or folder's name, or a copyright line) names, if any.

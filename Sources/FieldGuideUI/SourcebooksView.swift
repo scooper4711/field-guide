@@ -20,10 +20,10 @@ struct SourcebooksView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("Deities' lore comes from your own Paizo sourcebooks, creature art from your pawn, token "
-                         + "and Battle Cards PDFs, and item art from your item decks (Potions & Talismans, Guns, Deck "
-                         + "of Endless Treasure, …). Field Guide uses the ones Scrollkeeper downloads where they are, "
-                         + "without copying them.")
+                    Text("Deities' and creatures' lore comes from your own Paizo sourcebooks, creature art from your "
+                         + "pawn, token and Battle Cards PDFs, and item art from your item decks (Potions & Talismans, "
+                         + "Guns, Deck of Endless Treasure, …). Field Guide uses the ones Scrollkeeper downloads where "
+                         + "they are, without copying them.")
                         .font(.callout).foregroundStyle(.secondary)
                     importButtons
                     if let progress = sourcebooks.progress ?? model.progress ?? scrollkeeper.requested?.status {
@@ -49,7 +49,7 @@ struct SourcebooksView: View {
             .task {
                 scrollkeeper.requestIndex()
                 await model.refresh()
-                await sourcebooks.refresh(names: store.deityNames())
+                await sourcebooks.refresh(subjects: store.loreSubjects())
             }
         }
         #if os(macOS)
@@ -65,7 +65,7 @@ struct SourcebooksView: View {
             Button("Check Again", systemImage: "arrow.clockwise") {
                 Task {
                     await model.refresh(addingNew: true)
-                    await sourcebooks.refresh(addingNew: true, names: store.deityNames())
+                    await sourcebooks.refresh(addingNew: true, subjects: store.loreSubjects())
                 }
             }
         }
@@ -99,7 +99,7 @@ struct SourcebooksView: View {
         case .pdfs:
             Task {
                 await model.addFiles(urls)
-                await sourcebooks.addFiles(urls, names: store.deityNames())
+                await sourcebooks.addFiles(urls, subjects: store.loreSubjects())
             }
         }
     }
@@ -107,7 +107,7 @@ struct SourcebooksView: View {
     private func importFolder(_ folder: URL) {
         Task {
             await model.importFolder(folder)
-            await sourcebooks.importFolder(folder, names: store.deityNames())
+            await sourcebooks.importFolder(folder, subjects: store.loreSubjects())
         }
     }
 
@@ -120,7 +120,8 @@ struct SourcebooksView: View {
             Text("Sourcebooks")
         } footer: {
             Text("Each deity's lore comes from one book for its edicts, anathema and other lines, and one for its "
-                 + "write-up. The free Divine Mysteries Web Supplement gives nearly every deity's lines.")
+                 + "write-up. The free Divine Mysteries Web Supplement gives nearly every deity's lines. A creature "
+                 + "from a Bestiary takes its lore from Monster Core or Monster Core 2 when you have them.")
         }
     }
 
@@ -185,7 +186,7 @@ private struct SourcebookRowView: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(row.book.title)
-                Text("Deity lore: \(row.deityCount) \(row.deityCount == 1 ? "deity" : "deities")")
+                Text(row.supplies)
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()

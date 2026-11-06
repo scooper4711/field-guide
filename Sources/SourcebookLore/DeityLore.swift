@@ -54,6 +54,8 @@ public struct DeityLore: Codable, Equatable, Sendable {
         "<p><strong>\(escape(line.label))</strong> \(escape(line.text))</p>"
     }
 
+    private func escape(_ text: String) -> String { HTMLText.escape(text) }
+
     /// The stat lines of `self`, with those `other` adds or replaces: a write-up's lines and a table's are merged so
     /// each label appears once.
     public func merging(statLinesOf other: DeityLore) -> DeityLore {
@@ -66,10 +68,5 @@ public struct DeityLore: Codable, Equatable, Sendable {
             }
         }
         return merged
-    }
-
-    private func escape(_ text: String) -> String {
-        text.replacingOccurrences(of: "&", with: "&amp;").replacingOccurrences(of: "<", with: "&lt;")
-            .replacingOccurrences(of: ">", with: "&gt;")
     }
 }

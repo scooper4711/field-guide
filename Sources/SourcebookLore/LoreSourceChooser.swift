@@ -78,7 +78,7 @@ public enum LoreSourceChooser {
     }
 
     /// The share of the two texts' words they have in common, from 0 to 1.
-    static func similarity(_ first: String, _ second: String) -> Double {
+    public static func similarity(_ first: String, _ second: String) -> Double {
         let words = { (text: String) in Set(text.lowercased().split { !$0.isLetter }.map(String.init)) }
         let (one, two) = (words(first), words(second))
         guard !one.isEmpty || !two.isEmpty else { return 0 }

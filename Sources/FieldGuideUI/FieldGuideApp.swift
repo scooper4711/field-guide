@@ -26,7 +26,7 @@ public struct FieldGuideApp: App {
                 .environment(scrollkeeper)
                 .task {
                     await pdfArt.refresh(addingNew: true)
-                    await sourcebooks.refresh(addingNew: true, names: store.deityNames())
+                    await sourcebooks.refresh(addingNew: true, subjects: store.loreSubjects())
                 }
                 .onOpenURL(perform: open)
                 // What Scrollkeeper hands over goes to the open window rather than opening another.
@@ -56,7 +56,7 @@ extension FieldGuideApp {
         } else if url.pathExtension.lowercased() == "pdf" {
             Task {
                 await pdfArt.addFiles([url])
-                await sourcebooks.addFiles([url], names: store.deityNames())
+                await sourcebooks.addFiles([url], subjects: store.loreSubjects())
             }
         }
     }

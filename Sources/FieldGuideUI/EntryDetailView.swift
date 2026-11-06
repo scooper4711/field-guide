@@ -28,7 +28,7 @@ enum EntryTab: CaseIterable, Identifiable {
 }
 
 /// The tabs an entry's page has, and what each shows. A deity's Lore is its write-up from the user's sourcebooks,
-/// or, in a build that kept the setting's lore, Foundry's, moved off the overview.
+/// or, for a deity the Paizo Blog published, Foundry's, moved off the overview.
 struct PageTabs {
     let page: EntryPage
     /// The deity's lore from the user's sourcebooks, as HTML; nil when it has none.
@@ -106,7 +106,7 @@ struct PageView: View {
     /// Lore]; nothing for pages with only one.
     @ToolbarContentBuilder
     private func tabs(of page: EntryPage) -> some ToolbarContent {
-        if creature(on: page) != nil, !page.lore.isEmpty {
+        if creature(on: page) != nil, creatureLore(of: page) != nil {
             ToolbarItem {
                 Picker("Show", selection: $creatureView) {
                     ForEach(CreatureView.allCases) { Text($0.title).tag($0) }
@@ -128,14 +128,19 @@ struct PageView: View {
     @ViewBuilder
     private func content(of page: EntryPage) -> some View {
         if let (key, creature) = creature(on: page) {
-            if creatureView == .lore, !page.lore.isEmpty {
-                webView(page.lore, system: page.system)
+            if creatureView == .lore, let lore = creatureLore(of: page) {
+                webView(lore, system: page.system)
             } else {
                 CreatureCardView(creature: creature, key: key)
             }
         } else {
             webView(pageTabs(of: page).html(for: entryTab), system: page.system)
         }
+    }
+
+    /// A creature's lore from the user's books, else the lore the import kept (the Paizo Blog's); nil for none.
+    private func creatureLore(of page: EntryPage) -> String? {
+        sourcebooks.creatureLore(of: page.id)?.html ?? (page.lore.isEmpty ? nil : page.lore)
     }
 
     private func pageTabs(of page: EntryPage) -> PageTabs {

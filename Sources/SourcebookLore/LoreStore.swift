@@ -2,8 +2,8 @@ import ArtExtraction
 import Foundation
 import PDFKit
 
-/// The deity lore read from the user's sourcebooks, kept in `lore.json` in the store's folder, with the folders
-/// whose new PDFs are read (Scrollkeeper's downloads).
+/// The deity and creature lore read from the user's sourcebooks, kept in `lore.json` in the store's folder, with the
+/// folders whose new PDFs are read (Scrollkeeper's downloads).
 public actor LoreStore {
     struct Stored: Codable {
         var books: [String: BookLore] = [:]
@@ -29,13 +29,39 @@ public actor LoreStore {
     /// What the user's books give the deity: its stat lines from one book and its prose from another, as
     /// `sourcebooks.json` assigns them; nil when none of its books has been read.
     public func lore(of entryID: String) -> DeityLore? {
-        guard let sources = list.deities[entryID] else { return nil }
+        guard let sources = list.deities[entryID] else { return sampleLore(of: entryID) }
         let stats = sources.stats.flatMap { stored.books[$0]?.deities[entryID]?.statLines } ?? []
         let prose = sources.prose.flatMap { stored.books[$0]?.deities[entryID]?.paragraphs } ?? []
         let intercession = sources.intercession.flatMap { stored.books[$0]?.deities[entryID]?.intercession }
         let lore = DeityLore(statLines: stats, paragraphs: prose, intercession: intercession,
                              intercessionNote: intercession == nil ? nil : legacyNote(for: sources.intercession))
-        return lore.isEmpty ? nil : lore
+        return lore.isEmpty ? sampleLore(of: entryID) : lore
+    }
+
+    /// The deity's lore from the sample sourcebook, which stands in for books the user hasn't read.
+    private func sampleLore(of entryID: String) -> DeityLore? {
+        stored.books[SourcebookList.sample.title]?.deities[entryID]
+    }
+
+    /// What the user's books give the creature: for an adventure's creature whose lore is a bestiary creature's
+    /// (`SourcebookList.creatures`), that creature's; else from the first of its books
+    /// (`SourcebookList.creatureBooks(for:)`) that has been read and prints it, so Monster Core's lore is used over a
+    /// Bestiary's whichever was read first; nil when none has.
+    public func lore(of creature: CreatureReference) -> CreatureLore? {
+        if let source = list.creatures[creature.id],
+           let lore = printedLore(of: CreatureReference(id: creature.id, name: source.name, credited: source.book)) {
+            return lore
+        }
+        return printedLore(of: creature)
+    }
+
+    private func printedLore(of creature: CreatureReference) -> CreatureLore? {
+        let keys = CreatureLore.keys(for: creature.name)
+        for title in SourcebookList.creatureBooks(for: creature.credited) {
+            guard let creatures = stored.books[title]?.creatures else { continue }
+            if let lore = keys.lazy.compactMap({ creatures[$0] }).first { return lore }
+        }
+        return nil
     }
 
     /// The note an intercession from a book written for the rules before the remaster carries.

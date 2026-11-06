@@ -18,7 +18,8 @@ let package = Package(
         .target(name: "FieldGuideKit"),
         .target(name: "SourcebookLore", dependencies: [.product(name: "ArtExtraction", package: "tabletop-kit")],
                 resources: [.process("Resources")]),
-        .executableTarget(name: "FieldGuideLoreSurvey", dependencies: ["SourcebookLore", "FieldGuideKit"]),
+        .executableTarget(name: "FieldGuideLoreSurvey",
+                          dependencies: ["SourcebookLore", "SourcebookLoreTestSupport", "FieldGuideKit"]),
         .target(name: "CompendiumImport", dependencies: [
             "FieldGuideKit", .product(name: "Bestiary", package: "tabletop-kit"),
             .product(name: "CreatureImport", package: "tabletop-kit")
