@@ -13,13 +13,16 @@ import Testing
         _ = try CompendiumImporter(options: options).run()
         let catalog = try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
         let pages = try catalog.summaries(of: .gmScreen, in: .pathfinder).filter { $0.name != "Areas" }
-        #expect(pages.map(\.name) == ["DCs by Level", "Simple DCs"])
+        #expect(pages.map(\.name) == ["Counteracting", "DCs by Level", "Simple DCs"])
         #expect(pages.allSatisfy { $0.subtitle == "Running the Game" })
         #expect(pages.allSatisfy { $0.values(of: .section) == ["Running the Game"] })
         let dcs = try #require(try catalog.page(of: "Compendium.pf2e.journals.JournalEntry.gm1.JournalEntryPage.p3"))
         #expect(dcs.html.contains("<a href=\"entry:Compendium.pf2e.journals.JournalEntry.gm1.JournalEntryPage.p2\">"
                                   + "Simple DCs</a>"))
         #expect(try catalog.search("trained", in: .gmScreen, of: .pathfinder).count == 1)
+        let counteracting = try #require(
+            try catalog.page(of: "Compendium.pf2e.journals.JournalEntry.gm1.JournalEntryPage.p5"))
+        #expect(counteracting.html.contains("the target.</p><figure class=\"rules-figure\"><svg"))
     }
 
     @Test func pageLinksIgnoreHeadingAnchors() {

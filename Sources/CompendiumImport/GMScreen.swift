@@ -72,7 +72,7 @@ enum GMScreen {
 
     /// `areasEntry`, when given, is linked from the GM Screen's index page, in its first table.
     static func row(_ page: JournalPage, context: PageContext, areasEntry: String? = nil) -> EntryRow {
-        var body = context.enrich(page.html)
+        var body = RulesDiagrams.adding(to: context.enrich(page.html), of: page)
         if let areasEntry, page.name == "GM Screen" { body = linkingAreas(body, entry: areasEntry) }
         // Pages of a category of their own read as its kind ("Archetype"), the others as their journal.
         let isOwnCategory = !page.category.facets.contains(.section)

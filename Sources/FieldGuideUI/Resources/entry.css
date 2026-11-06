@@ -36,6 +36,14 @@
     --area-origin: #e8364a;
     --area-creature: #1c1c1c;
     --area-creature-text: #ffffff;
+    /* The rules diagrams: blue for moves that hide you, orange for ones that give you away, and a color for each
+       degree of success, all from the Okabe-Ito palette. */
+    --detection-hide: #0072b2;
+    --detection-found: #c45a00;
+    --degree-critical-success: #009e73;
+    --degree-success: #0072b2;
+    --degree-failure: #e69f00;
+    --degree-critical-failure: #d55e00;
     color-scheme: light dark;
 }
 
@@ -60,6 +68,12 @@
         --area-origin: #ff5c6c;
         --area-creature: #e8e2d8;
         --area-creature-text: #1c1c1c;
+        --detection-hide: #56b4e9;
+        --detection-found: #e69f00;
+        --degree-critical-success: #14b386;
+        --degree-success: #56b4e9;
+        --degree-failure: #f0c040;
+        --degree-critical-failure: #ff7a3d;
     }
 }
 
@@ -146,3 +160,34 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
     font-size: 14px; color: var(--muted); }
 .area-key .swatch { display: inline-block; width: 12px; height: 12px; margin-right: 5px; border-radius: 2px;
     vertical-align: -1px; }
+
+.rules-figure { margin: 18px 0; }
+.rules-diagram { display: block; width: 100%; max-width: 480px; height: auto; margin: 0 auto; }
+.rules-diagram .state rect, .rules-diagram .step rect { fill: var(--panel); stroke: var(--rule); stroke-width: 1.5; }
+.rules-diagram .state.condition rect { stroke-dasharray: 5 3; }
+.rules-diagram .name { fill: var(--text); font: bold 13px "Roboto Condensed", "Helvetica Neue", sans-serif;
+    text-anchor: middle; text-transform: uppercase; letter-spacing: 0.04em; }
+.rules-diagram .effect { fill: var(--muted); font: 9.5px "Helvetica Neue", sans-serif; text-anchor: middle; }
+.rules-diagram .effect.term { fill: var(--text); font-weight: bold; }
+.rules-diagram .move { fill: none; stroke: var(--rule); stroke-width: 1.75; }
+.rules-diagram .move.hide { stroke: var(--detection-hide); }
+.rules-diagram .move.found { stroke: var(--detection-found); }
+.rules-diagram .move.condition { stroke-dasharray: 4 3; }
+.rules-diagram .head { fill: var(--rule); }
+.rules-diagram .head.hide { fill: var(--detection-hide); }
+.rules-diagram .head.found { fill: var(--detection-found); }
+.rules-diagram .trigger, .rules-diagram .outcome, .rules-diagram .degree text { fill: var(--text);
+    font: 10.5px "Helvetica Neue", sans-serif; }
+.rules-diagram .trigger.left { text-anchor: end; }
+.rules-diagram .outcome { text-anchor: middle; }
+.rules-diagram .heading { fill: var(--muted); font: bold 9.5px "Helvetica Neue", sans-serif;
+    text-transform: uppercase; letter-spacing: 0.04em; }
+.rules-diagram .degree rect.row { fill: var(--panel); }
+.rules-diagram .degree text.result { font: bold 11px "Roboto Condensed", "Helvetica Neue", sans-serif; }
+.rules-diagram .degree text.example { text-anchor: end; }
+.rules-diagram .degree text.never { fill: var(--muted); }
+.rules-diagram .critical-success { fill: var(--degree-critical-success); }
+.rules-diagram .success { fill: var(--degree-success); }
+.rules-diagram .failure { fill: var(--degree-failure); }
+.rules-diagram .critical-failure { fill: var(--degree-critical-failure); }
+.rules-notes { max-width: 480px; margin: 10px auto 0; font-size: 15px; }
