@@ -4,7 +4,7 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-0.0.0}"
+VERSION="${VERSION:-$(scripts/version.sh marketing)}"
 APP="build/Field Guide.app"
 STAGING="build/dmg"
 DMG="build/Field-Guide-$VERSION.dmg"
