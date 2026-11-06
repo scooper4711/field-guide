@@ -12,8 +12,9 @@
 DEVELOPMENT_TEAM = 9SWRBY8HN9
 PRODUCT_BUNDLE_IDENTIFIER = io.github.scooper4711.FieldGuide
 
-// The version and build number come from git (scripts/version.sh), written to Version.xcconfig by the scripts
-// that build the app ("make ipad-archive", "make ipad-install"). These are the fallbacks before it exists.
+// The version and build number come from git (scripts/version.sh): the FieldGuide-iPad scheme's build pre-action
+// writes them to Version.xcconfig before every build, Product > Archive included. These are the fallbacks for a
+// build that skips the scheme.
 MARKETING_VERSION = 0.0.0
 CURRENT_PROJECT_VERSION = 1
 #include? "Version.xcconfig"

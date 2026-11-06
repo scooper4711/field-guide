@@ -7,7 +7,6 @@ cd "$(dirname "$0")/.."
 
 [ -f Generated/catalog.sqlite ] || { echo "Archiving failed: Generated/ is missing; run \"make import\" first." >&2; exit 1; }
 
-scripts/version.sh xcconfig > ios/Version.xcconfig
 ARCHIVE="build/FieldGuide.xcarchive"
 rm -rf "$ARCHIVE"
 xcodebuild -project ios/FieldGuide.xcodeproj -scheme FieldGuide-iPad -configuration Release \

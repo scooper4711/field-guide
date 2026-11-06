@@ -10,7 +10,6 @@ mkdir -p Generated
 DEVICE="$(scripts/ipad-simulator-id.sh)"
 [ -n "$DEVICE" ] || { echo "Starting the simulator failed: no iPad simulator is installed." >&2; exit 1; }
 
-scripts/version.sh xcconfig > ios/Version.xcconfig
 xcodebuild -project ios/FieldGuide.xcodeproj -scheme FieldGuide-iPad \
     -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath ios/build \
     CODE_SIGNING_ALLOWED=NO build | tail -n 3
