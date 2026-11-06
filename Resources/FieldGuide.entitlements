@@ -4,6 +4,9 @@
 <dict>
     <key>com.apple.security.app-sandbox</key>
     <true/>
+    <!-- Field Guide makes no network requests of its own, but the entry pages' WKWebView stays blank in the
+         sandbox without this, even though every page and resource comes from loadHTMLString and the fieldguide:
+         scheme (checked on macOS 27, 2026-11-06). Web links open in the browser instead. -->
     <key>com.apple.security.network.client</key>
     <true/>
     <key>com.apple.security.files.user-selected.read-only</key>

@@ -21,7 +21,20 @@ struct ParagraphReader {
                 paragraphs[paragraphs.count - 1].append(text)
             }
         }
-        return paragraphs.map(TextRepair.join)
+        return Self.mendingSplits(paragraphs.map(TextRepair.join))
+    }
+
+    /// The paragraphs with any split mid-sentence joined again: one that doesn't end a sentence, followed by one
+    /// that starts in lowercase, as after a drop cap's indented lines.
+    static func mendingSplits(_ paragraphs: [String]) -> [String] {
+        paragraphs.reduce(into: []) { mended, paragraph in
+            if let last = mended.last, let first = paragraph.first, first.isLowercase,
+               let end = last.last, !".!?:”’\")".contains(end) {
+                mended[mended.count - 1] = TextRepair.join([last, paragraph])
+            } else {
+                mended.append(paragraph)
+            }
+        }
     }
 
     func isSubheading(_ line: TextLine) -> Bool {

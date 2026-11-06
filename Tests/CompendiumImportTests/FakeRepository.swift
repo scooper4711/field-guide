@@ -139,8 +139,11 @@ extension FakeRepository {
                 }])
         }
         try journal("ancestries", "an1", "Ancestries", [Page(id: "anI", name: "Index", text: "See @UUID[.anE]{Elf}."),
-                                                         Page(id: "anE", name: "Elf", text: "Elves live long lives.")])
-        try journal("classes", "cl1", "Classes", [Page(id: "clF", name: "Fighter", text: "Fighters train hard."),
+                                                         Page(id: "anE", name: "Elf", text: "Elves live long lives."
+                                                              + "</p><h2>Elf Mechanics</h2><p>Hit Points 6")])
+        try journal("classes", "cl1", "Classes", [Page(id: "clF", name: "Fighter", text: "Key Attribute Strength"
+                                                       + "</p><h1>Roleplaying the Fighter</h1><p>Fighters train hard."
+                                                       + "</p><h2>Initial Proficiencies</h2><p>Expert in Fortitude"),
                                                   Page(id: "clD", name: "Draconic Connections", text: "Dragons.")])
         try journal("archetypes", "ar1", "Archetypes", [Page(id: "arA", name: "Acrobat", text: "Tumbling.")])
         try journal("domains", "do1", "Domains", [Page(id: "doF", name: "Fire Domain", text: "Flames.")])

@@ -1,4 +1,4 @@
-.PHONY: build test lint coverage import update app dmg run ipad-install ipad-simulator icon clean
+.PHONY: build test lint coverage import update app dmg run ipad-install ipad-simulator ipad-archive icon clean
 
 build:
 	swift build
@@ -39,6 +39,10 @@ ipad-install:
 
 ipad-simulator:
 	scripts/run-ipad-simulator.sh
+
+# Archives the iPad app for the App Store into build/FieldGuide.xcarchive, versioned from git.
+ipad-archive:
+	scripts/archive-ipad.sh
 
 # Redraws the app icon from scripts/make-icon.swift.
 icon:

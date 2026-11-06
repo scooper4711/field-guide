@@ -13,7 +13,7 @@ import SourcebookLoreTestSupport
     static let list = SourcebookList(books: [monsterCore, bestiary], creatures: [
         "id.hydra": CreatureSource(name: "Hydra", book: monsterCore.title)
     ])
-    static let warrior = CreatureReference(id: "id.warrior", name: "Goblin Warrior", credited: bestiary.title)
+    static let warrior = EntryReference(id: "id.warrior", name: "Goblin Warrior", credited: bestiary.title)
 
     /// A bestiary page with one creature, its paragraph saying which book it is.
     static func writeBook(_ book: Sourcebook, saying text: String, in folder: URL) throws -> URL {
@@ -49,7 +49,7 @@ import SourcebookLoreTestSupport
         let old = try Self.writeBook(Self.bestiary, saying: "From the Bestiary.", in: folder)
         let store = try LoreStore(folder: folder.appendingPathComponent("Store"), list: Self.list)
         for file in monsterCoreFirst ? [core, old] : [old, core] {
-            _ = try await store.addFiles([file], names: [:])
+            _ = try await store.addFiles([file], subjects: LoreSubjects())
         }
         #expect(await store.lore(of: Self.warrior)?.paragraphs == ["From Monster Core."])
     }
@@ -60,12 +60,27 @@ import SourcebookLoreTestSupport
         let core = try Self.writeBook(Self.monsterCore, saying: "From Monster Core.", in: folder)
         let store = try LoreStore(folder: folder.appendingPathComponent("Store"), list: Self.list)
         #expect(await store.lore(of: Self.warrior) == nil)
-        #expect(try await store.addFiles([core], names: [:]) == [Self.monsterCore.title])
+        #expect(try await store.addFiles([core], subjects: LoreSubjects()) == [Self.monsterCore.title])
         #expect(await store.lore(of: Self.warrior)?.paragraphs == ["From Monster Core."])
-        let hydra = CreatureReference(id: "id.hydra", name: "Hooktongue Hydra", credited: Self.adventure)
+        let hydra = EntryReference(id: "id.hydra", name: "Hooktongue Hydra", credited: Self.adventure)
         #expect(await store.lore(of: hydra)?.paragraphs == ["Hydras regrow heads."])
-        let unknown = CreatureReference(id: "id.other", name: "Goblin Warrior", credited: Self.adventure)
+        let unknown = EntryReference(id: "id.other", name: "Goblin Warrior", credited: Self.adventure)
         #expect(await store.lore(of: unknown) == nil)
+    }
+
+    @Test func anAncestrysDetailsComeFromItsBookElseTheSample() async throws {
+        let folder = try Self.temporaryFolder()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let file = folder.appendingPathComponent("\(SourcebookList.sample.title).pdf")
+        try #require(SampleSourcebook.document()?.write(to: file) == true)
+        let store = try LoreStore(folder: folder.appendingPathComponent("Store"),
+                                  list: SourcebookList(books: [SourcebookList.sample]))
+        let elf = EntryReference(id: "id.elf", name: "Elf", credited: "Pathfinder Player Core")
+        #expect(await store.details(of: elf) == nil)
+        _ = try await store.addFiles([file], subjects: LoreSubjects(details: [elf]))
+        #expect(await store.details(of: elf)?.sections.map(\.heading).contains("Society") == true)
+        let goblin = EntryReference(id: "id.goblin", name: "Goblin", credited: "Pathfinder Player Core")
+        #expect(await store.details(of: goblin) == nil)
     }
 
     @Test func theNewEditionsComeFirstThenTheBookThenTheOtherBestiaries() {
@@ -78,9 +93,21 @@ import SourcebookLoreTestSupport
         #expect(SourcebookList.creatureBooks(for: Self.adventure) == [Self.adventure, SourcebookList.sample.title])
     }
 
+    @Test func aCompilationsCreaturesTakeLoreFromItsVolumesAndABooksOtherTitleFindsIt() {
+        let list = SourcebookList(books: [
+            Sourcebook(title: "Pathfinder Adventure Path #217: Death Sails", aliases: ["Pathfinder #217: Death Sails"],
+                       supplies: [.creatureLore])
+        ], volumes: ["Season of Ghosts Compilation": ["#196", "#197"]])
+        #expect(list.creatureBookTitles(for: "Season of Ghosts Compilation")
+            == ["Season of Ghosts Compilation", "#196", "#197", SourcebookList.sample.title])
+        #expect(list.creatureBookTitles(for: "Pathfinder #217: Death Sails").first
+            == "Pathfinder Adventure Path #217: Death Sails")
+        #expect(list.title(of: "Unlisted") == "Unlisted")
+    }
+
     @Test func readsRecordsWrittenBeforeCreatureLore() throws {
         let list = try JSONDecoder().decode(SourcebookList.self, from: Data(#"{"books": [], "deities": {}}"#.utf8))
-        #expect(list.creatures.isEmpty)
+        #expect(list.creatures.isEmpty && list.volumes.isEmpty)
         let record = #"""
             {"title": "T", "sourceDigest": "d", "readerVersion": 1, "importedAt": 0, "deities": {}}
             """#

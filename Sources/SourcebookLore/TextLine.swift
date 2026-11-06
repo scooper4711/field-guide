@@ -54,15 +54,30 @@ public struct TextWord: Equatable, Sendable {
 
 /// Reads a PDF page's text as lines.
 public enum PageText {
-    /// The page's lines, or those inside `rect`, in the order PDFKit reads them.
+    /// The page's lines, or those inside `rect`, in the order PDFKit reads them. Pictures, which PDFKit reads as
+    /// object replacement characters on lines as tall and wide as the picture, are left out.
     public static func lines(of page: PDFPage, in rect: CGRect? = nil) -> [TextLine] {
         let area = rect ?? page.bounds(for: .mediaBox)
         guard let selection = page.selection(for: area) else { return [] }
         return selection.selectionsByLine().compactMap { line in
-            guard let text = line.attributedString, !text.string.trimmingCharacters(in: .whitespaces).isEmpty
-            else { return nil }
-            return TextLine(runs: runs(of: text), bounds: line.bounds(for: page))
+            guard let text = line.attributedString else { return nil }
+            let runs = runs(of: text).compactMap(withoutPictures)
+            guard runs.contains(where: { !$0.text.trimmingCharacters(in: .whitespaces).isEmpty }) else { return nil }
+            return TextLine(runs: runs, bounds: line.bounds(for: page))
         }
+    }
+
+    static let pictureCharacter = "\u{FFFC}"
+
+    /// The run without picture characters or control characters (some fonts' action icons read back as them); nil
+    /// when nothing else is left.
+    static func withoutPictures(_ run: TextRun) -> TextRun? {
+        let scalars = run.text.unicodeScalars.filter { scalar in
+            String(scalar) != pictureCharacter && !(CharacterSet.controlCharacters.contains(scalar) && scalar != "\t")
+        }
+        guard scalars.count != run.text.unicodeScalars.count else { return run }
+        let text = String(String.UnicodeScalarView(scalars))
+        return text.isEmpty ? nil : TextRun(text: text, font: run.font, size: run.size)
     }
 
     /// The page's words matching `pattern`, each with its own bounds. Selecting a range of the page's text gives

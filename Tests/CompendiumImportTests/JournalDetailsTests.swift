@@ -39,13 +39,17 @@ import Testing
         #expect(try catalog.categories(in: .pathfinder).contains(.archetypes))
     }
 
-    @Test func ancestriesAndClassesHaveNoDetails() throws {
+    @Test func ancestriesAndClassesKeepTheRulesOfTheirDetailsButNotTheLore() throws {
         let repository = try FakeRepository()
         defer { repository.remove() }
         let catalog = try importedCatalog(repository)
         let elf = try #require(try catalog.page(of: "Compendium.pf2e.ancestries.Item.el1"))
-        #expect(elf.details.isEmpty)
-        #expect(try catalog.page(of: "Compendium.pf2e.classes.Item.fi1")?.details.isEmpty == true)
+        let start = "<section class=\"description journal\">\(DetailsPage.loreMarker)<h2>Elf Mechanics"
+        #expect(elf.details.hasPrefix(start))
+        #expect(elf.details.contains("Hit Points 6") && !elf.details.contains("Elves live long lives."))
+        let fighter = try #require(try catalog.page(of: "Compendium.pf2e.classes.Item.fi1")?.details)
+        #expect(fighter.contains("Key Attribute Strength") && fighter.contains("Expert in Fortitude"))
+        #expect(fighter.contains(DetailsPage.loreMarker) && !fighter.contains("Fighters train hard."))
         #expect(try catalog.search("elves", in: .ancestries, of: .pathfinder).isEmpty)
         #expect(try catalog.page(of: "\(Self.journalPage).an1.JournalEntryPage.anE") == nil)
         // Links to a Details page open its entry, and the journals' other pages stay.

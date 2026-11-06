@@ -87,6 +87,12 @@ enum GMScreen {
         )
     }
 
+    /// A page's rules as an entry's Details: no header, since the entry's overview has one, and the setting's lore
+    /// left out (`DetailsPage`), for the app to fill from the user's book.
+    static func details(_ page: JournalPage, context: PageContext) -> String {
+        section(context.enrich(DetailsPage.removingLore(from: page.html)))
+    }
+
     private static func section(_ body: String) -> String {
         "<section class=\"description journal\">\(body)</section>"
     }

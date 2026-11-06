@@ -3,7 +3,7 @@ import SwiftUI
 import WebKit
 
 /// Shows an entry page's HTML with the app's stylesheet. Images, fonts and the stylesheet come through the
-/// `fieldguide:` scheme; `entry:` and `trait:` links are handed to `onLink` instead of loading.
+/// `fieldguide:` scheme; every link the user taps is handed to `onLink` instead of loading.
 @MainActor
 struct EntryWebView {
     let html: String

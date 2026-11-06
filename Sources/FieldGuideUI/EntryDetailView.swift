@@ -9,6 +9,16 @@ enum PageLink: Hashable {
     case trait(String, GameSystem)
 }
 
+/// Where a link tapped on an entry page goes: another page in the app, a web page in the browser, or nowhere.
+enum LinkDestination: Equatable {
+    case page(PageLink)
+    case browser(URL)
+    case ignored
+
+    /// The schemes that open in the browser (or the mail app) rather than in the entry's web view.
+    static let browserSchemes: Set<String> = ["http", "https", "mailto"]
+}
+
 /// An entry's pages beside its overview: an ancestry's or class's Details from the rules journals, or a deity's
 /// Lore from the user's sourcebooks.
 enum EntryTab: CaseIterable, Identifiable {
@@ -33,6 +43,8 @@ struct PageTabs {
     let page: EntryPage
     /// The deity's lore from the user's sourcebooks, as HTML; nil when it has none.
     let bookLore: String?
+    /// The ancestry's or class's lore from the user's book, as HTML, for its Details; nil for other entries.
+    var detailsLore: String?
 
     var tabs: [EntryTab] {
         if !page.details.isEmpty { return [.overview, .details] }
@@ -41,7 +53,7 @@ struct PageTabs {
 
     func html(for tab: EntryTab) -> String {
         switch tab {
-        case .details where !page.details.isEmpty: page.details
+        case .details where !page.details.isEmpty: DetailsPage.inserting(detailsLore ?? "", into: page.details)
         case .lore: lore ?? page.html
         default: lore == nil ? page.html : PageDescription.removingSection(from: page.html)
         }
@@ -73,6 +85,7 @@ struct PageView: View {
     @Environment(CatalogStore.self) private var store
     @Environment(ArtModel.self) private var pdfArt
     @Environment(SourcebookModel.self) private var sourcebooks
+    @Environment(\.openURL) private var openURL
     let link: PageLink
     let follow: (PageLink) -> Void
     /// A stored value from before the Lore tab ("statBlock") reads as the default, the card.
@@ -144,12 +157,17 @@ struct PageView: View {
     }
 
     private func pageTabs(of page: EntryPage) -> PageTabs {
-        PageTabs(page: page, bookLore: sourcebooks.lore(of: page.id)?.html)
+        PageTabs(page: page, bookLore: sourcebooks.lore(of: page.id)?.html,
+                 detailsLore: sourcebooks.detailsHTML(of: page.id))
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {
         EntryWebView(html: html, data: store.data, pdfArt: pdfArt) { url in
-            if let next = Self.link(for: url, system: system) { follow(next) }
+            switch Self.destination(for: url, system: system) {
+            case let .page(next): follow(next)
+            case let .browser(web): openURL(web)
+            case .ignored: break
+            }
         }
     }
 
@@ -167,16 +185,18 @@ struct PageView: View {
         }
     }
 
-    /// `entry:<id>`, `entry:<id>#details` and `trait:<slug>` links from a page.
-    static func link(for url: URL, system: GameSystem) -> PageLink? {
+    /// `entry:<id>`, `entry:<id>#details` and `trait:<slug>` links follow to a page; web and mail links open in
+    /// the browser; anything else is ignored.
+    static func destination(for url: URL, system: GameSystem) -> LinkDestination {
         let target = String(url.absoluteString.drop { $0 != ":" }.dropFirst())
         let decoded = target.removingPercentEncoding ?? target
-        switch url.scheme {
+        let scheme = url.scheme?.lowercased() ?? ""
+        switch scheme {
         case "entry":
             let entry = EntryLink.entry(of: decoded)
-            return .entry(entry.id, entry.isDetails ? .details : .overview)
-        case "trait": return .trait(decoded, system)
-        default: return nil
+            return .page(.entry(entry.id, entry.isDetails ? .details : .overview))
+        case "trait": return .page(.trait(decoded, system))
+        default: return LinkDestination.browserSchemes.contains(scheme) ? .browser(url) : .ignored
         }
     }
 }

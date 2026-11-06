@@ -13,13 +13,19 @@ Counts are for pf2e-8.6.1 and sf2e-1.6.1 (`pf2e.release`), from `FieldGuideLoreS
 |---|---|---|
 | Creatures' descriptions (the Lore tab) | 4556 | The bestiary or adventure that prints the creature (`CreatureWriteups`) |
 | Deities' write-ups | 511 | The books `sourcebooks.json` names for each deity (`DeityWriteups`, `DeityTable`) |
-| Ancestries' and classes' Details | 160 pages (pf2e 86, sf2e 74) | Not yet: needs a reader for Player Core, Player Core 2 and Starfinder Player Core |
+| Ancestries' and classes' Details: their setting prose | 142 pages | The book that introduces the ancestry or class (`DetailsWriteups`) |
+
+The rest of a Details page is rules, which the import keeps: a class's key attribute and Hit Points, "<Ancestry>
+Mechanics" and its heritages, "Initial Proficiencies" and the class features. `DetailsPage` splits a page where its
+lore is ("Elf" through "Popular Anathema", or "Roleplaying the Fighter" through "Others Probably...") and leaves a
+marker there; the app puts the lore from the user's book in its place, or a note naming the book to add.
 
 ## How creature lore comes back
 
 - A bestiary's creature is read from its stat block ("GOBLIN WARRIOR CREATURE –1") back to the heading that names
   it, and its family's introduction from the taller heading above ("Goblin"). A creature without its own heading
-  (an adult dragon after the young one) shares the nearest one above.
+  (an adult dragon after the young one) shares the nearest one above. Prose stops at a stat block or a line that
+  opens with a bold label, so a stat block the page's order puts early can't run into it.
 - Monster Core and Monster Core 2 remaster Bestiaries 1–3. A creature from any of the five books takes its lore from
   the first of them the user has read that prints it: Monster Core, Monster Core 2, the book Foundry credits, then
   the other Bestiaries. Each book's lore is stored separately and chosen when shown, so the order the books are read
@@ -27,42 +33,103 @@ Counts are for pf2e-8.6.1 and sf2e-1.6.1 (`pf2e.release`), from `FieldGuideLoreS
 - 936 adventure creatures have lore Foundry copied from a bestiary creature (Kingmaker's "Hooktongue Hydra" is the
   hydra). `sourcebooks.json` maps each to that creature by name, so its lore comes from the user's bestiaries
   without reading the adventure.
-- `Field Guide Sample Monster Core.pdf` (`Resources/Review/`, written by `FieldGuideLoreSurvey sample`) has
-  placeholder text under real creatures' and deities' names, for App Review and anyone without the books. Its lore
-  comes after any real book's.
+
+## How ancestry and class lore comes back
+
+The ancestry's or class's name as a title ("ELF", "FIGHTER"), its introduction, then its sections up to where its
+rules begin ("Elf Heritages", "Class Features", "ANDROID HERITAGES"). Sections are the ones Paizo's books use (You
+Might..., Others Probably..., Physical Description, Society, Beliefs, Names, Roleplaying, During Combat
+Encounters...), whether set in title case or in capitals; boxes of rules under other headings in capitals ("KEY
+ATTRIBUTE", "LOW-LIGHT VISION") are left out. Bullets stay bulleted and "Popular Edicts" stays a labeled line.
+
+## The sample sourcebook
+
+`Field Guide Sample Monster Core.pdf` (`Resources/Review/`, written by `FieldGuideLoreSurvey sample`) has placeholder
+text under real names: creatures (Goblin Warrior, Goblin Commando, Wolf, Dire Wolf, Athraxer), deities (Abadar,
+Iomedae), an ancestry (Elf) and a class (Fighter), laid out as Paizo's books are. It is for App Review and anyone
+without the books; its lore comes after any real book's.
 
 ## How well the books read
 
-Creatures Foundry credits to the book with lore; how many the reader finds; how many of those share at least 60%
-of their words with Foundry's text (the rest are mostly the book's fuller text, or Foundry's own mix-ups); and the
-families found among the creatures that have one.
+`FieldGuideLoreSurvey creatures` and `details` compare what the readers find with Foundry's copy of the text. A
+match shares at least 60% of its words with Foundry's (most below that are the book's fuller text, or Foundry's own
+mix-ups). **Faults** counts flaws in the text read, which the book may have more of than Foundry but must not
+garble: words broken in two ("shor ter"), hyphens left from a line break, words run together, paragraphs split
+mid-sentence, and stray characters (pictures, control characters). A word Foundry writes as two and the book as one
+("willpower", "rainforest") is flagged but isn't a fault.
 
-| Book | Creatures | Found | Matching | Families |
-|---|---|---|---|---|
-| Pathfinder Monster Core | 497 | 475 | 464 | 337/383 |
-| Starfinder Alien Core | 234 | 233 | 219 | 137/145 |
-| Pathfinder Bestiary | 164 | 162 | 155 | 130/131 |
-| Pathfinder Bestiary 2 | 160 | 155 | 149 | 10/10 |
-| Pathfinder Bestiary 3 | 165 | 146 | 142 | 66/87 |
-| Pathfinder Monster Core 2 | 440 | 435 | 388 | 179/214 |
-| Pathfinder NPC Core | 270 | 267 | 253 | 252/265 |
-| Pathfinder Howl of the Wild | 71 | 68 | 55 | 0/12 |
-| Pathfinder Rage of Elements | 78 | 73 | 68 | 3/28 |
-| Pathfinder #220: Crypt of Runes | 25 | 12 | 2 | 0/5 |
-| Pathfinder Adventure: Rusthenge | 11 | 5 | 0 | 0/9 |
-| Pathfinder #192: Worst of All Possible Worlds | 33 | 17 | 1 | 0/18 |
-| Pathfinder Society Scenario #3-13: Guardian's Covenant | 25 | 0 | 0 | 0/20 |
-| Starfinder Murder in Metal City Deluxe Adventure | 11 | 0 | 0 | 0/9 |
+### Creatures
+
+Creatures Foundry credits to the book with lore; how many the reader finds; how many match; the families found
+among the creatures that have one; and faults.
+
+| Book | Creatures | Found | Matching | Families | Faults |
+|---|---|---|---|---|---|
+| Pathfinder Monster Core | 497 | 475 | 466 | 341/383 | 0 |
+| Starfinder Alien Core | 234 | 233 | 230 | 142/145 | 0 |
+| Pathfinder Bestiary | 164 | 162 | 155 | 130/131 | 0 |
+| Pathfinder Bestiary 2 | 160 | 155 | 155 | 10/10 | 0 |
+| Pathfinder Bestiary 3 | 165 | 146 | 142 | 66/87 | 0 |
+| Pathfinder Monster Core 2 | 440 | 435 | 401 | 179/214 | 4 |
+| Pathfinder NPC Core | 270 | 267 | 261 | 252/265 | 0 |
+| Pathfinder Howl of the Wild | 71 | 68 | 56 | 0/12 | 0 |
+| Pathfinder Rage of Elements | 78 | 73 | 68 | 4/28 | 0 |
+| Pathfinder #220: Crypt of Runes | 25 | 12 | 2 | 0/5 | 0 |
+| Pathfinder Adventure: Rusthenge | 11 | 4 | 0 | 0/9 | 0 |
+| Pathfinder #192: Worst of All Possible Worlds | 33 | 11 | 1 | 0/18 | 0 |
+| Pathfinder Society Scenario #3-13: Guardian's Covenant | 25 | 0 | 0 | 0/20 | 0 |
+| Starfinder Murder in Metal City Deluxe Adventure | 11 | 0 | 0 | 0/9 | 0 |
+
+The faults left are two of Monster Core 2's flagged-but-real words and Bestiary 2's "nea r" (in Platecarpus and
+Tylosaurus), which the PDF itself spaces apart.
+
+### Ancestries and classes
+
+Details pages Foundry has for the book's ancestries and classes; how many the reader finds; how many match. None
+has a fault.
+
+| Book | Pages | Found | Matching |
+|---|---|---|---|
+| Pathfinder Player Core | 16 | 16 | 16 |
+| Pathfinder Player Core 2 | 16 | 16 | 16 |
+| Pathfinder Howl of the Wild | 6 | 6 | 6 |
+| Starfinder Player Core | 16 | 16 | 16 |
+| Starfinder Galaxy Guide | 6 | 6 | 5 |
+| Pathfinder Lost Omens Tian Xia Character Guide | 6 | 6 | 6 |
+| Pathfinder Lost Omens Impossible Lands | 5 | 5 | 5 |
+| Pathfinder Lost Omens The Mwangi Expanse | 4 | 4 | 4 |
+| Pathfinder Lost Omens Ancestry Guide | 4 | 4 | 4 |
+| Pathfinder Guns & Gears | 3 | 3 | 3 |
+| Pathfinder Impossible Magic | 4 | 4 | 4 |
+| Pathfinder War of Immortals | 2 | 2 | 2 |
+| Pathfinder Dark Archive (Remastered) | 2 | 2 | 2 |
+| Pathfinder Battlecry! | 3 | 3 | 2 |
+| Pathfinder Rage of Elements | 1 | 1 | 1 |
+| Pathfinder Book of the Dead | 1 | 1 | 1 |
+| Pathfinder Lost Omens The Grand Bazaar | 1 | 1 | 1 |
+| Pathfinder Lost Omens Absalom, City of Lost Omens | 1 | 1 | 1 |
+| Pathfinder Lost Omens Draconic Codex | 1 | 1 | 1 |
+| Starfinder Galactic Ancestries | 28 | 28 | 28 |
+
+Vlaka (Galaxy Guide) has a fuller Society section than Foundry's. Battlecry! opens Jotunborn's pages before its
+title, so only the introduction after the title is read.
 
 ## Known gaps
 
 - **Adventures' own creatures.** Adventure paths, standalone adventures and Society scenarios set their creatures
-  differently from the bestiaries; the reader finds few of them (see the last rows above). Those whose lore is a
+  differently from the bestiaries; the reader finds few of them (see the adventures above). Those whose lore is a
   bestiary creature's come back through the mapping; the rest need an adventure reader.
 - **Families in Howl of the Wild and Rage of Elements**, which set their families' introductions differently.
-- **Ancestries' and classes' Details**, which need a reader for the Player Cores.
-- 42 credited books have no SKU in Scrollkeeper's catalog (`FieldGuideLoreSurvey creature-books` lists them), so
-  the app can't offer to download them; it still reads them when the user adds their PDFs.
+- **Jotunborn**, whose Details begin on the page before its title.
+- Details of ancestries from adventures and player's guides Field Guide hasn't been checked against (Secrets of the
+  Swarm, Absalom Station, Invasion's Edge, Beyond the Blood Door, Guilt of the Grave World, Murder in Metal City,
+  Cheliax, Life's Long Shadows).
+- 13 credited books aren't in Scrollkeeper's catalog under any name (`FieldGuideLoreSurvey lore-books` lists them):
+  free player's guides and web supplements not claimed in the library, and books the library doesn't list. The
+  app can't offer to download them; it still reads them when the user adds their PDFs, and says so rather than
+  claiming the user lacks them. The survey matches Foundry's titles to Scrollkeeper's products by number (scenarios,
+  quests, adventure paths) or by their words within the book's game (`ProductMatcher`); a book Foundry credits
+  under two titles is one book, and a compilation's volumes (Season of Ghosts' #196–199) supply its lore too.
 
 ## Books
 

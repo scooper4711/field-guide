@@ -19,6 +19,19 @@ public enum SampleSourcebook {
         Family(name: "The Swarm", creatures: [("Athraxer", 1)])
     ]
     public static let deities = ["Abadar", "Iomedae"]
+    /// An ancestry or class: its Details' sections and the heading its rules start under.
+    public struct Details: Sendable {
+        public var name: String
+        public var sections: [String]
+        public var rules: String
+    }
+
+    public static let details = [
+        Details(name: "Elf", sections: ["Physical Description", "Society", "You Might...", "Others Probably..."],
+                rules: "Elf Heritages"),
+        Details(name: "Fighter", sections: ["During Combat Encounters...", "While Exploring...", "You Might..."],
+                rules: "Class Features")
+    ]
 
     static let left: CGFloat = 60
     static let lineHeight: CGFloat = 12
@@ -30,7 +43,8 @@ public enum SampleSourcebook {
     }
 
     static func pages() -> [[PDFFixture.Piece]] {
-        [titlePage()] + families.map(page(of:)) + deities.map(page(ofDeity:)) + [copyrightPage()]
+        [titlePage()] + families.map(page(of:)) + deities.map(page(ofDeity:))
+            + details.map(page(of:)) + [copyrightPage()]
     }
 
     private static func titlePage() -> [PDFFixture.Piece] {
@@ -68,6 +82,27 @@ public enum SampleSourcebook {
         return writer.pieces
     }
 
+    /// An ancestry's or class's opening pages: its name, an introduction, its sections (the ones named "...",
+    /// bulleted), then the heading its rules start under.
+    private static func page(of details: Details) -> [PDFFixture.Piece] {
+        var writer = PageWriter(top: 700)
+        writer.heading(details.name.uppercased(), size: 26)
+        writer.paragraphs(1, seed: details.name)
+        for section in details.sections {
+            writer.gap()
+            writer.heading(section, size: 13)
+            if section.hasSuffix("...") {
+                writer.bullets(2, seed: section)
+            } else {
+                writer.paragraphs(1, seed: section)
+            }
+        }
+        writer.gap()
+        writer.heading(details.rules, size: 17)
+        writer.statLine("Hit Points", "8")
+        return writer.pieces
+    }
+
     private static func copyrightPage() -> [PDFFixture.Piece] {
         [PDFFixture.text("\(SourcebookList.sample.title) © 2026, Field Guide.", at: left, 400)]
     }
@@ -89,6 +124,18 @@ public enum SampleSourcebook {
         }
 
         mutating func gap() { top -= lineHeight }
+
+        /// `count` bulleted items of placeholder text, the bullet beside each item's first line.
+        mutating func bullets(_ count: Int, seed: String) {
+            for index in 0..<count {
+                let item = Lorem.paragraph(seed: seed.count + index).components(separatedBy: ". ").first ?? ""
+                for (offset, line) in Lorem.lines(of: item + ".", width: charactersPerLine - 4).enumerated() {
+                    top -= lineHeight
+                    if offset == 0 { pieces.append(PDFFixture.text("•", at: left, top)) }
+                    pieces.append(PDFFixture.text(line, at: left + 9, top))
+                }
+            }
+        }
 
         /// `count` paragraphs of placeholder text, each ending on a short line.
         mutating func paragraphs(_ count: Int, seed: String) {

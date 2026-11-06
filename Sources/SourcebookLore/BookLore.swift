@@ -21,10 +21,12 @@ public struct BookLore: Codable, Equatable, Sendable {
     /// What the book gives each creature it prints, by the match key of the creature's name
     /// (`CreatureLore.keys(for:)`): the editions of a bestiary are matched by name.
     public var creatures: [String: CreatureLore]
+    /// What the book gives each ancestry and class it introduces, by the match key of its name.
+    public var details: [String: DetailsLore]
 
     public init(title: String, location: FileReference?, sourceDigest: String, sourceDate: Date?,
                 readerVersion: Int, importedAt: Date, deities: [String: DeityLore],
-                creatures: [String: CreatureLore] = [:]) {
+                creatures: [String: CreatureLore] = [:], details: [String: DetailsLore] = [:]) {
         self.title = title
         self.location = location
         self.sourceDigest = sourceDigest
@@ -33,9 +35,10 @@ public struct BookLore: Codable, Equatable, Sendable {
         self.importedAt = importedAt
         self.deities = deities
         self.creatures = creatures
+        self.details = details
     }
 
-    /// Reads a record, which a version before creature lore wrote without `creatures`.
+    /// Reads a record, which a version before creature lore wrote without `creatures` and `details`.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         title = try container.decode(String.self, forKey: .title)
@@ -46,22 +49,27 @@ public struct BookLore: Codable, Equatable, Sendable {
         importedAt = try container.decode(Date.self, forKey: .importedAt)
         deities = try container.decode([String: DeityLore].self, forKey: .deities)
         creatures = try container.decodeIfPresent([String: CreatureLore].self, forKey: .creatures) ?? [:]
+        details = try container.decodeIfPresent([String: DetailsLore].self, forKey: .details) ?? [:]
     }
 }
 
 /// Reads a sourcebook's lore for the deities `sourcebooks.json` assigns it.
 public struct BookReader: Sendable {
-    /// Raised when the rules for reading books change, so books are read again. 2: creature lore.
-    public static let version = 2
+    /// Raised when the rules for reading books change, so books are read again. 2: creature lore; 3: ancestries'
+    /// and classes' Details.
+    public static let version = 3
 
     public let list: SourcebookList
-    /// Each deity's name by entry ID, as the catalog spells it.
-    public let names: [String: String]
+    /// The deities, creatures, ancestries and classes, as the catalog names them.
+    public let subjects: LoreSubjects
 
-    public init(list: SourcebookList, names: [String: String]) {
+    public init(list: SourcebookList, subjects: LoreSubjects) {
         self.list = list
-        self.names = names
+        self.subjects = subjects
     }
+
+    /// Each deity's name by entry ID.
+    private var names: [String: String] { subjects.deityNames }
 
     /// The book's lore, read from `document`, the PDF at `file`.
     public func read(_ book: Sourcebook, from document: PDFDocument, file: URL) throws -> BookLore {
@@ -70,7 +78,18 @@ public struct BookReader: Sendable {
         let modified = document.documentAttributes?[PDFDocumentAttribute.modificationDateAttribute] as? Date
         return BookLore(title: book.title, location: try? FileReference(file), sourceDigest: try Self.digest(of: file),
                         sourceDate: modified, readerVersion: Self.version, importedAt: Date(), deities: deities,
-                        creatures: creatures)
+                        creatures: creatures, details: detailsLore(of: book, from: document))
+    }
+
+    /// The Details of the ancestries and classes Foundry credits to the book (to the sample, every one it prints),
+    /// by the match key of their names.
+    private func detailsLore(of book: Sourcebook, from document: PDFDocument) -> [String: DetailsLore] {
+        guard book.supplies.contains(.detailsLore) else { return [:] }
+        let isSample = book.title == SourcebookList.sample.title
+        let names = Set(subjects.details.filter { isSample || list.title(of: $0.credited) == book.title }.map(\.name))
+        guard !names.isEmpty else { return [:] }
+        let writeups = DetailsWriteups(names: Array(names)).writeups(in: document)
+        return Dictionary(writeups.map { (TextRepair.matchKey($0.key), $0.value) }) { first, _ in first }
     }
 
     /// The lore the book gives the deities `sourcebooks.json` assigns it; the sample's, every deity it prints.

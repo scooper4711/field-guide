@@ -15,12 +15,23 @@ struct Survey {
             guard !book.keepsTitle else { return book }
             var book = book
             let key = TextRepair.matchKey(book.title)
-            let matches = credited.filter { key.contains(Self.distinctiveKey(of: $0)) }
+            let matches = credited.filter { title in
+                key.contains(Self.distinctiveKey(of: title)) && Self.isSameGame(book.title, title)
+            }
             if let title = matches.max(by: { Self.distinctiveKey(of: $0).count < Self.distinctiveKey(of: $1).count }) {
                 book.title = title
             }
             return book
         }
+    }
+
+    /// False when the two names are for different games ("Pathfinder Player Core", "Starfinder Player Core"), whose
+    /// titles are otherwise alike; true when either doesn't name its game.
+    static func isSameGame(_ first: String, _ second: String) -> Bool {
+        let games = [first, second].map { name in
+            ["pathfinder", "starfinder"].first { TextRepair.matchKey(name).hasPrefix($0) }
+        }
+        return games[0] == nil || games[1] == nil || games[0] == games[1]
     }
 
     /// A title's match key without the game's name, which Paizo's and Foundry's titles place differently.

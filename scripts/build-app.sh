@@ -1,7 +1,8 @@
 #!/bin/sh
 # Builds "build/Field Guide.app" from the Swift package, with Generated/ (make import) inside.
 #
-# VERSION    version written to the bundle (default 0.0.0)
+# VERSION       version written to the bundle (default: scripts/version.sh marketing)
+# BUILD_NUMBER  build number, which must grow with every App Store upload (default: scripts/version.sh build)
 # UNIVERSAL  set to 1 to build for both Apple silicon and Intel
 # TEAM_ID    team whose Tableside Toolkit App Group the app joins, to read Scrollkeeper's downloads (default: the
 #            team of the Developer ID certificate in the keychain; none when signing ad hoc)
@@ -9,7 +10,8 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-VERSION="${VERSION:-0.0.0}"
+VERSION="${VERSION:-$(scripts/version.sh marketing)}"
+BUILD_NUMBER="${BUILD_NUMBER:-$(scripts/version.sh build)}"
 APP="build/Field Guide.app"
 EXECUTABLE="FieldGuide"
 
@@ -49,6 +51,8 @@ rm -rf "$ICONSET"
 ditto Generated "$APP/Contents/Resources/Generated"
 # Moves the data an unsandboxed version kept into the sandbox on the first sandboxed launch.
 cp Resources/container-migration.plist "$APP/Contents/Resources/"
+# The privacy manifest the App Store requires, shared with the iPad app.
+cp ios/App/PrivacyInfo.xcprivacy "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -74,9 +78,15 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleShortVersionString</key>
     <string>$VERSION</string>
     <key>CFBundleVersion</key>
-    <string>$VERSION</string>
+    <string>$BUILD_NUMBER</string>
+    <!-- A rules reference, so App Review judges it as one rather than as a game. -->
     <key>LSApplicationCategoryType</key>
-    <string>public.app-category.role-playing-games</string>
+    <string>public.app-category.reference</string>
+    <!-- Only the system's HTTPS, which is exempt, so uploads don't ask about export compliance. -->
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2026 Stephen Cooper</string>
     <key>LSMinimumSystemVersion</key>
     <string>15.0</string>
     <key>NSHighResolutionCapable</key>
@@ -149,4 +159,4 @@ if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ]; then
     plutil -insert TablesideAppGroup -string "$GROUP" "$APP/Contents/Info.plist"
 fi
 scripts/sign-app.sh "$APP" "$ENTITLEMENTS"
-echo "Built $APP ($VERSION)"
+echo "Built $APP ($VERSION, build $BUILD_NUMBER)"
