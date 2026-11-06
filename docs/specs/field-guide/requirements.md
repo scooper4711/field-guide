@@ -138,6 +138,9 @@ device as art is. Lore the Paizo Blog published stays in the import.
   Others Probably..., Physical Description, Society, Beliefs, Names, Roleplaying) from the book that introduces it,
   in its place on the page, with bullets and labeled lines as printed; until that book is read, a note there names
   it.
+- R9.11 While a book is read, the window's toolbar says which, wherever the user is; a book Scrollkeeper hands
+  over is read for lore and art side by side. The Sourcebooks screen says a book isn't in the library only when
+  Scrollkeeper's list says so.
 - R9.10 Text read from books has no words broken in two or run together, no hyphens left from line breaks, no
   paragraphs split mid-sentence and no stray characters; pictures and sidebars don't interrupt it.
 

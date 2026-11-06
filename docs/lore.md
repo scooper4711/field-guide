@@ -124,8 +124,12 @@ title, so only the introduction after the title is read.
 - Details of ancestries from adventures and player's guides Field Guide hasn't been checked against (Secrets of the
   Swarm, Absalom Station, Invasion's Edge, Beyond the Blood Door, Guilt of the Grave World, Murder in Metal City,
   Cheliax, Life's Long Shadows).
-- 45 credited books have no SKU in Scrollkeeper's catalog (`FieldGuideLoreSurvey lore-books` lists them), so the
-  app can't offer to download them; it still reads them when the user adds their PDFs.
+- 13 credited books aren't in Scrollkeeper's catalog under any name (`FieldGuideLoreSurvey lore-books` lists them):
+  free player's guides and web supplements not claimed in the library, and books the library doesn't list. The
+  app can't offer to download them; it still reads them when the user adds their PDFs, and says so rather than
+  claiming the user lacks them. The survey matches Foundry's titles to Scrollkeeper's products by number (scenarios,
+  quests, adventure paths) or by their words within the book's game (`ProductMatcher`); a book Foundry credits
+  under two titles is one book, and a compilation's volumes (Season of Ghosts' #196–199) supply its lore too.
 
 ## Books
 
