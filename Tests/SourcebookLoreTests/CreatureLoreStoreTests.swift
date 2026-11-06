@@ -93,9 +93,21 @@ import SourcebookLoreTestSupport
         #expect(SourcebookList.creatureBooks(for: Self.adventure) == [Self.adventure, SourcebookList.sample.title])
     }
 
+    @Test func aCompilationsCreaturesTakeLoreFromItsVolumesAndABooksOtherTitleFindsIt() {
+        let list = SourcebookList(books: [
+            Sourcebook(title: "Pathfinder Adventure Path #217: Death Sails", aliases: ["Pathfinder #217: Death Sails"],
+                       supplies: [.creatureLore])
+        ], volumes: ["Season of Ghosts Compilation": ["#196", "#197"]])
+        #expect(list.creatureBookTitles(for: "Season of Ghosts Compilation")
+            == ["Season of Ghosts Compilation", "#196", "#197", SourcebookList.sample.title])
+        #expect(list.creatureBookTitles(for: "Pathfinder #217: Death Sails").first
+            == "Pathfinder Adventure Path #217: Death Sails")
+        #expect(list.title(of: "Unlisted") == "Unlisted")
+    }
+
     @Test func readsRecordsWrittenBeforeCreatureLore() throws {
         let list = try JSONDecoder().decode(SourcebookList.self, from: Data(#"{"books": [], "deities": {}}"#.utf8))
-        #expect(list.creatures.isEmpty)
+        #expect(list.creatures.isEmpty && list.volumes.isEmpty)
         let record = #"""
             {"title": "T", "sourceDigest": "d", "readerVersion": 1, "importedAt": 0, "deities": {}}
             """#

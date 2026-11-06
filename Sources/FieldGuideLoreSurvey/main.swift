@@ -12,6 +12,8 @@ import SourcebookLoreTestSupport
 //     checks the creature lore read from each book against Foundry's, as a table and the creatures missed
 // FieldGuideLoreSurvey creatures-of <pdf> <name>...
 //     prints the lore a book gives the named creatures, as JSON
+// FieldGuideLoreSurvey identify <library>
+//     lists the sourcebook each PDF in a library folder is known as, by its name
 // FieldGuideLoreSurvey read-library --catalog <catalog.sqlite> --store <folder> <library>
 //     reads every sourcebook in a library folder into a lore store, as the app's import does
 // FieldGuideLoreSurvey details-of <pdf> <name>...
@@ -31,6 +33,7 @@ let usage = """
     Usage: FieldGuideLoreSurvey table|writeups <pdf> [--catalog <catalog.sqlite>]
            FieldGuideLoreSurvey creatures --pf2e <repository> <title>=<pdf>...
            FieldGuideLoreSurvey creatures-of <pdf> <name>...
+           FieldGuideLoreSurvey identify <library>
            FieldGuideLoreSurvey read-library --catalog <catalog.sqlite> --store <folder> <library>
            FieldGuideLoreSurvey details-of <pdf> <name>...
            FieldGuideLoreSurvey details --pf2e <repository> <title>=<pdf>...
@@ -68,6 +71,12 @@ case "creatures-of":
         CreatureLore.keys(for: name).lazy.compactMap { all[$0] }.first.map { (name, $0) }
     }) { first, _ in first }
     FileHandle.standardOutput.write(try SurveyOutput.encoder.encode(named))
+case "identify":
+    guard let library = arguments.last, arguments.count >= 2 else { fail(usage, code: 2) }
+    for file in LoreStore.sourcebookFiles(in: URL(filePath: library), list: .bundled) {
+        let title = SourcebookIdentifier(list: .bundled).book(namedBy: file)?.title ?? "?"
+        print("\(title)\t\(file.path.replacingOccurrences(of: URL(filePath: library).path + "/", with: ""))")
+    }
 case "read-library":
     guard let catalog = value(of: "--catalog"), let store = value(of: "--store"), let library = arguments.last
     else { fail(usage, code: 2) }

@@ -86,7 +86,7 @@ public struct BookReader: Sendable {
     private func detailsLore(of book: Sourcebook, from document: PDFDocument) -> [String: DetailsLore] {
         guard book.supplies.contains(.detailsLore) else { return [:] }
         let isSample = book.title == SourcebookList.sample.title
-        let names = Set(subjects.details.filter { isSample || $0.credited == book.title }.map(\.name))
+        let names = Set(subjects.details.filter { isSample || list.title(of: $0.credited) == book.title }.map(\.name))
         guard !names.isEmpty else { return [:] }
         let writeups = DetailsWriteups(names: Array(names)).writeups(in: document)
         return Dictionary(writeups.map { (TextRepair.matchKey($0.key), $0.value) }) { first, _ in first }

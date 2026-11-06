@@ -109,20 +109,25 @@ public struct SourcebookList: Codable, Equatable, Sendable {
     public var deities: [String: LoreSources]
     /// The bestiary creature whose lore each adventure creature shares, by entry ID.
     public var creatures: [String: CreatureSource]
+    /// The volumes a compilation collects ("Pathfinder Season of Ghosts Hardcover Compilation" collects #196–199),
+    /// by the compilation's title: a user with the volumes has its lore.
+    public var volumes: [String: [String]]
 
     public init(books: [Sourcebook] = [], deities: [String: LoreSources] = [:],
-                creatures: [String: CreatureSource] = [:]) {
+                creatures: [String: CreatureSource] = [:], volumes: [String: [String]] = [:]) {
         self.books = books
         self.deities = deities
         self.creatures = creatures
+        self.volumes = volumes
     }
 
-    /// Reads a list, which a version before creature lore wrote without `creatures`.
+    /// Reads a list, which a version before creature lore wrote without `creatures` and `volumes`.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         books = try container.decode([Sourcebook].self, forKey: .books)
         deities = try container.decode([String: LoreSources].self, forKey: .deities)
         creatures = try container.decodeIfPresent([String: CreatureSource].self, forKey: .creatures) ?? [:]
+        volumes = try container.decodeIfPresent([String: [String]].self, forKey: .volumes) ?? [:]
     }
 
     /// The books a creature Foundry credits to `credited` may take its lore from, best first: for a bestiary, the
@@ -142,6 +147,21 @@ public struct SourcebookList: Codable, Equatable, Sendable {
         list.books.append(sample)
         return list
     }()
+
+    /// The books a creature Foundry credits to `credited` may take its lore from, best first: as
+    /// `creatureBooks(for:)` says, with a compilation's volumes after the compilation.
+    public func creatureBookTitles(for credited: String) -> [String] {
+        let title = title(of: credited)
+        return Self.creatureBooks(for: title).flatMap { book in
+            book == title ? [book] + (volumes[book] ?? []) : [book]
+        }
+    }
+
+    /// The title of the book Foundry credits as `credited`: Foundry credits some books under two titles, one of them
+    /// listed as the other's alias.
+    public func title(of credited: String) -> String {
+        books.first { $0.title == credited }?.title ?? book(named: credited)?.title ?? credited
+    }
 
     /// The book `name` (a file's or folder's name, or a copyright line) names, if any.
     public func book(named name: String) -> Sourcebook? {

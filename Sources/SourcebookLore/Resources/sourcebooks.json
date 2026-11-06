@@ -451,7 +451,9 @@
     },
     {
       "aliases" : [
+        "Pathfinder Adventure Path #186- Ghost King's Rage (Blood Lords 6 of 6)",
         "Pathfinder Adventure Path #186- Ghost King’s Rage (Blood Lords 6 of 6)",
+        "Pathfinder Adventure Path #186: Ghost King's Rage (Blood Lords 6 of 6)",
         "Pathfinder Adventure Path #186: Ghost King’s Rage (Blood Lords 6 of 6)"
       ],
       "sku" : "PZO90186E",
@@ -506,7 +508,9 @@
     },
     {
       "aliases" : [
+        "Pathfinder Adventure Path #194- Cult of the Cave Worm (Sky King's Tomb 2 of 3)",
         "Pathfinder Adventure Path #194- Cult of the Cave Worm (Sky King’s Tomb 2 of 3)",
+        "Pathfinder Adventure Path #194: Cult of the Cave Worm (Sky King's Tomb 2 of 3)",
         "Pathfinder Adventure Path #194: Cult of the Cave Worm (Sky King’s Tomb 2 of 3)"
       ],
       "sku" : "PZO90194E",
@@ -517,7 +521,9 @@
     },
     {
       "aliases" : [
+        "Pathfinder Adventure Path #195- Heavy is the Crown (Sky King's Tomb 3 of 3)",
         "Pathfinder Adventure Path #195- Heavy is the Crown (Sky King’s Tomb 3 of 3)",
+        "Pathfinder Adventure Path #195: Heavy is the Crown (Sky King's Tomb 3 of 3)",
         "Pathfinder Adventure Path #195: Heavy is the Crown (Sky King’s Tomb 3 of 3)"
       ],
       "sku" : "PZO90195E",
@@ -572,7 +578,8 @@
     },
     {
       "aliases" : [
-        "Pathfinder Adventure Path #203- Shepherd of Decay (Wardens of Wildwood 3 of 3)"
+        "Pathfinder Adventure Path #203- Shepherd of Decay (Wardens of Wildwood 3 of 3)",
+        "Pathfinder Adventure Path #203: Shepherd of Decay (Wardens of Wildwood 3 of 3)"
       ],
       "sku" : "PZO15203E",
       "supplies" : [
@@ -726,17 +733,6 @@
     },
     {
       "aliases" : [
-        "Pathfinder Adventure Path #217- Death Sails a Wine-Dark Sea (Myth-Speaker 2 of 3)",
-        "Pathfinder Adventure Path #217: Death Sails a Wine-Dark Sea (Myth-Speaker 2 of 3)"
-      ],
-      "sku" : "PZO15217E",
-      "supplies" : [
-        "creatureLore"
-      ],
-      "title" : "Pathfinder #217: Death Sails a Wine-Dark Sea"
-    },
-    {
-      "aliases" : [
         "Pathfinder Adventure Path #218- Titanbane (Myth-Speaker 3 of 3)"
       ],
       "sku" : "PZO15218E",
@@ -781,8 +777,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Adventure Path- Abomination Vaults",
+        "Pathfinder Adventure Path: Abomination Vaults"
       ],
+      "sku" : "PZO2033E",
       "supplies" : [
         "creatureLore"
       ],
@@ -790,11 +788,43 @@
     },
     {
       "aliases" : [
+        "Pathfinder Adventure Path #196- The Summer That Never Was (Season of Ghosts 1 of 4)"
+      ],
+      "sku" : "PZO90196E",
+      "supplies" : [
+        "creatureLore"
+      ],
+      "title" : "Pathfinder Adventure Path #196: The Summer That Never Was (Season of Ghosts 1 of 4)"
+    },
+    {
+      "aliases" : [
+        "Pathfinder Adventure Path #197- Let the Leaves Fall (Season of Ghosts 2 of 4)"
+      ],
+      "sku" : "PZO90197E",
+      "supplies" : [
+        "creatureLore"
+      ],
+      "title" : "Pathfinder Adventure Path #197: Let the Leaves Fall (Season of Ghosts 2 of 4)"
+    },
+    {
+      "aliases" : [
+        "Pathfinder Adventure Path #198- No Breath to Cry (Season of Ghosts 3 of 4)"
+      ],
+      "sku" : "PZO90198E",
+      "supplies" : [
+        "creatureLore"
+      ],
+      "title" : "Pathfinder Adventure Path #198: No Breath to Cry (Season of Ghosts 3 of 4)"
+    },
+    {
+      "aliases" : [
+        "Pathfinder #217: Death Sails a Wine-Dark Sea",
         "Pathfinder Adventure Path #217- Death Sails a Wine-Dark Sea (Myth-Speaker 2 of 3)"
       ],
       "sku" : "PZO15217E",
       "supplies" : [
-        "deityLore"
+        "deityLore",
+        "creatureLore"
       ],
       "title" : "Pathfinder Adventure Path #217: Death Sails a Wine-Dark Sea (Myth-Speaker 2 of 3)"
     },
@@ -819,8 +849,9 @@
     },
     {
       "aliases" : [
-
+        "PZO15223E Pathfinder Hell's Destiny Adventure Path -"
       ],
+      "sku" : "PZO15223",
       "supplies" : [
         "creatureLore"
       ],
@@ -828,8 +859,10 @@
     },
     {
       "aliases" : [
-
+        "PZO15222E Pathfinder Adventure Path- Hellbreakers",
+        "PZO15222E Pathfinder Adventure Path: Hellbreakers"
       ],
+      "sku" : "PZO15222E",
       "supplies" : [
         "creatureLore"
       ],
@@ -985,8 +1018,10 @@
     },
     {
       "aliases" : [
-
+        "PZO14009E - Pathfinder Adventure- Troubles in Grayce",
+        "PZO14009E - Pathfinder Adventure: Troubles in Grayce"
       ],
+      "sku" : "PZO14009",
       "supplies" : [
         "creatureLore"
       ],
@@ -1015,8 +1050,10 @@
     },
     {
       "aliases" : [
-
+        "PZO12013E - Pathfinder Beginner Box- Secrets of the Unlit Star",
+        "PZO12013E - Pathfinder Beginner Box: Secrets of the Unlit Star"
       ],
+      "sku" : "PZO12013-BX",
       "supplies" : [
         "creatureLore"
       ],
@@ -1126,8 +1163,9 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Dark Archive"
       ],
+      "sku" : "PZO2111E",
       "supplies" : [
         "creatureLore",
         "detailsLore"
@@ -1157,6 +1195,7 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO2103E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1164,7 +1203,7 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Guns & Gears (Remastered)"
       ],
       "sku" : "PZO2109E",
       "supplies" : [
@@ -1185,7 +1224,7 @@
     },
     {
       "aliases" : [
-
+        "PZO12014E Pathfinder Impossible Magic -"
       ],
       "sku" : "PZO12014E",
       "supplies" : [
@@ -1195,8 +1234,9 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Kingmaker Adventure Path"
       ],
+      "sku" : "PZO2020E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1315,7 +1355,7 @@
     },
     {
       "aliases" : [
-
+        "PZO13008E Pathfinder Lost Omens Hellfire Dispatches Single-File"
       ],
       "sku" : "PZO13008E",
       "supplies" : [
@@ -1325,7 +1365,8 @@
     },
     {
       "aliases" : [
-
+        "PZO13009E Pathfinder Lost Omens- High Seas -",
+        "PZO13009E Pathfinder Lost Omens: High Seas -"
       ],
       "sku" : "PZO13009E",
       "supplies" : [
@@ -1389,8 +1430,9 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Lost Omens Grand Bazaar"
       ],
+      "sku" : "PZO9310E",
       "supplies" : [
         "detailsLore"
       ],
@@ -1515,8 +1557,9 @@
     },
     {
       "aliases" : [
-
+        "PZO14008E Season of Ghosts"
       ],
+      "sku" : "PZO14008E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1584,8 +1627,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #15- In the Footsteps of Horror",
+        "Pathfinder Quest (Series 2) #15: In the Footsteps of Horror"
       ],
+      "sku" : "PZOPFQ0015E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1593,8 +1638,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #18- Student Exchange",
+        "Pathfinder Quest (Series 2) #18: Student Exchange"
       ],
+      "sku" : "PZOPFQ0018E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1602,8 +1649,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #19- The Elsewhere Feast",
+        "Pathfinder Quest (Series 2) #19: The Elsewhere Feast"
       ],
+      "sku" : "PZOPFQ0019E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1611,8 +1660,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #20- The Dacilane Academy's Show Must Go On",
+        "Pathfinder Quest (Series 2) #20: The Dacilane Academy's Show Must Go On"
       ],
+      "sku" : "PZO16Q020E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1620,8 +1671,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #22- Friends in Need",
+        "Pathfinder Quest (Series 2) #22: Friends in Need"
       ],
+      "sku" : "PZO16Q022E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1629,8 +1682,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #23- Lacking Respect",
+        "Pathfinder Quest (Series 2) #23: Lacking Respect"
       ],
+      "sku" : "PZO16Q023E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1638,8 +1693,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #24- Tanuki Trouble",
+        "Pathfinder Quest (Series 2) #24: Tanuki Trouble"
       ],
+      "sku" : "PZO16Q024E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1647,8 +1704,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Quest (Series 2) #27- Within the Glacier",
+        "Pathfinder Quest (Series 2) #27: Within the Glacier"
       ],
+      "sku" : "PZO16Q027E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1717,6 +1776,7 @@
     },
     {
       "aliases" : [
+        "Pathfinder Society Scenario #1-05- Trailblazers' Bounty",
         "Pathfinder Society Scenario #1-05- Trailblazers’ Bounty",
         "Pathfinder Society Scenario #1-05: Trailblazers’ Bounty"
       ],
@@ -1818,8 +1878,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #1-17- The Perennial Crown Part 2, The Thorned King",
+        "Pathfinder Society Scenario #1-17: The Perennial Crown Part 2, The Thorned King"
       ],
+      "sku" : "PZOPFS0117E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2077,8 +2139,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #3-15- Cavern of the Sundered Song",
+        "Pathfinder Society Scenario #3-15: Cavern of the Sundered Song"
       ],
+      "sku" : "PZOPFS0315E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2257,8 +2321,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Special #4-99- Blessings of the Forest",
+        "Pathfinder Society Special #4-99: Blessings of the Forest"
       ],
+      "sku" : "PZOPFS0499E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2297,8 +2363,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #5-09- Equal Exchanges – Skymetal Hoard",
+        "Pathfinder Society Scenario #5-09: Equal Exchanges – Skymetal Hoard"
       ],
+      "sku" : "PZOPFS0509E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2316,8 +2384,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #5-11- Equal Exchanges – The Hidden Current",
+        "Pathfinder Society Scenario #5-11: Equal Exchanges – The Hidden Current"
       ],
+      "sku" : "PZOPFS0511E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2355,8 +2425,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #5-18- Equal Exchanges - Tapestry of the Mind",
+        "Pathfinder Society Scenario #5-18: Equal Exchanges - Tapestry of the Mind"
       ],
+      "sku" : "PZOPFS0518E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2364,8 +2436,9 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #5-19- Demonic Afterparty"
       ],
+      "sku" : "PZOPFS0519E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2383,8 +2456,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Special #6-00- Salt of the Ocean",
+        "Pathfinder Society Special #6-00: Salt of the Ocean"
       ],
+      "sku" : "PZO160600E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2392,8 +2467,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Intro- Year of Immortal Influence",
+        "Pathfinder Society Intro: Year of Immortal Influence"
       ],
+      "sku" : "PZO160601E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2570,8 +2647,9 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Intro to the Year of Battle’s Spark - Enough is Enough"
       ],
+      "sku" : "PZO160701E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2670,8 +2748,10 @@
     },
     {
       "aliases" : [
-
+        "Pathfinder Society Scenario #7-21- The Home of Empty Breath",
+        "Pathfinder Society Scenario #7-21: The Home of Empty Breath"
       ],
+      "sku" : "PZO160721E",
       "supplies" : [
         "creatureLore"
       ],
@@ -2709,7 +2789,7 @@
     },
     {
       "aliases" : [
-
+        "PZO22005E Starfinder Galactic Ancestries Single-File"
       ],
       "sku" : "PZO22005E",
       "supplies" : [
@@ -2744,6 +2824,7 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO24005E",
       "supplies" : [
         "creatureLore",
         "detailsLore"
@@ -8373,5 +8454,18 @@
       "prose" : "Starfinder Player Core",
       "stats" : "Starfinder Player Core"
     }
+  },
+  "volumes" : {
+    "Pathfinder Abomination Vaults Hardcover Compilation" : [
+      "Pathfinder #163: Ruins of Gauntlight",
+      "Pathfinder #164: Hands of the Devil",
+      "Pathfinder #165: Eyes of Empty Death"
+    ],
+    "Pathfinder Season of Ghosts Hardcover Compilation" : [
+      "Pathfinder Adventure Path #196: The Summer That Never Was (Season of Ghosts 1 of 4)",
+      "Pathfinder Adventure Path #197: Let the Leaves Fall (Season of Ghosts 2 of 4)",
+      "Pathfinder Adventure Path #198: No Breath to Cry (Season of Ghosts 3 of 4)",
+      "Pathfinder #199: To Bloom Below the Web"
+    ]
   }
 }

@@ -59,13 +59,14 @@ public actor LoreStore {
     /// sample; nil when neither has been read.
     public func details(of entry: EntryReference) -> DetailsLore? {
         let key = TextRepair.matchKey(entry.name)
-        return [entry.credited, SourcebookList.sample.title].lazy.compactMap { self.stored.books[$0]?.details[key] }
+        return [list.title(of: entry.credited), SourcebookList.sample.title].lazy
+            .compactMap { self.stored.books[$0]?.details[key] }
             .first
     }
 
     private func printedLore(of creature: EntryReference) -> CreatureLore? {
         let keys = CreatureLore.keys(for: creature.name)
-        for title in SourcebookList.creatureBooks(for: creature.credited) {
+        for title in list.creatureBookTitles(for: creature.credited) {
             guard let creatures = stored.books[title]?.creatures else { continue }
             if let lore = keys.lazy.compactMap({ creatures[$0] }).first { return lore }
         }
