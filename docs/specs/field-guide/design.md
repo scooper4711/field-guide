@@ -145,9 +145,21 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   family's. Lore is stored by the match key of the printed name (`CreatureLore.keys(for:)` adds "Adult Horned
   Dragon" for "Horned Dragon (Adult)"), so `LoreStore` can choose among editions when shown
   (`SourcebookList.creatureBooks(for:)`). `FieldGuideLoreSurvey creatures` checks a book against Foundry's text;
-  `creature-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
+  `lore-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
   whose text Foundry copied; `sample` writes `Resources/Review/Field Guide Sample Monster Core.pdf`
   (`SampleSourcebook`).
+- Ancestry and class lore: the import keeps a Details page's rules and puts `DetailsPage.loreMarker` where its lore
+  was (`DetailsPage.loreRange`: from a class's "Roleplaying" heading, or the page's start, to "Mechanics" or
+  "Initial Proficiencies"). `DetailsWriteups` finds the entry's title (chapter-sized, else section-sized; of several,
+  the one whose section has most of the Details' own headings), reads its introduction and sections
+  (`DetailsSectionReader.loreHeadings`, in title case or capitals; other headings in capitals are boxes of rules,
+  left out) and stops where the rules begin: a heading naming heritages, class features or ancestry feats, a
+  section-sized one naming the entry, or one as tall as its title. `DetailsParagraphs` keeps bullets and bold labels.
+  `ColumnOrder` reads a row's lines (tops within 2 points, as a bullet and its text) left to right, and `PageText`
+  drops pictures and control characters, which would otherwise split columns and paragraphs. `PageTabs` puts
+  `SourcebookModel.detailsHTML(of:)` (the book's lore, or a note naming the book) in the marker's place.
+  `FieldGuideLoreSurvey details` and `creatures` check the readers against Foundry's text, `TextQuality` flagging
+  broken, hyphenated and run-together words, split paragraphs and stray characters.
 - `ScrollkeeperLink` follows Scrollkeeper's app-handoff contract (`scrollkeeper://index` and `open`, the
   `scrollkeeperindex` list, `fieldguide://handoff` status links), as Pluck's bridge does; the Mac's Info.plist
   declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed.

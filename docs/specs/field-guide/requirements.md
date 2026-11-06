@@ -130,8 +130,16 @@ device as art is. Lore the Paizo Blog published stays in the import.
   any of them takes its lore from the first of them read that prints it (Monster Core, Monster Core 2, the book
   Foundry credits, the other Bestiaries), whichever order the books were read in. An adventure's creature whose
   lore is a bestiary creature's (`sourcebooks.json`) takes that creature's.
-- R9.8 A sample sourcebook (placeholder text under real creatures' and deities' names, laid out as Monster Core
-  is) lets App Review and anyone without the books try it; its lore comes after any real book's.
+- R9.8 A sample sourcebook (placeholder text under real creatures', deities', an ancestry's and a class's names, laid
+  out as Paizo's books are) lets App Review and anyone without the books try it; its lore comes after any real
+  book's.
+- R9.9 An ancestry's or class's Details keep their rules from the import (key attribute and Hit Points, mechanics,
+  heritages, initial proficiencies, class features) and show the setting's prose (introduction, You Might...,
+  Others Probably..., Physical Description, Society, Beliefs, Names, Roleplaying) from the book that introduces it,
+  in its place on the page, with bullets and labeled lines as printed; until that book is read, a note there names
+  it.
+- R9.10 Text read from books has no words broken in two or run together, no hyphens left from line breaks, no
+  paragraphs split mid-sentence and no stray characters; pictures and sidebars don't interrupt it.
 
 ## R8 Battle cards
 - R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
