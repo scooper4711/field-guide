@@ -8,12 +8,26 @@ import Testing
 @MainActor
 struct PageLinkTests {
     @Test("Entry links open the entry, Details links its Details, trait links the trait", arguments: [
-        ("entry:Compendium.pf2e.classes.Item.fi1", PageLink?.some(.entry("Compendium.pf2e.classes.Item.fi1"))),
+        ("entry:Compendium.pf2e.classes.Item.fi1", PageLink.entry("Compendium.pf2e.classes.Item.fi1")),
         ("entry:Compendium.pf2e.classes.Item.fi1#details", .entry("Compendium.pf2e.classes.Item.fi1", .details)),
-        ("trait:fire", .trait("fire", .pathfinder)), ("https://example.com", nil)
+        ("trait:fire", .trait("fire", .pathfinder))
     ])
-    func links(url: String, link: PageLink?) throws {
-        #expect(PageView.link(for: try #require(URL(string: url)), system: .pathfinder) == link)
+    func pageLinks(url: String, link: PageLink) throws {
+        #expect(PageView.destination(for: try #require(URL(string: url)), system: .pathfinder) == .page(link))
+    }
+
+    @Test("Web and mail links open in the browser", arguments: [
+        "https://paizo.com/community/communityuse", "http://example.com/page", "HTTPS://example.com",
+        "mailto:someone@example.com"
+    ])
+    func browserLinks(url: String) throws {
+        let link = try #require(URL(string: url))
+        #expect(PageView.destination(for: link, system: .pathfinder) == .browser(link))
+    }
+
+    @Test("Other schemes are ignored", arguments: ["javascript:alert(1)", "file:///etc/hosts", "fieldguide:///x"])
+    func ignoredLinks(url: String) throws {
+        #expect(PageView.destination(for: try #require(URL(string: url)), system: .pathfinder) == .ignored)
     }
 
     @Test("The tabs read as Overview, Details and Lore")
