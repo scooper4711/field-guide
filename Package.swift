@@ -27,8 +27,9 @@ let package = Package(
         .executableTarget(name: "FieldGuideImport", dependencies: [
             "CompendiumImport", .product(name: "CreatureImport", package: "tabletop-kit")
         ]),
+        .target(name: "LoreSync", dependencies: ["SourcebookLore"]),
         .target(name: "FieldGuideUI", dependencies: [
-            "FieldGuideKit", "SourcebookLore", .product(name: "BattleCards", package: "tabletop-kit"),
+            "FieldGuideKit", "SourcebookLore", "LoreSync", .product(name: "BattleCards", package: "tabletop-kit"),
             .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit"),
             .product(name: "AppNotices", package: "tabletop-kit")
         ], resources: [.process("Resources")]),
@@ -36,6 +37,7 @@ let package = Package(
         .testTarget(name: "FieldGuideKitTests", dependencies: ["FieldGuideKit"]),
         .target(name: "SourcebookLoreTestSupport", dependencies: ["SourcebookLore"]),
         .testTarget(name: "SourcebookLoreTests", dependencies: ["SourcebookLore", "SourcebookLoreTestSupport"]),
+        .testTarget(name: "LoreSyncTests", dependencies: ["LoreSync", "SourcebookLore"]),
         .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),
         .testTarget(name: "FieldGuideUITests", dependencies: [
             "FieldGuideUI", "FieldGuideKit", "SourcebookLore", "SourcebookLoreTestSupport"
