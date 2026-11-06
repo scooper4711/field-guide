@@ -197,8 +197,11 @@ private struct SourcebookRowView: View {
                 Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
             } else if let url = row.book.downloadURL {
                 Link("Get", destination: url).formRowButtonStyle()
-            } else {
+            } else if scrollkeeper.lacks(sku: row.book.sku) {
                 Text("Not in your library").font(.caption).foregroundStyle(.secondary)
+            } else {
+                // Without Scrollkeeper's list, or a SKU to look the book up by, whether the user owns it is unknown.
+                Text("Add its PDF to read it").font(.caption).foregroundStyle(.secondary)
             }
         }
     }

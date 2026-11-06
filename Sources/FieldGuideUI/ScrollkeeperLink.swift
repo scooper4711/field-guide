@@ -48,6 +48,13 @@ public final class ScrollkeeperLink {
         sku.map { owned[$0] != nil } ?? false
     }
 
+    /// True when Scrollkeeper's list says the user doesn't own the title; false when that can't be known: no SKU,
+    /// or no list yet.
+    public func lacks(sku: String?) -> Bool {
+        guard let sku, !owned.isEmpty else { return false }
+        return owned[sku] == nil
+    }
+
     /// Asks Scrollkeeper, staying in the background, to hand over the list of titles.
     public func requestIndex() {
         guard isInstalled else { return }
