@@ -49,6 +49,8 @@ rm -rf "$ICONSET"
 ditto Generated "$APP/Contents/Resources/Generated"
 # Moves the data an unsandboxed version kept into the sandbox on the first sandboxed launch.
 cp Resources/container-migration.plist "$APP/Contents/Resources/"
+# The privacy manifest the App Store requires, shared with the iPad app.
+cp ios/App/PrivacyInfo.xcprivacy "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
