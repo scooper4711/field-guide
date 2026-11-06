@@ -54,7 +54,7 @@ public struct CreatureWriteups {
     static func contentLines(of page: PDFPage) -> [TextLine] {
         let box = page.bounds(for: .mediaBox)
         let content = box.insetBy(dx: box.width * 0.1, dy: 0).divided(atDistance: 32, from: .minYEdge).remainder
-            .divided(atDistance: box.height * 0.07, from: .maxYEdge).remainder
+            .divided(atDistance: box.height * 0.05, from: .maxYEdge).remainder
         let lines = PageText.lines(of: page).filter { content.contains(CGPoint(x: $0.bounds.midX, y: $0.bounds.midY)) }
         return ColumnOrder.lines(lines, pageWidth: box.width)
     }
@@ -98,16 +98,21 @@ struct CreatureSection {
     /// The creature's paragraphs, from its heading at `start` to its stat block at `end`, and its family's
     /// introduction when its heading is a creature's (`creatureHeight` tall) rather than a family's.
     func lore(from start: Int, to end: Int, creatureHeight: CGFloat) -> CreatureLore {
-        let stop = lines[(start + 1)..<end].indices.first(where: isStatHeading) ?? end
-        let prose = ParagraphReader(lines: proseLines(from: start + 1, to: stop), bodySize: bodySize)
-        var lore = CreatureLore(paragraphs: prose.paragraphs())
+        var lore = CreatureLore(paragraphs: paragraphs(after: start, before: end))
         if let family = familyHeading(above: start, creatureHeight: creatureHeight) {
             lore.family = Self.headingText(lines[family])
             let close = lines[(family + 1)...].firstIndex { isHeading($0) } ?? start
-            lore.familyParagraphs = ParagraphReader(lines: proseLines(from: family + 1, to: close),
-                                                    bodySize: bodySize).paragraphs()
+            lore.familyParagraphs = paragraphs(after: family, before: max(close, family + 1))
         }
         return lore
+    }
+
+    /// The paragraphs after the heading at `start`, up to `end`, a stat block's heading or a line opening with a
+    /// bold label ("Perception +12"): prose never does, so a stat block the page's order put here ends it.
+    private func paragraphs(after start: Int, before end: Int) -> [String] {
+        let rest = lines[(start + 1)..<end]
+        let stop = rest.indices.first { isStatHeading($0) || lines[$0].startsBold } ?? end
+        return ParagraphReader(lines: proseLines(from: start + 1, to: stop), bodySize: bodySize).paragraphs()
     }
 
     /// Where a creature's prose starts: its heading, and whether the heading names it.

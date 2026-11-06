@@ -54,8 +54,7 @@ public struct CompendiumImporter {
         let diagrams = AreaDiagrams().rows()
         let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
         let journalRows = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
-        // The ancestries' and classes' Details are lore, left out; links to them open the ancestry or class.
-        let rows = documents.map(builder.row(for:)) + journalRows + diagrams
+        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
         let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))

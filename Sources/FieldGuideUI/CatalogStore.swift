@@ -129,16 +129,23 @@ public final class CatalogStore {
         return globalSearch
     }
 
-    /// The deities and creatures of both systems, for reading their lore from the user's books.
+    /// The deities, creatures, ancestries and classes of both systems, for reading their lore from the user's books.
     public func loreSubjects() -> LoreSubjects {
-        let deities = GameSystem.allCases.flatMap { (try? catalog?.summaries(of: .deities, in: $0)) ?? [] }
-        let creatures = GameSystem.allCases.flatMap { (try? catalog?.summaries(of: .bestiary, in: $0)) ?? [] }
+        let deities = summaries(of: .deities)
         return LoreSubjects(deityNames: Dictionary(deities.map { ($0.id, $0.name) }) { first, _ in first },
-                            creatures: creatures.compactMap { creature in
-                                creature.values(of: .source).first.map {
-                                    CreatureReference(id: creature.id, name: creature.name, credited: $0)
-                                }
-                            })
+                            creatures: references(to: summaries(of: .bestiary)),
+                            details: references(to: summaries(of: .ancestries) + summaries(of: .classes)))
+    }
+
+    private func summaries(of category: EntryCategory) -> [EntrySummary] {
+        GameSystem.allCases.flatMap { (try? catalog?.summaries(of: category, in: $0)) ?? [] }
+    }
+
+    /// The entries with the book each is credited to; an entry without one is left out.
+    private func references(to entries: [EntrySummary]) -> [EntryReference] {
+        entries.compactMap { entry in
+            entry.values(of: .source).first.map { EntryReference(id: entry.id, name: entry.name, credited: $0) }
+        }
     }
 
     public func page(_ id: String) -> EntryPage? {

@@ -36,6 +36,8 @@ struct ScrollkeeperLinkTests {
         let link = ScrollkeeperLink(launcher: launcher)
         link.requestIndex()
         #expect(launcher.opened.isEmpty && !link.isInstalled && !link.owns(sku: "PZO13003E"))
+        // Without the list, whether the user lacks a title is unknown.
+        #expect(!link.lacks(sku: "PZO13003E"))
         #expect(!ScrollkeeperLink(launcher: nil).isInstalled)
     }
 
@@ -50,6 +52,7 @@ struct ScrollkeeperLinkTests {
         let link = ScrollkeeperLink(launcher: FakeLauncher())
         link.receiveIndex(file)
         #expect(link.owns(sku: "PZO13003E") && !link.owns(sku: "PZO9303WS") && !link.owns(sku: nil))
+        #expect(link.lacks(sku: "PZO9303WS") && !link.lacks(sku: "PZO13003E") && !link.lacks(sku: nil))
         link.receiveIndex(file.appendingPathExtension("missing"))
         #expect(link.owned == ["PZO13003E": false])
     }

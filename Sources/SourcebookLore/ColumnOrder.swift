@@ -11,10 +11,8 @@ enum ColumnOrder {
         var ordered: [TextLine] = []
         var band: [TextLine] = []
         func closeBand() {
-            ordered += band.sorted { first, second in
-                let (left, right) = (first.bounds.minX < split, second.bounds.minX < split)
-                return left != right ? left : first.bounds.maxY > second.bounds.maxY
-            }
+            let left = band.filter { $0.bounds.minX < split }
+            ordered += rows(of: left) + rows(of: band.filter { $0.bounds.minX >= split })
             band = []
         }
         for line in lines.sorted(by: { $0.bounds.maxY > $1.bounds.maxY }) {
@@ -27,6 +25,20 @@ enum ColumnOrder {
         }
         closeBand()
         return ordered
+    }
+
+    /// A column's lines top to bottom; lines whose tops are within 2 points, as a bullet and its text are, form a
+    /// row read left to right.
+    static func rows(of column: [TextLine]) -> [TextLine] {
+        var rows: [[TextLine]] = []
+        for line in column.sorted(by: { $0.bounds.maxY > $1.bounds.maxY }) {
+            if let top = rows.last?.first?.bounds.maxY, top - line.bounds.maxY <= 2 {
+                rows[rows.count - 1].append(line)
+            } else {
+                rows.append([line])
+            }
+        }
+        return rows.flatMap { $0.sorted { $0.bounds.minX < $1.bounds.minX } }
     }
 
     /// The x where the columns meet: of the places a line starts in the page's middle, the one the fewest lines
