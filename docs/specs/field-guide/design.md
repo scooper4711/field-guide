@@ -116,8 +116,9 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote,
   `CreatureCardView` shows Tabletop Kit's `InteractiveBattleCard`: the `BattleCard`, and `CardBack` around an
   `ArtPicture`, with the card art, glossary and an `ArtPictureLoader` over `ArtModel` in the environment. When
-  the page has lore (`EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a
-  toolbar picker switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it to
+  the page has lore (from the user's books through `SourcebookModel.creatureLore(of:)`, else the Paizo Blog's
+  `EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a toolbar picker
+  switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it to
   the column's width. An entry with Details gets an [Overview | Details] picker instead (`EntryTab`, opened on
   Details by `entry:<id>#details` links). `RootView` is the Mac's `battleCardFullScreenHost()`. The web
   fonts in `Generated` are registered at launch for the cards.
@@ -136,6 +137,17 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   result ships as `sourcebooks.json`. On the device, `LoreStore` (an actor) reads the books the user adds or
   Scrollkeeper's folder holds (`SourcebookIdentifier`, `BookReader`) into `lore.json`, and `SourcebookModel` gives
   `PageView` the lore for its tabs (`PageTabs`).
+- Creature lore: `CreatureWriteups` reads pages in column order (`ColumnOrder` splits a wide column from a
+  narrow sidebar where the fewest lines cross), finds stat block headings ("NAME CREATURE n", the level perhaps on
+  the next line) and walks back to the heading naming the creature, else the nearest heading. Headings are told by
+  their lines' heights, since some display fonts read back at the body's size: the commonest height of headings
+  naming creatures is a creature's, and the nearest taller one (up to 1.4 times) above a creature's heading is its
+  family's. Lore is stored by the match key of the printed name (`CreatureLore.keys(for:)` adds "Adult Horned
+  Dragon" for "Horned Dragon (Adult)"), so `LoreStore` can choose among editions when shown
+  (`SourcebookList.creatureBooks(for:)`). `FieldGuideLoreSurvey creatures` checks a book against Foundry's text;
+  `creature-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
+  whose text Foundry copied; `sample` writes `Resources/Review/Field Guide Sample Monster Core.pdf`
+  (`SampleSourcebook`).
 - `ScrollkeeperLink` follows Scrollkeeper's app-handoff contract (`scrollkeeper://index` and `open`, the
   `scrollkeeperindex` list, `fieldguide://handoff` status links), as Pluck's bridge does; the Mac's Info.plist
   declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed.

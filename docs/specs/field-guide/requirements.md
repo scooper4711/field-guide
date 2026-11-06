@@ -104,11 +104,12 @@ Foundry VTT's compendium browser.
   card says which missing PDF its art needs.
 
 ## R9 Sourcebook lore
-The App Store build and the disk image leave out Paizo's Reserved Material, so a deity's lore comes from the
-user's own PDFs, read on the device as art is.
+No build ships Paizo's Reserved Material (creatures' descriptions, deities' write-ups, the ancestries' and classes'
+Details; `docs/lore.md` lists it), so deities' and creatures' lore comes from the user's own PDFs, read on the
+device as art is. Lore the Paizo Blog published stays in the import.
 - R9.1 A deity's page has a Lore tab when the user's books give it any lore: its setting lines (title, areas of
   concern, edicts, anathema, religious symbol, sacred animal and colors), the introduction of its write-up, and
-  its divine intercession (boons and curses). A build that kept Foundry's lore moves that write-up to the tab.
+  its divine intercession (boons and curses). A Paizo Blog deity's write-up moves from its overview to the tab.
 - R9.2 Each part has one source, chosen once for every user (`sourcebooks.json`): the setting lines from Paizo's
   free Divine Mysteries Web Supplement where it lists the deity, else the book with its write-up; the prose from
   the book Foundry credits, else the book whose text opens as Foundry's does; the intercession from the credited
@@ -124,10 +125,17 @@ user's own PDFs, read on the device as art is.
   a book is offered.
 - R9.6 Each book's lore is kept with its PDF's digest and date, the reader's version and when it was read, so a
   later sync between devices can keep the newest; a newer reader reads books again.
+- R9.7 A creature's lore is the paragraphs its book prints before its stat block, then its family's
+  introduction under the family's name. Monster Core and Monster Core 2 remaster Bestiaries 1–3: a creature from
+  any of them takes its lore from the first of them read that prints it (Monster Core, Monster Core 2, the book
+  Foundry credits, the other Bestiaries), whichever order the books were read in. An adventure's creature whose
+  lore is a bestiary creature's (`sourcebooks.json`) takes that creature's.
+- R9.8 A sample sourcebook (placeholder text under real creatures' and deities' names, laid out as Monster Core
+  is) lets App Review and anyone without the books try it; its lore comes after any real book's.
 
 ## R8 Battle cards
 - R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
-  style, as in Turnkeeper) and its lore, the description without the stat block; the choice is remembered. A
+  style, as in Turnkeeper) and its lore from the user's books (R9.7); the choice is remembered. A
   creature without lore shows only its card. The card fills the width of its column, padded, and grows when
   the sidebar is hidden.
 - R8.2 Tapping an empty part of the card shows its corner icons and a second tap hides them; with a pointer,
