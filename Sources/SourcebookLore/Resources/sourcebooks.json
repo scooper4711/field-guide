@@ -1007,6 +1007,7 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO2106E",
       "supplies" : [
         "creatureLore"
       ],
@@ -1484,6 +1485,7 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO12001E",
       "supplies" : [
         "creatureLore",
         "detailsLore"
@@ -2697,9 +2699,9 @@
     },
     {
       "aliases" : [
-        "Pathfinder GM Core"
+
       ],
-      "sku" : "PZO12002E",
+      "sku" : "PZO22002E",
       "supplies" : [
         "deityLore"
       ],
@@ -2750,9 +2752,9 @@
     },
     {
       "aliases" : [
-        "Pathfinder Player Core"
+
       ],
-      "sku" : "PZO12001E",
+      "sku" : "PZO22001E",
       "supplies" : [
         "deityLore",
         "detailsLore"

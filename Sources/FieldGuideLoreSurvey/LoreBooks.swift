@@ -34,6 +34,7 @@ enum LoreBooks {
         for title in titles.filter({ !$0.isEmpty }).sorted() {
             if let index = list.books.firstIndex(where: { $0.title == title }) {
                 if !list.books[index].supplies.contains(supply) { list.books[index].supplies.append(supply) }
+                if list.books[index].sku == nil { list.books[index].sku = product(for: title, in: products)?.sku }
                 continue
             }
             let product = self.product(for: title, in: products)
@@ -53,7 +54,8 @@ enum LoreBooks {
         let key = Survey.distinctiveKey(of: title)
         guard !key.isEmpty else { return nil }
         let matches = products.filter { product in
-            guard product.name.range(of: accessories, options: .regularExpression) == nil else { return false }
+            guard product.name.range(of: accessories, options: .regularExpression) == nil,
+                  Survey.isSameGame(title, product.name) else { return false }
             return strippedKey(of: product.name).hasPrefix(key) || Survey.distinctiveKey(of: product.name) == key
         }
         let bySKU = Dictionary(grouping: matches, by: \.sku)
