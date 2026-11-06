@@ -78,11 +78,11 @@ release, it builds the next patch version into a draft release. Commit `pf2e.rel
   `icon-overrides.json`. `icon-matches.tsv` keeps each Foundry icon's match for imports without the Foundry
   app, such as GitHub's.
   `cwebp` (`brew install webp`) shrinks the icons.
-  The import leaves out the setting's lore: creatures' descriptions (and their Lore tab), deities' write-ups and
-  the ancestries' and classes' Details. Neither the ORC License nor the Community Use Policy covers reproducing
-  that text, so the disk image and the App Store build don't ship it. Lore from the Paizo Blog stays: the
-  Community Use Policy lets a free project use the blog's text. `LORE=include make import` (or
-  `LORE=include make update`) keeps it, for a build of your own; such an import doesn't rewrite `import.sha256`.
+  The import always leaves out the setting's lore: creatures' descriptions, deities' write-ups and the ancestries'
+  and classes' Details. Neither the ORC License nor the Community Use Policy covers reproducing that text, so no
+  build ships it. Lore from the Paizo Blog stays: the Community Use Policy lets a free project use the blog's
+  text. The app reads deities' and creatures' lore from the user's own sourcebooks instead (Sourcebooks in the
+  sidebar); `docs/lore.md` lists what is left out and where it comes back from.
 - `make ipad-install` builds the iPad and iPhone app with `Generated/` inside and installs it on a connected
   iPad (`IPAD=<name>` picks another device, such as an iPhone with Developer Mode on). Put
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so

@@ -27,8 +27,6 @@ struct PageBuilder {
     static let creatureArtPrefix = "creature/"
 
     let context: PageContext
-    /// Whether creatures' descriptions and deities' write-ups are kept (`ImportOptions.includesLore`).
-    var includesLore = true
     /// The sources whose lore is always kept: the Community Use Policy lets a free project use "any of the text
     /// or artwork published in the Paizo Blog".
     static let communityUseSources = ["Paizo Blog", "Pathfinder Blog"]
@@ -91,10 +89,11 @@ struct PageBuilder {
         }
     }
 
-    /// A description that is the setting's lore (a creature's, a deity's), or "" when the import leaves lore out
-    /// and the Community Use Policy doesn't cover the document's source.
+    /// A description that is the setting's lore (a creature's, a deity's): Paizo's Reserved Material, which neither
+    /// the ORC License nor the Community Use Policy lets the app reproduce, so it is left out ("") unless the Paizo
+    /// Blog published it. The app reads it from the user's own books instead (SourcebookLore).
     private func lore(_ html: String, of document: SourceDocument, values: FormulaValues) -> String {
-        includesLore || Self.isCommunityUse(document) ? description(html, values: values) : ""
+        Self.isCommunityUse(document) ? description(html, values: values) : ""
     }
 
     private static func isCommunityUse(_ document: SourceDocument) -> Bool {

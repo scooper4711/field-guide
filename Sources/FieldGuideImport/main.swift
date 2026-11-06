@@ -3,7 +3,7 @@ import CreatureImport
 import Foundation
 
 /// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--symbols DIR]
-/// [--starfinder-symbols DIR] [--artwork DIR] [--lore include|omit] [--out DIR] [--work DIR]`
+/// [--starfinder-symbols DIR] [--artwork DIR] [--out DIR] [--work DIR]`
 ///
 /// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, the
 /// Community Use Package's Religious Symbols and Starfinder Religious Symbols in
@@ -13,8 +13,8 @@ import Foundation
 /// of Foundry's; `icon-overrides.json` corrects them, and `icon-matches.tsv` keeps the matches for machines
 /// without the Foundry app. Also writes the creatures for the battle cards to
 /// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
-/// user's own PDFs on the device. `--lore omit` leaves out the setting's lore (creatures' descriptions, deities'
-/// write-ups, the ancestries' and classes' Details), as the App Store build must.
+/// user's own PDFs on the device. The setting's lore (creatures' descriptions, deities' write-ups, the ancestries'
+/// and classes' Details) is left out: the app reads it from the user's own books too.
 let home = FileManager.default.homeDirectoryForCurrentUser
 var settings = [
     "--pf2e": home.appendingPathComponent("git/pf2e").path,
@@ -25,7 +25,6 @@ var settings = [
     "--starfinder-symbols": home.appendingPathComponent(
         "git/community-use-artwork/Community Use Package- Starfinder Religious Symbols").path,
     "--artwork": "Artwork",
-    "--lore": "include",
     "--out": "Generated",
     "--work": ".build/field-guide-import"
 ]
@@ -55,11 +54,6 @@ options.actionIconsFont = existingFolder(settings["--artwork"])?
     .appendingPathComponent("pathfinder-icons/Pathfinder-Icons.ttf")
 options.religiousSymbols = ReligiousSymbols(pathfinder: existingFolder(settings["--symbols"]),
                                             starfinder: existingFolder(settings["--starfinder-symbols"]))
-guard let lore = settings["--lore"], ["include", "omit"].contains(lore) else {
-    FileHandle.standardError.write(Data("Importing failed: --lore must be include or omit\n".utf8))
-    exit(2)
-}
-options.includesLore = lore == "include"
 let creatures = ImportConfiguration(repository: options.paths.repository,
                                     outputDirectory: options.output.appendingPathComponent("Creatures"),
                                     configurationDirectory: URL(fileURLWithPath: "."))

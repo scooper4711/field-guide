@@ -6,26 +6,12 @@ import Testing
 @Suite struct JournalDetailsTests {
     static let journalPage = "Compendium.pf2e.journals.JournalEntry"
 
-    private func importedCatalog(_ repository: FakeRepository,
-                                 configure: (inout ImportOptions) -> Void = { _ in }) throws -> Catalog {
+    private func importedCatalog(_ repository: FakeRepository) throws -> Catalog {
         try repository.writeRulesJournals()
-        var options = ImportOptions(paths: repository.paths, output: repository.output,
+        let options = ImportOptions(paths: repository.paths, output: repository.output,
                                     workFolder: repository.root.appendingPathComponent("work"))
-        configure(&options)
         _ = try CompendiumImporter(options: options).run()
         return try Catalog(url: repository.output.appendingPathComponent("catalog.sqlite"))
-    }
-
-    @Test func ancestryAndClassPagesAreTheirEntriesDetails() throws {
-        let repository = try FakeRepository()
-        defer { repository.remove() }
-        let catalog = try importedCatalog(repository)
-        let elf = try #require(try catalog.page(of: "Compendium.pf2e.ancestries.Item.el1"))
-        #expect(elf.details.contains("Elves live long lives.") && !elf.details.contains("entry-header"))
-        let fighter = try #require(try catalog.page(of: "Compendium.pf2e.classes.Item.fi1"))
-        #expect(fighter.details.contains("Fighters train hard."))
-        #expect(try catalog.search("elves", in: .ancestries, of: .pathfinder).count == 1)
-        #expect(try catalog.page(of: "\(Self.journalPage).an1.JournalEntryPage.anE") == nil)
     }
 
     @Test func linksToADetailsPageOpenItsEntrysDetails() throws {
@@ -53,10 +39,10 @@ import Testing
         #expect(try catalog.categories(in: .pathfinder).contains(.archetypes))
     }
 
-    @Test func withoutLoreAncestriesAndClassesHaveNoDetails() throws {
+    @Test func ancestriesAndClassesHaveNoDetails() throws {
         let repository = try FakeRepository()
         defer { repository.remove() }
-        let catalog = try importedCatalog(repository) { $0.includesLore = false }
+        let catalog = try importedCatalog(repository)
         let elf = try #require(try catalog.page(of: "Compendium.pf2e.ancestries.Item.el1"))
         #expect(elf.details.isEmpty)
         #expect(try catalog.page(of: "Compendium.pf2e.classes.Item.fi1")?.details.isEmpty == true)
