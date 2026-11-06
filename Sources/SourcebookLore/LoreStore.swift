@@ -139,8 +139,12 @@ public actor LoreStore {
         let named = identifier.book(namedBy: file)
         guard named != nil || openingToIdentify, let document = PDFDocument(url: file),
               let book = named ?? identifier.book(of: file, document: document) else { return nil }
-        if let existing = stored.books[book.title], existing.readerVersion == BookReader.version,
-           let digest = try? BookReader.digest(of: file), digest == existing.sourceDigest { return nil }
+        if let existing = stored.books[book.title] {
+            // A newer app's reading, from another device, is better than this app's.
+            if existing.readerVersion > BookReader.version { return nil }
+            if existing.readerVersion == BookReader.version, let digest = try? BookReader.digest(of: file),
+               digest == existing.sourceDigest { return nil }
+        }
         guard let lore = try? BookReader(list: list, subjects: subjects).read(book, from: document, file: file)
         else { return nil }
         stored.books[book.title] = lore
@@ -153,7 +157,17 @@ public actor LoreStore {
         return body()
     }
 
-    private func save() throws {
+    /// Keeps `record`, from another device, when it is better than the stored one; returns its title when kept.
+    func adopt(_ record: BookLore) -> String? {
+        let existing = stored.books[record.title]
+        if let existing, !record.isPreferred(over: existing) { return nil }
+        var adopted = record
+        adopted.location = existing?.sourceDigest == record.sourceDigest ? existing?.location : nil
+        stored.books[record.title] = adopted
+        return record.title
+    }
+
+    func save() throws {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .sortedKeys
         try encoder.encode(stored).write(to: file, options: .atomic)

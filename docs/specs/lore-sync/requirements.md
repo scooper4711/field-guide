@@ -20,8 +20,8 @@ for the PDFs still shows it (issue #26).
   stays on this device".
 
 ## R3 Merging
-- R3.1 When two devices have the same book, the record from the same PDF (same digest) is kept as it is, with the
-  device's own location.
+- R3.1 When two devices read the same PDF (same digest), the record from the newer reader wins; otherwise the
+  device's own record stays. Either way a device keeps its own location of the PDF.
 - R3.2 Otherwise the newer edition wins (the later PDF date; a dated record beats one without a date), then the
   newer reader, then the later read. Reading an older PDF again later doesn't replace a newer edition's lore.
 - R3.3 An app whose reader is older than a record's doesn't read the book again over it.

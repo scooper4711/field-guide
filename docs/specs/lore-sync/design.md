@@ -1,8 +1,8 @@
 # Lore sync: design
 
 ## Merge rule (`SourcebookLore`)
-`BookLore.isPreferred(over:)` decides between two records of one book: the same digest keeps the existing record;
-otherwise compare `sourceDate` (nil is oldest), then `readerVersion`, then `importedAt`. `LoreStore.merge(_:)` applies
+`BookLore.isPreferred(over:)` decides between two records of one book: with the same digest, only a higher
+`readerVersion` wins; otherwise compare `sourceDate` (nil is oldest), then `readerVersion`, then `importedAt`. `LoreStore.merge(_:)` applies
 it to records from another device, keeps the local `location` when the digests match, saves, and returns the titles
 that changed. `readIfNew` skips a book whose stored record has a `readerVersion` above `BookReader.version`.
 
