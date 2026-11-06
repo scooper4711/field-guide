@@ -3,6 +3,8 @@
 #
 # VERSION    version written to the bundle (default 0.0.0)
 # UNIVERSAL  set to 1 to build for both Apple silicon and Intel
+# TEAM_ID    team whose Tableside Toolkit App Group the app joins, to read Scrollkeeper's downloads (default: the
+#            team of the Developer ID certificate in the keychain; none when signing ad hoc)
 set -eu
 
 cd "$(dirname "$0")/.."
@@ -133,6 +135,18 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-# The entitlements turn on the App Sandbox.
-scripts/sign-app.sh "$APP" Resources/FieldGuide.entitlements
+# The entitlements turn on the App Sandbox. A build signed by the team also joins the Tableside Toolkit's App Group,
+# whose folder holds Scrollkeeper's downloads; an ad hoc signature can't, so it leaves the group out.
+[ "${SIGNING_IDENTITY:-}" = "-" ] && TEAM_ID="${TEAM_ID:-none}"
+TEAM_ID="${TEAM_ID:-$(security find-identity -v -p codesigning \
+    | sed -n 's/.*"Developer ID Application: .*(\([A-Z0-9]*\))"$/\1/p' | head -n 1)}"
+ENTITLEMENTS="build/FieldGuide.entitlements"
+cp Resources/FieldGuide.entitlements "$ENTITLEMENTS"
+if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ]; then
+    GROUP="$TEAM_ID.io.github.scooper4711.tableside"
+    /usr/libexec/PlistBuddy -c "Add :com.apple.security.application-groups array" \
+        -c "Add :com.apple.security.application-groups:0 string $GROUP" "$ENTITLEMENTS"
+    plutil -insert TablesideAppGroup -string "$GROUP" "$APP/Contents/Info.plist"
+fi
+scripts/sign-app.sh "$APP" "$ENTITLEMENTS"
 echo "Built $APP ($VERSION)"
