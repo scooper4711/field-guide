@@ -12,6 +12,8 @@ import SourcebookLoreTestSupport
 //     checks the creature lore read from each book against Foundry's, as a table and the creatures missed
 // FieldGuideLoreSurvey creatures-of <pdf> <name>...
 //     prints the lore a book gives the named creatures, as JSON
+// FieldGuideLoreSurvey read-library --catalog <catalog.sqlite> --store <folder> <library>
+//     reads every sourcebook in a library folder into a lore store, as the app's import does
 // FieldGuideLoreSurvey details-of <pdf> <name>...
 //     prints the Details a book gives the named ancestries or classes, as JSON
 // FieldGuideLoreSurvey details --pf2e <repository> <title>=<pdf>...
@@ -29,6 +31,7 @@ let usage = """
     Usage: FieldGuideLoreSurvey table|writeups <pdf> [--catalog <catalog.sqlite>]
            FieldGuideLoreSurvey creatures --pf2e <repository> <title>=<pdf>...
            FieldGuideLoreSurvey creatures-of <pdf> <name>...
+           FieldGuideLoreSurvey read-library --catalog <catalog.sqlite> --store <folder> <library>
            FieldGuideLoreSurvey details-of <pdf> <name>...
            FieldGuideLoreSurvey details --pf2e <repository> <title>=<pdf>...
            FieldGuideLoreSurvey lore-books --pf2e <repository> --scrollkeeper <catalog.json> --list <json>
@@ -65,6 +68,10 @@ case "creatures-of":
         CreatureLore.keys(for: name).lazy.compactMap { all[$0] }.first.map { (name, $0) }
     }) { first, _ in first }
     FileHandle.standardOutput.write(try SurveyOutput.encoder.encode(named))
+case "read-library":
+    guard let catalog = value(of: "--catalog"), let store = value(of: "--store"), let library = arguments.last
+    else { fail(usage, code: 2) }
+    try await readLibrary(URL(filePath: library), catalog: URL(filePath: catalog), store: URL(filePath: store))
 case "details-of":
     guard arguments.count >= 3, let document = PDFDocument(url: URL(filePath: arguments[1])) else {
         fail(usage, code: 2)
@@ -150,4 +157,26 @@ func addLoreBooks(pf2e: String, catalog: String, list path: String) throws {
     let withoutSKU = loreBooks.filter { $0.sku == nil }.map(\.title)
     print("\(loreBooks.count) books supply creature or Details lore; \(withoutSKU.count) without a Scrollkeeper SKU:")
     withoutSKU.forEach { print("  \($0)") }
+}
+
+/// Reads every sourcebook in `library` into the lore store in `store`, a book at a time, saying which.
+func readLibrary(_ library: URL, catalog url: URL, store folder: URL) async throws {
+    let catalog = try Catalog(url: url)
+    func references(_ categories: [EntryCategory]) throws -> [EntryReference] {
+        try GameSystem.allCases.flatMap { system in
+            try categories.flatMap { try catalog.summaries(of: $0, in: system) }
+        }.compactMap { entry in
+            entry.values(of: .source).first.map { EntryReference(id: entry.id, name: entry.name, credited: $0) }
+        }
+    }
+    let deities = try GameSystem.allCases.flatMap { try catalog.summaries(of: .deities, in: $0) }
+    let subjects = LoreSubjects(deityNames: Dictionary(deities.map { ($0.id, $0.name) }) { first, _ in first },
+                                creatures: try references([.bestiary]),
+                                details: try references([.ancestries, .classes]))
+    let store = try LoreStore(folder: folder)
+    let files = LoreStore.sourcebookFiles(in: library, list: .bundled)
+    for (index, file) in files.enumerated() {
+        let read = try await store.addFiles([file], subjects: subjects)
+        print("[\(index + 1)/\(files.count)] \(read.first ?? "skipped") (\(file.lastPathComponent))")
+    }
 }
