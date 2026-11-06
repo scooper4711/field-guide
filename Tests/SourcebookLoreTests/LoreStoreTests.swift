@@ -56,6 +56,18 @@ import SourcebookLoreTestSupport
         #expect(stored.readerVersion == BookReader.version && stored.sourceDigest.count == 64)
     }
 
+    @Test func readsABooksLargestFileNotEachOfItsChapters() throws {
+        let folder = try Self.temporaryFolder()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let book = folder.appendingPathComponent("Pathfinder Lost Omens- Test Gods")
+        try FileManager.default.createDirectory(at: book, withIntermediateDirectories: true)
+        let whole = try Self.writeBook(named: "Pathfinder Lost Omens- Test Gods PDF - Single File.pdf", in: book)
+        try Data("tiny".utf8).write(to: book.appendingPathComponent("Chapter 1.pdf"))
+        try Data("other".utf8).write(to: folder.appendingPathComponent("Unrelated.pdf"))
+        #expect(LoreStore.sourcebookFiles(in: folder, list: Self.list).map(\.lastPathComponent)
+            == [whole.lastPathComponent])
+    }
+
     @Test func knowsARenamedPDFByItsCopyrightLine() async throws {
         let folder = try Self.temporaryFolder()
         defer { try? FileManager.default.removeItem(at: folder) }

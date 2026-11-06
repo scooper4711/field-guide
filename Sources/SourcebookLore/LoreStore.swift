@@ -111,9 +111,25 @@ public actor LoreStore {
     }
 
     private func readFolder(_ folder: URL, subjects: LoreSubjects) -> [String] {
-        let enumerator = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: nil)
+        Self.sourcebookFiles(in: folder, list: list).compactMap {
+            readIfNew($0, subjects: subjects, openingToIdentify: false)
+        }
+    }
+
+    /// The PDFs in `folder` that are sourcebooks, by their names: for each book the largest, its single-file edition
+    /// rather than one of the chapters of a file-per-chapter download, which name the book too.
+    public static func sourcebookFiles(in folder: URL, list: SourcebookList) -> [URL] {
+        let identifier = SourcebookIdentifier(list: list)
+        let enumerator = FileManager.default.enumerator(at: folder, includingPropertiesForKeys: [.fileSizeKey])
         let pdfs = (enumerator?.compactMap { $0 as? URL } ?? []).filter { $0.pathExtension.lowercased() == "pdf" }
-        return pdfs.compactMap { readIfNew($0, subjects: subjects, openingToIdentify: false) }
+        let named = pdfs.compactMap { file in identifier.book(namedBy: file).map { ($0.title, file) } }
+        let byBook = Dictionary(grouping: named, by: \.0)
+        return byBook.values.compactMap { files in files.map(\.1).max { size(of: $0) < size(of: $1) } }
+            .sorted { $0.path < $1.path }
+    }
+
+    private static func size(of file: URL) -> Int {
+        (try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
     }
 
     /// Reads the PDF when it is a sourcebook whose lore isn't stored yet from this file and reader; returns its title.
