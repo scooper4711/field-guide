@@ -21,6 +21,12 @@ import SourcebookLoreTestSupport
             let lore = try #require(deities[name])
             #expect(lore.statLines.map(\.label).contains("Edicts") && !lore.paragraphs.isEmpty, "\(name)")
         }
+        let details = DetailsWriteups(names: SampleSourcebook.details.map(\.name)).writeups(in: document)
+        for entry in SampleSourcebook.details {
+            let lore = try #require(details[entry.name])
+            #expect(lore.sections.map(\.heading) == [""] + entry.sections, "\(entry.name)")
+            #expect(lore.sections.last?.paragraphs.allSatisfy(\.isBullet) == true, "\(entry.name)")
+        }
         // The sample is known by its file's name, as published.
         let file = URL(filePath: "/Downloads/Field Guide Sample Monster Core.pdf")
         #expect(SourcebookIdentifier(list: SourcebookList(books: [SourcebookList.sample])).book(namedBy: file)

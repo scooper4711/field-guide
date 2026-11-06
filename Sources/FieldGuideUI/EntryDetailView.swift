@@ -33,6 +33,8 @@ struct PageTabs {
     let page: EntryPage
     /// The deity's lore from the user's sourcebooks, as HTML; nil when it has none.
     let bookLore: String?
+    /// The ancestry's or class's lore from the user's book, as HTML, for its Details; nil for other entries.
+    var detailsLore: String?
 
     var tabs: [EntryTab] {
         if !page.details.isEmpty { return [.overview, .details] }
@@ -41,7 +43,7 @@ struct PageTabs {
 
     func html(for tab: EntryTab) -> String {
         switch tab {
-        case .details where !page.details.isEmpty: page.details
+        case .details where !page.details.isEmpty: DetailsPage.inserting(detailsLore ?? "", into: page.details)
         case .lore: lore ?? page.html
         default: lore == nil ? page.html : PageDescription.removingSection(from: page.html)
         }
@@ -144,7 +146,8 @@ struct PageView: View {
     }
 
     private func pageTabs(of page: EntryPage) -> PageTabs {
-        PageTabs(page: page, bookLore: sourcebooks.lore(of: page.id)?.html)
+        PageTabs(page: page, bookLore: sourcebooks.lore(of: page.id)?.html,
+                 detailsLore: sourcebooks.detailsHTML(of: page.id))
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {

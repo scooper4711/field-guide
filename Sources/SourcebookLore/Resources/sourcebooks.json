@@ -5,9 +5,19 @@
 
       ],
       "supplies" : [
-        "deityLore"
+        "deityLore",
+        "detailsLore"
       ],
       "title" : "Beyond the Blood Door Player's Guide"
+    },
+    {
+      "aliases" : [
+
+      ],
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Invasion's Edge Player's Guide"
     },
     {
       "aliases" : [
@@ -104,7 +114,8 @@
       ],
       "sku" : "PZO90153E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder #153: Life's Long Shadows"
     },
@@ -987,7 +998,8 @@
       ],
       "sku" : "PZO12008E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Battlecry!"
     },
@@ -1046,7 +1058,8 @@
       "sku" : "PZO2110E",
       "supplies" : [
         "deityLore",
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Book of the Dead"
     },
@@ -1115,7 +1128,8 @@
 
       ],
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Dark Archive (Remastered)"
     },
@@ -1151,11 +1165,32 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO2109E",
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Pathfinder Guns & Gears"
+    },
+    {
+      "aliases" : [
+
+      ],
       "sku" : "PZO12005E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Howl of the Wild"
+    },
+    {
+      "aliases" : [
+
+      ],
+      "sku" : "PZO12014E",
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Pathfinder Impossible Magic"
     },
     {
       "aliases" : [
@@ -1173,9 +1208,20 @@
       ],
       "sku" : "PZO9304E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Lost Omens Absalom, City of Lost Omens"
+    },
+    {
+      "aliases" : [
+
+      ],
+      "sku" : "PZO9308E",
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Pathfinder Lost Omens Ancestry Guide"
     },
     {
       "aliases" : [
@@ -1193,7 +1239,8 @@
       ],
       "supplies" : [
         "deityLore",
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Lost Omens Cheliax, Infernal Inheritance"
     },
@@ -1226,7 +1273,8 @@
       "sku" : "PZO13007E",
       "supplies" : [
         "deityLore",
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Lost Omens Draconic Codex"
     },
@@ -1302,7 +1350,8 @@
       "sku" : "PZO9314E",
       "supplies" : [
         "deityLore",
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Lost Omens Impossible Lands"
     },
@@ -1341,12 +1390,33 @@
       "aliases" : [
 
       ],
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Pathfinder Lost Omens The Grand Bazaar"
+    },
+    {
+      "aliases" : [
+
+      ],
       "sku" : "PZO9309E",
       "supplies" : [
         "deityLore",
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Lost Omens The Mwangi Expanse"
+    },
+    {
+      "aliases" : [
+        "Pathfinder Lost Omens- Tian Xia Character Guide",
+        "Pathfinder Lost Omens: Tian Xia Character Guide"
+      ],
+      "sku" : "PZO13002E",
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Pathfinder Lost Omens Tian Xia Character Guide"
     },
     {
       "aliases" : [
@@ -1415,7 +1485,8 @@
 
       ],
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Player Core"
     },
@@ -1423,9 +1494,20 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO12004E",
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Pathfinder Player Core 2"
+    },
+    {
+      "aliases" : [
+
+      ],
       "sku" : "PZO2113E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder Rage of Elements"
     },
@@ -2579,7 +2661,8 @@
       ],
       "sku" : "PZO12006E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Pathfinder War of Immortals"
     },
@@ -2597,7 +2680,8 @@
 
       ],
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Starfinder Absalom Station"
     },
@@ -2625,9 +2709,20 @@
       "aliases" : [
 
       ],
+      "sku" : "PZO22005E",
+      "supplies" : [
+        "detailsLore"
+      ],
+      "title" : "Starfinder Galactic Ancestries"
+    },
+    {
+      "aliases" : [
+
+      ],
       "sku" : "PZO22004E",
       "supplies" : [
-        "deityLore"
+        "deityLore",
+        "detailsLore"
       ],
       "title" : "Starfinder Galaxy Guide"
     },
@@ -2638,7 +2733,8 @@
       ],
       "sku" : "PZO24006E",
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Starfinder Guilt of the Grave World"
     },
@@ -2647,7 +2743,8 @@
 
       ],
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Starfinder Murder in Metal City Deluxe Adventure"
     },
@@ -2657,7 +2754,8 @@
       ],
       "sku" : "PZO12001E",
       "supplies" : [
-        "deityLore"
+        "deityLore",
+        "detailsLore"
       ],
       "title" : "Starfinder Player Core"
     },
@@ -2666,7 +2764,8 @@
 
       ],
       "supplies" : [
-        "creatureLore"
+        "creatureLore",
+        "detailsLore"
       ],
       "title" : "Starfinder Secrets of the Swarm Adventure Path"
     },

@@ -1,9 +1,9 @@
 import Foundation
 import SourcebookLore
 
-/// The books whose creatures' lore the import leaves out, as sourcebooks the app reads it from: each with the SKU and
-/// product name Scrollkeeper knows it by, when its catalog lists the product.
-enum CreatureBooks {
+/// The books whose creatures' or ancestries' and classes' lore the import leaves out, as sourcebooks the app reads it
+/// from: each with the SKU and product name Scrollkeeper knows it by, when its catalog lists the product.
+enum LoreBooks {
     /// A product in Scrollkeeper's `catalog.json`.
     struct Product {
         var name: String
@@ -15,22 +15,32 @@ enum CreatureBooks {
     /// Words a product's name may start with that Foundry's title for the book leaves out.
     static let leadingWords = ["adventurepath", "adventure", "deluxeadventure"]
 
-    /// `list` with a sourcebook for each book Foundry credits creatures with lore to: a book already listed for its
-    /// deities also supplies creature lore.
-    static func merge(into list: SourcebookList, creatures: [FoundryCreature], products: [Product]) -> SourcebookList {
+    /// `list` with the creature and Details books Foundry credits in `repository`, and the bestiary creatures
+    /// adventures' creatures share lore with.
+    static func adding(to list: SourcebookList, repository: URL, catalog: URL) throws -> SourcebookList {
+        let creatures = try FoundryCreatures.read(repository: repository)
+        let details = try FoundryDetailsPages.read(repository: repository)
+        let products = try self.products(inCatalog: catalog)
+        var list = merge(into: list, titles: Set(creatures.map(\.credited)), supply: .creatureLore, products: products)
+        list = merge(into: list, titles: Set(details.map(\.credited)), supply: .detailsLore, products: products)
+        list.creatures = CreatureLoreMap.sources(of: creatures)
+        return list
+    }
+
+    /// `list` with a sourcebook supplying `supply` for each of `titles`: a book already listed supplies it too.
+    static func merge(into list: SourcebookList, titles: Set<String>, supply: Sourcebook.Supply,
+                      products: [Product]) -> SourcebookList {
         var list = list
-        for title in Set(creatures.map(\.credited)).filter({ !$0.isEmpty }).sorted() {
+        for title in titles.filter({ !$0.isEmpty }).sorted() {
             if let index = list.books.firstIndex(where: { $0.title == title }) {
-                if !list.books[index].supplies.contains(.creatureLore) {
-                    list.books[index].supplies.append(.creatureLore)
-                }
+                if !list.books[index].supplies.contains(supply) { list.books[index].supplies.append(supply) }
                 continue
             }
             let product = self.product(for: title, in: products)
             let aliases = [product?.name, product.map { scrollkeeperFolder(of: $0.name) }].compactMap { $0 }
             list.books.append(Sourcebook(title: title, sku: product?.sku,
                                          aliases: Array(Set(aliases)).filter { $0 != title }.sorted(),
-                                         supplies: [.creatureLore]))
+                                         supplies: [supply]))
         }
         list.books.sort { $0.title < $1.title }
         return list

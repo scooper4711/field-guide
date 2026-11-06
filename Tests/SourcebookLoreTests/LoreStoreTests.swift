@@ -14,7 +14,8 @@ import SourcebookLoreTestSupport
         "id.abadar": LoreSources(stats: book.title, prose: book.title, intercession: book.title),
         "id.chavazvug": LoreSources(stats: "Web Supplement", prose: book.title)
     ])
-    static let names = ["id.abadar": "Abadar", "id.chavazvug": "Chavazvug", "id.other": "Other"]
+    static let subjects = LoreSubjects(deityNames: ["id.abadar": "Abadar", "id.chavazvug": "Chavazvug",
+                                                    "id.other": "Other"])
 
     /// A book with Abadar's write-up and Chavazvug's prose, and a copyright line on its last page.
     static let pages = DeityWriteupsTests.pages + [[
@@ -38,8 +39,8 @@ import SourcebookLoreTestSupport
         defer { try? FileManager.default.removeItem(at: folder) }
         let file = try Self.writeBook(named: "Pathfinder Lost Omens- Test Gods PDF - Single File.pdf", in: folder)
         let store = try LoreStore(folder: folder.appendingPathComponent("Store"), list: Self.list)
-        #expect(try await store.addFiles([file], names: Self.names) == [Self.book.title])
-        #expect(try await store.addFiles([file], names: Self.names).isEmpty)
+        #expect(try await store.addFiles([file], subjects: Self.subjects) == [Self.book.title])
+        #expect(try await store.addFiles([file], subjects: Self.subjects).isEmpty)
         let abadar = try #require(await store.lore(of: "id.abadar"))
         #expect(abadar.statLines.first == StatLine(label: "Title", text: "Master of the First Vault"))
         #expect(abadar.paragraphs.count == 2)
@@ -60,7 +61,7 @@ import SourcebookLoreTestSupport
         defer { try? FileManager.default.removeItem(at: folder) }
         let file = try Self.writeBook(named: "gods.pdf", in: folder)
         let store = try LoreStore(folder: folder.appendingPathComponent("Store"), list: Self.list)
-        #expect(try await store.addFiles([file], names: Self.names) == [Self.book.title])
+        #expect(try await store.addFiles([file], subjects: Self.subjects) == [Self.book.title])
     }
 
     @Test func readsAWatchedFoldersSourcebooksByName() async throws {
@@ -71,10 +72,10 @@ import SourcebookLoreTestSupport
         _ = try Self.writeBook(named: "gods.pdf", in: downloads)
         _ = try Self.writeBook(named: "Unrelated.pdf", in: folder.appendingPathComponent("Files"))
         let store = try LoreStore(folder: folder.appendingPathComponent("Store"), list: Self.list)
-        #expect(try await store.importFolder(folder.appendingPathComponent("Files"), names: Self.names)
+        #expect(try await store.importFolder(folder.appendingPathComponent("Files"), subjects: Self.subjects)
                 == [Self.book.title])
         #expect(await store.watchedFolders.count == 1)
-        #expect(try await store.addNewFiles(names: Self.names).isEmpty)
+        #expect(try await store.addNewFiles(subjects: Self.subjects).isEmpty)
         try await store.unwatch(await store.watchedFolders[0])
         #expect(await store.watchedFolders.isEmpty)
     }

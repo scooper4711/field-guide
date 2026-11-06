@@ -1,11 +1,11 @@
 import Foundation
 
-/// A product whose PDF supplies content Field Guide reads on the device: deity or creature lore, creature art or item
-/// art.
+/// A product whose PDF supplies content Field Guide reads on the device: lore (deities', creatures', or ancestries'
+/// and classes' Details), creature art or item art.
 public struct Sourcebook: Codable, Equatable, Hashable, Sendable, Identifiable {
     /// What a product supplies.
     public enum Supply: String, Codable, Sendable, CaseIterable {
-        case deityLore, creatureLore, creatureArt, itemArt
+        case deityLore, creatureLore, detailsLore, creatureArt, itemArt
     }
 
     /// The product's name as Foundry credits it, such as "Pathfinder Lost Omens Divine Mysteries".
@@ -99,7 +99,7 @@ public struct SourcebookList: Codable, Equatable, Sendable {
         title: "Field Guide Sample Monster Core",
         downloadURL: URL(string: "https://github.com/scooper4711/field-guide/raw/main/Resources/Review/"
                          + "Field%20Guide%20Sample%20Monster%20Core.pdf"),
-        supplies: [.deityLore, .creatureLore])
+        supplies: [.deityLore, .creatureLore, .detailsLore])
 
     /// The new editions, which come first in `pathfinderBestiaries`.
     static let newEditions: Set<String> = ["Pathfinder Monster Core", "Pathfinder Monster Core 2"]

@@ -38,6 +38,15 @@ struct SourcebookModelTests {
         #expect(tabs.html(for: .lore).contains("Keeper of the Vault."))
     }
 
+    @Test("An ancestry's Details show the lore from its book where the import left room for it")
+    func detailsLore() {
+        let page = Self.page(id: "Compendium.pf2e.ancestries.Item.el1",
+                             details: "<p>Intro</p>\(DetailsPage.loreMarker)<h2>Elf Mechanics</h2>")
+        let tabs = PageTabs(page: page, bookLore: nil, detailsLore: "<p>Lore</p>")
+        #expect(tabs.html(for: .details) == "<p>Intro</p><p>Lore</p><h2>Elf Mechanics</h2>")
+        #expect(PageTabs(page: page, bookLore: nil).html(for: .details) == "<p>Intro</p><h2>Elf Mechanics</h2>")
+    }
+
     @Test("Other pages keep their Details tab or have none")
     func otherPages() {
         let deity = PageTabs(page: Self.page(id: "Compendium.pf2e.deities.Item.ab1"), bookLore: nil)
@@ -63,7 +72,7 @@ struct SourcebookModelTests {
         let model = SourcebookModel(store: try LoreStore(folder: folder.appendingPathComponent("Store"),
                                                          list: Self.list), list: Self.list)
         #expect(model.rows.map(\.isRead) == [false, false])
-        #expect(model.rows.map(\.deityCount) == [1, 2])
+        #expect(model.rows.map(\.counts.deities) == [1, 2])
         #expect(model.rows.map(\.supplies) == ["Deity lore: 1 deity", "Deity lore: 2 deities"])
         await model.addFiles([file], subjects: Self.subjects)
         #expect(model.message == "Read Pathfinder Lost Omens Test Gods.")
@@ -95,10 +104,17 @@ struct SourcebookModelTests {
         let list = SourcebookList(books: [SourcebookList.sample])
         let model = SourcebookModel(store: try LoreStore(folder: folder.appendingPathComponent("Store"), list: list),
                                     list: list)
-        let warrior = CreatureReference(id: "id.warrior", name: "Goblin Warrior", credited: "Pathfinder Monster Core")
-        let athraxer = CreatureReference(id: "id.athraxer", name: "Athraxer", credited: "Starfinder Alien Core")
-        let subjects = LoreSubjects(deityNames: ["id.abadar": "Abadar"], creatures: [warrior, athraxer])
+        let warrior = EntryReference(id: "id.warrior", name: "Goblin Warrior", credited: "Pathfinder Monster Core")
+        let athraxer = EntryReference(id: "id.athraxer", name: "Athraxer", credited: "Starfinder Alien Core")
+        let fighter = EntryReference(id: "id.fighter", name: "Fighter", credited: "Pathfinder Player Core")
+        let wizard = EntryReference(id: "id.wizard", name: "Wizard", credited: "Pathfinder Player Core")
+        let subjects = LoreSubjects(deityNames: ["id.abadar": "Abadar"], creatures: [warrior, athraxer],
+                                    details: [fighter, wizard])
         await model.addFiles([file], subjects: subjects)
+        #expect(model.detailsHTML(of: "id.fighter")?.contains("<h2>During Combat Encounters...</h2>") == true)
+        let note = "Add your copy of Pathfinder Player Core in Sourcebooks to read this lore."
+        #expect(model.detailsHTML(of: "id.wizard") == "<p class=\"note\"><em>\(note)</em></p>")
+        #expect(model.detailsHTML(of: "id.other") == nil)
         #expect(model.message == "Read \(SourcebookList.sample.title).")
         #expect(model.creatureLore(of: "id.warrior")?.family == "Goblin")
         #expect(model.creatureLore(of: "id.warrior")?.paragraphs.isEmpty == false)

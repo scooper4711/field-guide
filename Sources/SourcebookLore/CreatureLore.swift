@@ -41,20 +41,6 @@ public struct CreatureLore: Codable, Equatable, Sendable {
     }
 }
 
-/// A creature in the catalog whose lore the user's books may give.
-public struct CreatureReference: Equatable, Hashable, Sendable {
-    public var id: String
-    public var name: String
-    /// The book Foundry credits, such as "Pathfinder Bestiary".
-    public var credited: String
-
-    public init(id: String, name: String, credited: String) {
-        self.id = id
-        self.name = name
-        self.credited = credited
-    }
-}
-
 /// Text made safe to put in HTML.
 enum HTMLText {
     static func escape(_ text: String) -> String {
