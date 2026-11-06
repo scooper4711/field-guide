@@ -27,6 +27,7 @@ public struct FieldGuideApp: App {
                 .task {
                     await pdfArt.refresh(addingNew: true)
                     await sourcebooks.refresh(addingNew: true, subjects: store.loreSubjects())
+                    await sourcebooks.startSync()
                 }
                 .onOpenURL(perform: open)
                 // What Scrollkeeper hands over goes to the open window rather than opening another.
