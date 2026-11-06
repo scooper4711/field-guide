@@ -7,6 +7,8 @@ import SwiftUI
 public struct FieldGuideApp: App {
     @State private var store: CatalogStore
     @State private var pdfArt: ArtModel
+    @State private var sourcebooks = SourcebookModel.standard()
+    @State private var scrollkeeper = ScrollkeeperLink.standard()
 
     public init() {
         let store = CatalogStore()
@@ -20,14 +22,42 @@ public struct FieldGuideApp: App {
             RootView()
                 .environment(store)
                 .environment(pdfArt)
-                .task { await pdfArt.refresh(addingNew: true) }
+                .environment(sourcebooks)
+                .environment(scrollkeeper)
+                .task {
+                    await pdfArt.refresh(addingNew: true)
+                    await sourcebooks.refresh(addingNew: true, subjects: store.loreSubjects())
+                }
+                .onOpenURL(perform: open)
+                // What Scrollkeeper hands over goes to the open window rather than opening another.
+                .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         }
         .defaultSize(width: 1280, height: 820)
+        .handlesExternalEvents(matching: ["*"])
         .commands {
             FieldGuideCommands(store: store)
             #if os(macOS)
             AboutCommands(info: .fieldGuide)
             #endif
+        }
+    }
+}
+
+extension FieldGuideApp {
+    /// Takes what Scrollkeeper hands over: its list of the user's titles, the PDFs of a title the user asked for,
+    /// which are read for art and lore, and links saying how a request is going.
+    private func open(_ url: URL) {
+        guard url.isFileURL else {
+            scrollkeeper.receiveStatus(url)
+            return
+        }
+        if url.pathExtension == ScrollkeeperLink.indexExtension {
+            scrollkeeper.receiveIndex(url)
+        } else if url.pathExtension.lowercased() == "pdf" {
+            Task {
+                await pdfArt.addFiles([url])
+                await sourcebooks.addFiles([url], subjects: store.loreSubjects())
+            }
         }
     }
 }
@@ -156,7 +186,7 @@ struct SidebarView: View {
     /// Called when a category's list is to be shown: on an iPhone, the next screen.
     let showList: () -> Void
     @Environment(\.showsOneColumn) private var showsOneColumn
-    @State private var isShowingPDFArt = false
+    @State private var isShowingSourcebooks = false
     @State private var isShowingAbout = false
 
     var body: some View {
@@ -172,14 +202,14 @@ struct SidebarView: View {
                     prompt: "Search Everything")
         .navigationTitle("Field Guide")
         .toolbar {
-            Button("Art from PDFs", systemImage: "photo.on.rectangle.angled") { isShowingPDFArt = true }
+            Button("Sourcebooks", systemImage: "books.vertical") { isShowingSourcebooks = true }
             // The Mac has About in the app menu.
             #if os(iOS)
             Button("About", systemImage: "info.circle") { isShowingAbout = true }
             #endif
         }
-        .focusedSceneValue(\.isShowingArtFromPDFs, $isShowingPDFArt)
-        .sheet(isPresented: $isShowingPDFArt) { PDFArtView() }
+        .focusedSceneValue(\.isShowingSourcebooks, $isShowingSourcebooks)
+        .sheet(isPresented: $isShowingSourcebooks) { SourcebooksView() }
         .sheet(isPresented: $isShowingAbout) { AboutSheet(info: .fieldGuide) }
     }
 

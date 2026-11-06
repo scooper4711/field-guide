@@ -1,5 +1,6 @@
 import Bestiary
 import FieldGuideKit
+import SourcebookLore
 import SwiftUI
 
 /// What an entry page can lead to: another entry, on its overview or its Details, or a trait's description.
@@ -8,10 +9,12 @@ enum PageLink: Hashable {
     case trait(String, GameSystem)
 }
 
-/// An ancestry's or class's two pages: its overview from the compendium, and its Details from the rules journals.
+/// An entry's pages beside its overview: an ancestry's or class's Details from the rules journals, or a deity's
+/// Lore from the user's sourcebooks.
 enum EntryTab: CaseIterable, Identifiable {
     case overview
     case details
+    case lore
 
     var id: Self { self }
 
@@ -19,7 +22,34 @@ enum EntryTab: CaseIterable, Identifiable {
         switch self {
         case .overview: "Overview"
         case .details: "Details"
+        case .lore: "Lore"
         }
+    }
+}
+
+/// The tabs an entry's page has, and what each shows. A deity's Lore is its write-up from the user's sourcebooks,
+/// or, for a deity the Paizo Blog published, Foundry's, moved off the overview.
+struct PageTabs {
+    let page: EntryPage
+    /// The deity's lore from the user's sourcebooks, as HTML; nil when it has none.
+    let bookLore: String?
+
+    var tabs: [EntryTab] {
+        if !page.details.isEmpty { return [.overview, .details] }
+        return lore == nil ? [] : [.overview, .lore]
+    }
+
+    func html(for tab: EntryTab) -> String {
+        switch tab {
+        case .details where !page.details.isEmpty: page.details
+        case .lore: lore ?? page.html
+        default: lore == nil ? page.html : PageDescription.removingSection(from: page.html)
+        }
+    }
+
+    private var lore: String? {
+        guard page.id.contains(".deities.") else { return nil }
+        return bookLore ?? (page.lore.isEmpty ? nil : page.lore)
     }
 }
 
@@ -42,6 +72,7 @@ struct EntryDetailView: View {
 struct PageView: View {
     @Environment(CatalogStore.self) private var store
     @Environment(ArtModel.self) private var pdfArt
+    @Environment(SourcebookModel.self) private var sourcebooks
     let link: PageLink
     let follow: (PageLink) -> Void
     /// A stored value from before the Lore tab ("statBlock") reads as the default, the card.
@@ -71,21 +102,21 @@ struct PageView: View {
         }
     }
 
-    /// A creature's [Battle Card | Lore], or an ancestry's or class's [Overview | Details]; nothing for pages with
-    /// only one.
+    /// A creature's [Battle Card | Lore], an ancestry's or class's [Overview | Details], or a deity's [Overview |
+    /// Lore]; nothing for pages with only one.
     @ToolbarContentBuilder
     private func tabs(of page: EntryPage) -> some ToolbarContent {
-        if creature(on: page) != nil, !page.lore.isEmpty {
+        if creature(on: page) != nil, creatureLore(of: page) != nil {
             ToolbarItem {
                 Picker("Show", selection: $creatureView) {
                     ForEach(CreatureView.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
             }
-        } else if !page.details.isEmpty {
+        } else if !pageTabs(of: page).tabs.isEmpty {
             ToolbarItem {
                 Picker("Show", selection: $entryTab) {
-                    ForEach(EntryTab.allCases) { Text($0.title).tag($0) }
+                    ForEach(pageTabs(of: page).tabs) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
             }
@@ -93,20 +124,27 @@ struct PageView: View {
     }
 
     /// A creature's battle card, or its lore when it has some and the Lore tab is chosen; an ancestry's or class's
-    /// Details when chosen; other pages, and creatures without a card, as written.
+    /// Details or a deity's Lore when chosen; other pages, and creatures without a card, as written.
     @ViewBuilder
     private func content(of page: EntryPage) -> some View {
         if let (key, creature) = creature(on: page) {
-            if creatureView == .lore, !page.lore.isEmpty {
-                webView(page.lore, system: page.system)
+            if creatureView == .lore, let lore = creatureLore(of: page) {
+                webView(lore, system: page.system)
             } else {
                 CreatureCardView(creature: creature, key: key)
             }
-        } else if entryTab == .details, !page.details.isEmpty {
-            webView(page.details, system: page.system)
         } else {
-            webView(page.html, system: page.system)
+            webView(pageTabs(of: page).html(for: entryTab), system: page.system)
         }
+    }
+
+    /// A creature's lore from the user's books, else the lore the import kept (the Paizo Blog's); nil for none.
+    private func creatureLore(of page: EntryPage) -> String? {
+        sourcebooks.creatureLore(of: page.id)?.html ?? (page.lore.isEmpty ? nil : page.lore)
+    }
+
+    private func pageTabs(of page: EntryPage) -> PageTabs {
+        PageTabs(page: page, bookLore: sourcebooks.lore(of: page.id)?.html)
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {

@@ -13,7 +13,8 @@ import Foundation
 /// of Foundry's; `icon-overrides.json` corrects them, and `icon-matches.tsv` keeps the matches for machines
 /// without the Foundry app. Also writes the creatures for the battle cards to
 /// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
-/// user's own PDFs on the device.
+/// user's own PDFs on the device. The setting's lore (creatures' descriptions, deities' write-ups, the ancestries'
+/// and classes' Details) is left out: the app reads it from the user's own books too.
 let home = FileManager.default.homeDirectoryForCurrentUser
 var settings = [
     "--pf2e": home.appendingPathComponent("git/pf2e").path,

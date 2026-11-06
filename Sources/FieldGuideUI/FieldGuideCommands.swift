@@ -6,22 +6,22 @@ extension FocusedValues {
     @Entry var entryPath: Binding<[PageLink]>?
     /// Whether Search Everything is focused; setting it shows the sidebar with the search ready to type in.
     @Entry var isSearchingEverything: Binding<Bool>?
-    /// Whether Art from PDFs shows.
-    @Entry var isShowingArtFromPDFs: Binding<Bool>?
+    /// Whether Sourcebooks shows.
+    @Entry var isShowingSourcebooks: Binding<Bool>?
 }
 
-/// The Mac's menu commands: Art from PDFs in File, and the Go menu.
+/// The Mac's menu commands: Sourcebooks in File, and the Go menu.
 struct FieldGuideCommands: Commands {
     let store: CatalogStore
     @FocusedValue(\.entryPath) private var entryPath
     @FocusedValue(\.isSearchingEverything) private var isSearchingEverything
-    @FocusedValue(\.isShowingArtFromPDFs) private var isShowingArtFromPDFs
+    @FocusedValue(\.isShowingSourcebooks) private var isShowingSourcebooks
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
-            Button("Art from PDFs…") { isShowingArtFromPDFs?.wrappedValue = true }
+            Button("Sourcebooks…") { isShowingSourcebooks?.wrappedValue = true }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
-                .disabled(isShowingArtFromPDFs == nil)
+                .disabled(isShowingSourcebooks == nil)
         }
         CommandMenu("Go") {
             Button("Search Everything") { isSearchingEverything?.wrappedValue = true }

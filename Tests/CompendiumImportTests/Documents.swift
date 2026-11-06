@@ -94,11 +94,15 @@ enum SpellsAndItems {
             system: ["traits": Documents.traits([]), "boosts": ["0": ["value": ["int", "wis"]]],
                      "trainedSkills": ["value": ["religion"], "lore": ["Scribing Lore"]], "items": [:]]),
         "pf2e/deities/abadar": Documents.item("ab1", "Abadar", "deity",
-            system: ["category": "deity", "sanctification": ["modal": "can", "what": ["holy"]], "attribute": ["con"],
+            system: ["description": ["value": "<p>Abadar keeps the First Vault.</p>"],
+                     "category": "deity", "sanctification": ["modal": "can", "what": ["holy"]], "attribute": ["con"],
                      "font": ["heal"], "skill": ["society"], "weapons": ["crossbow"],
                      "domains": ["primary": ["cities"], "alternate": ["wealth"]],
                      "spells": ["1": "Compendium.pf2e.spells-srd.Item.Light",
                                 "3": "Compendium.pf2e.spells-srd.Item.Fireball"]]),
+        "pf2e/deities/sky-keepers": Documents.item("sk1", "Sky Keepers", "deity",
+            system: ["description": ["value": "<p>The Sky Keepers watch the heavens.</p>"], "category": "pantheon",
+                     "publication": Documents.publication("Pathfinder Blog")]),
         "sf2e/conditions/glitching": Documents.item("gl1", "Glitching", "effect",
             system: ["traits": ["value": []], "description": ["value": "<p>Sparks.</p>"]])
     ]

@@ -79,6 +79,56 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <string>15.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <!-- Scrollkeeper hands Field Guide the sourcebooks the user asks for, its list of titles, and how a request is going
+         (fieldguide://). -->
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>PDF Document</string>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Alternate</string>
+            <key>LSItemContentTypes</key>
+            <array><string>com.adobe.pdf</string></array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>Scrollkeeper Library List</string>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Alternate</string>
+            <key>LSItemContentTypes</key>
+            <array><string>io.github.scooper4711.scrollkeeper.index</string></array>
+        </dict>
+    </array>
+    <key>UTImportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>io.github.scooper4711.scrollkeeper.index</string>
+            <key>UTTypeDescription</key>
+            <string>Scrollkeeper Library List</string>
+            <key>UTTypeConformsTo</key>
+            <array><string>public.json</string></array>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array><string>scrollkeeperindex</string></array>
+            </dict>
+        </dict>
+    </array>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>io.github.scooper4711.FieldGuide.handoff</string>
+            <key>CFBundleURLSchemes</key>
+            <array><string>fieldguide</string></array>
+        </dict>
+    </array>
 </dict>
 </plist>
 PLIST

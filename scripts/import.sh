@@ -10,7 +10,8 @@
 #                (default ~/git/community-use-artwork)
 # ARTWORK        the toolkit-artwork checkout, for Paizo's Pathfinder-Icons font (default the Artwork submodule)
 #
-# Creature art isn't imported: the app reads it from the user's own PDFs (Creature Art in the sidebar).
+# Neither creature art nor the setting's lore (creatures' descriptions, deities' write-ups, the ancestries' and
+# classes' Details) is imported: the app reads them from the user's own PDFs.
 set -eu
 
 cd "$(dirname "$0")/.."

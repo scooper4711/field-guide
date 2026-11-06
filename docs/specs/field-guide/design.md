@@ -116,13 +116,41 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote,
   `CreatureCardView` shows Tabletop Kit's `InteractiveBattleCard`: the `BattleCard`, and `CardBack` around an
   `ArtPicture`, with the card art, glossary and an `ArtPictureLoader` over `ArtModel` in the environment. When
-  the page has lore (`EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a
-  toolbar picker switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it to
+  the page has lore (from the user's books through `SourcebookModel.creatureLore(of:)`, else the Paizo Blog's
+  `EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a toolbar picker
+  switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it to
   the column's width. An entry with Details gets an [Overview | Details] picker instead (`EntryTab`, opened on
   Details by `entry:<id>#details` links). `RootView` is the Mac's `battleCardFullScreenHost()`. The web
   fonts in `Generated` are registered at launch for the cards.
-- `PDFArtView` ("Art from PDFs"), from the sidebar's toolbar, is Turnkeeper's creature art settings adapted (a second
-  copy; a third would move to Tabletop Kit).
+- `SourcebooksView` ("Sourcebooks"), from the sidebar's toolbar, is Turnkeeper's creature art settings adapted (a
+  second copy; a third would move to Tabletop Kit), with the sourcebooks lore comes from above the PDFs of art.
+- Sourcebook lore (`SourcebookLore`): `PageText` reads a page's lines with PDFKit (`selectionsByLine`, with fonts
+  and sizes from the attributed string) and words by text range, whose bounds are exact where
+  `characterBounds(at:)` can be a character off. `DeityWriteups` finds deities' headings (1.4 times the body size,
+  or 1.15 times in capitals, as Starfinder Player Core sets them), reads each page in column order and hands the
+  section to `WriteupReader` (header: title, descriptor, stat lines; prose: `ParagraphReader`, up to the first
+  subheading, a paragraph ending on a short line or starting indented) and `IntercessionReader` (boons and
+  curses by their labels). `DeityTable` reads tables such as the Web Supplement's: a header of capitals read a
+  word at a time (`TableHeader`), each column selected by its rectangle so neighbors can't run together, and
+  each cell given to the name nearest its middle. `TextRepair` joins lines and repairs headings' case.
+  `FieldGuideLoreSurvey` reads a whole library once, `LoreSourceChooser` picks each deity's sources, and the
+  result ships as `sourcebooks.json`. On the device, `LoreStore` (an actor) reads the books the user adds or
+  Scrollkeeper's folder holds (`SourcebookIdentifier`, `BookReader`) into `lore.json`, and `SourcebookModel` gives
+  `PageView` the lore for its tabs (`PageTabs`).
+- Creature lore: `CreatureWriteups` reads pages in column order (`ColumnOrder` splits a wide column from a
+  narrow sidebar where the fewest lines cross), finds stat block headings ("NAME CREATURE n", the level perhaps on
+  the next line) and walks back to the heading naming the creature, else the nearest heading. Headings are told by
+  their lines' heights, since some display fonts read back at the body's size: the commonest height of headings
+  naming creatures is a creature's, and the nearest taller one (up to 1.4 times) above a creature's heading is its
+  family's. Lore is stored by the match key of the printed name (`CreatureLore.keys(for:)` adds "Adult Horned
+  Dragon" for "Horned Dragon (Adult)"), so `LoreStore` can choose among editions when shown
+  (`SourcebookList.creatureBooks(for:)`). `FieldGuideLoreSurvey creatures` checks a book against Foundry's text;
+  `creature-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
+  whose text Foundry copied; `sample` writes `Resources/Review/Field Guide Sample Monster Core.pdf`
+  (`SampleSourcebook`).
+- `ScrollkeeperLink` follows Scrollkeeper's app-handoff contract (`scrollkeeper://index` and `open`, the
+  `scrollkeeperindex` list, `fieldguide://handoff` status links), as Pluck's bridge does; the Mac's Info.plist
+  declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed.
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices are formatted in American English at import, whatever the Mac's locale.
 - Search Everything: `GlobalSearch` (FieldGuideKit) holds every entry of the system, read once with
@@ -143,10 +171,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   system chooses one.
 - `FIELD_GUIDE_SELECT` opens an entry at launch and `FIELD_GUIDE_DATA` points the Mac build at another data
   folder, for trying pages out from a script.
-- Mac menus: `FieldGuideCommands` adds the Go menu and Art from PDFs… to File. The store is the app's, so
+- Mac menus: `FieldGuideCommands` adds the Go menu and Sourcebooks… to File. The store is the app's, so
   the system commands set it directly; Back and Search Everything reach the window through focused scene
   values (`entryPath`, the detail column's navigation path, and `searchEverything`, `RootView`'s action), and
-  `SidebarView` shows Art from PDFs for `showArtFromPDFs`.
+  `SidebarView` shows Sourcebooks for `isShowingSourcebooks`.
 - About: Tabletop Kit's `AppNotices`, with `AboutInfo.fieldGuide` (`About.swift`): `AboutCommands` on the Mac and
   an `AboutSheet` from the sidebar's toolbar on the iPad.
 

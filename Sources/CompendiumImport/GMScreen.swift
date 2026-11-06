@@ -87,11 +87,6 @@ enum GMScreen {
         )
     }
 
-    /// A page's text as an entry's Details: no header, since the entry's overview has one.
-    static func details(_ page: JournalPage, context: PageContext) -> String {
-        section(context.enrich(page.html))
-    }
-
     private static func section(_ body: String) -> String {
         "<section class=\"description journal\">\(body)</section>"
     }

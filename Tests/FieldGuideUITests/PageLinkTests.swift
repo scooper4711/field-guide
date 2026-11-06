@@ -16,9 +16,9 @@ struct PageLinkTests {
         #expect(PageView.link(for: try #require(URL(string: url)), system: .pathfinder) == link)
     }
 
-    @Test("The tabs read as Overview and Details")
+    @Test("The tabs read as Overview, Details and Lore")
     func tabTitles() {
-        #expect(EntryTab.allCases.map(\.title) == ["Overview", "Details"])
+        #expect(EntryTab.allCases.map(\.title) == ["Overview", "Details", "Lore"])
     }
 }
 

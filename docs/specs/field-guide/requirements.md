@@ -100,12 +100,42 @@ Foundry VTT's compendium browser.
   License and kept out of the repository.
 - R6.3 Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, without copying them,
   and picks up new downloads at launch; Add PDFs copies other PDFs into the app.
-- R6.4 PDFs deleted or moved since they were read are listed as missing in Art from PDFs, and a creature's
+- R6.4 PDFs deleted or moved since they were read are listed as missing in Sourcebooks, and a creature's
   card says which missing PDF its art needs.
+
+## R9 Sourcebook lore
+No build ships Paizo's Reserved Material (creatures' descriptions, deities' write-ups, the ancestries' and classes'
+Details; `docs/lore.md` lists it), so deities' and creatures' lore comes from the user's own PDFs, read on the
+device as art is. Lore the Paizo Blog published stays in the import.
+- R9.1 A deity's page has a Lore tab when the user's books give it any lore: its setting lines (title, areas of
+  concern, edicts, anathema, religious symbol, sacred animal and colors), the introduction of its write-up, and
+  its divine intercession (boons and curses). A Paizo Blog deity's write-up moves from its overview to the tab.
+- R9.2 Each part has one source, chosen once for every user (`sourcebooks.json`): the setting lines from Paizo's
+  free Divine Mysteries Web Supplement where it lists the deity, else the book with its write-up; the prose from
+  the book Foundry credits, else the book whose text opens as Foundry's does; the intercession from the credited
+  book, else one written for the current rules, else the free Gods & Magic Web Supplement, noted as written
+  before the remaster.
+- R9.3 Text read from PDFs keeps no stray capitals from Paizo's display fonts, joins lines into paragraphs, and
+  leaves out page numbers, chapter tabs and first-edition source tags.
+- R9.4 A PDF is recognized by its file or folder name as Paizo and Scrollkeeper name them, a `PZO…` SKU in its
+  name, or its own copyright line, so a renamed copy bought anywhere works.
+- R9.5 Sourcebooks (sidebar toolbar; File ▸ Sourcebooks…, ⇧⌘A) lists every book lore comes from and what it
+  supplies, with a check mark once read. A book the user owns in Scrollkeeper for the Mac shows Download, which
+  has Scrollkeeper download it and open it in Field Guide; a free one shows Get, its download page. No link to buy
+  a book is offered.
+- R9.6 Each book's lore is kept with its PDF's digest and date, the reader's version and when it was read, so a
+  later sync between devices can keep the newest; a newer reader reads books again.
+- R9.7 A creature's lore is the paragraphs its book prints before its stat block, then its family's
+  introduction under the family's name. Monster Core and Monster Core 2 remaster Bestiaries 1–3: a creature from
+  any of them takes its lore from the first of them read that prints it (Monster Core, Monster Core 2, the book
+  Foundry credits, the other Bestiaries), whichever order the books were read in. An adventure's creature whose
+  lore is a bestiary creature's (`sourcebooks.json`) takes that creature's.
+- R9.8 A sample sourcebook (placeholder text under real creatures' and deities' names, laid out as Monster Core
+  is) lets App Review and anyone without the books try it; its lore comes after any real book's.
 
 ## R8 Battle cards
 - R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
-  style, as in Turnkeeper) and its lore, the description without the stat block; the choice is remembered. A
+  style, as in Turnkeeper) and its lore from the user's books (R9.7); the choice is remembered. A
   creature without lore shows only its card. The card fills the width of its column, padded, and grows when
   the sidebar is hidden.
 - R8.2 Tapping an empty part of the card shows its corner icons and a second tap hides them; with a pointer,
@@ -129,7 +159,7 @@ Foundry VTT's compendium browser.
   Gelasio. The README carries the same notices.
 - R7.4 The Mac app is a full Mac app, not only a developer build. Its window opens at 1280 by 820 points. A Go
   menu has Search Everything (⌘F), Back (⌘[, returning from a followed link) and Pathfinder (⌘1) and
-  Starfinder (⌘2); File has Art from PDFs… (⇧⌘A). The README says how to install the disk image from a
+  Starfinder (⌘2); File has Sourcebooks… (⇧⌘A). The README says how to install the disk image from a
   release, and how to open an older release, which isn't notarized.
 - R7.5 The Mac app runs in the App Sandbox, without a paid Apple developer account. Its first sandboxed launch
   moves the art library and settings an earlier version kept into the sandbox. PDFs added before show as missing

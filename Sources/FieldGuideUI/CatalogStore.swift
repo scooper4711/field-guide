@@ -1,6 +1,7 @@
 import FieldGuideKit
 import Foundation
 import Observation
+import SourcebookLore
 
 /// The app's state: the open catalog, the chosen system and category, the list's query and results, and the search
 /// across every category.
@@ -126,6 +127,18 @@ public final class CatalogStore {
             globalSearch = GlobalSearch(entries: entries)
         }
         return globalSearch
+    }
+
+    /// The deities and creatures of both systems, for reading their lore from the user's books.
+    public func loreSubjects() -> LoreSubjects {
+        let deities = GameSystem.allCases.flatMap { (try? catalog?.summaries(of: .deities, in: $0)) ?? [] }
+        let creatures = GameSystem.allCases.flatMap { (try? catalog?.summaries(of: .bestiary, in: $0)) ?? [] }
+        return LoreSubjects(deityNames: Dictionary(deities.map { ($0.id, $0.name) }) { first, _ in first },
+                            creatures: creatures.compactMap { creature in
+                                creature.values(of: .source).first.map {
+                                    CreatureReference(id: creature.id, name: creature.name, credited: $0)
+                                }
+                            })
     }
 
     public func page(_ id: String) -> EntryPage? {

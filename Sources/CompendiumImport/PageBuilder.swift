@@ -27,6 +27,9 @@ struct PageBuilder {
     static let creatureArtPrefix = "creature/"
 
     let context: PageContext
+    /// The sources whose lore is always kept: the Community Use Policy lets a free project use "any of the text
+    /// or artwork published in the Paizo Blog".
+    static let communityUseSources = ["Paizo Blog", "Pathfinder Blog"]
 
     func row(for document: SourceDocument) -> EntryRow {
         let traitsJSON = document.systemData["traits"]
@@ -73,15 +76,29 @@ struct PageBuilder {
         switch document.category {
         case .bestiary:
             return CreatureBlock.html(document, context: context)
-                + description(system[path: "details.publicNotes"].string, values: CreatureBlock.values(system))
+                + lore(system[path: "details.publicNotes"].string, of: document, values: CreatureBlock.values(system))
         case .hazards:
             return HazardBlock.html(document, context: context)
         default:
             let details = DetailLines.html(document, context: context)
+            let text = system[path: "description.value"].string
+            let values = FormulaValues.level(system[path: "level.value"].int)
             return (details.isEmpty ? "" : "<section class=\"details\">\(details)</section>")
-                + description(system[path: "description.value"].string,
-                              values: .level(system[path: "level.value"].int))
+                + (document.category == .deities
+                    ? lore(text, of: document, values: values) : description(text, values: values))
         }
+    }
+
+    /// A description that is the setting's lore (a creature's, a deity's): Paizo's Reserved Material, which neither
+    /// the ORC License nor the Community Use Policy lets the app reproduce, so it is left out ("") unless the Paizo
+    /// Blog published it. The app reads it from the user's own books instead (SourcebookLore).
+    private func lore(_ html: String, of document: SourceDocument, values: FormulaValues) -> String {
+        Self.isCommunityUse(document) ? description(html, values: values) : ""
+    }
+
+    private static func isCommunityUse(_ document: SourceDocument) -> Bool {
+        let source = FacetExtractor.sourceTitle(of: document)
+        return communityUseSources.contains { source.hasPrefix($0) }
     }
 
     /// The description, its formulas worked out from the entry's rank or level (`@item.level`, `@item.rank`).

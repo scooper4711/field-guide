@@ -26,8 +26,7 @@ import Testing
         "<strong>Arcane Prepared Spells</strong> DC 20; <strong>3rd</strong> <a " +
             "href=\"entry:Compendium.pf2e.spells-srd.Item.fb1\">fireball</a> (×2); <strong>Cantrips " +
                 "(2nd)</strong> light",
-        "<strong>Goblin Scuttle</strong> <span class=\"action-glyph\">\u{E904}</span> (move)",
-        "<hr><section class=\"description\"><p>Goblins fight in groups.</p>"
+        "<strong>Goblin Scuttle</strong> <span class=\"action-glyph\">\u{E904}</span> (move)"
     ]
 
     @Test func creaturesShowTheirStatBlockInPaizoOrder() throws {
