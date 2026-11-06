@@ -20,8 +20,9 @@ public final class SourcebookModel {
     @ObservationIgnored private var lore: [String: DeityLore] = [:]
     @ObservationIgnored private var creatureLore: [String: CreatureLore] = [:]
     @ObservationIgnored private var detailsLore: [String: DetailsLore] = [:]
-    /// The book each ancestry and class is credited to, by entry ID, to name it when it hasn't been read.
-    @ObservationIgnored private var detailsBooks: [String: String] = [:]
+    /// Each ancestry and class, with the book it is credited to, by entry ID, to name both when the book hasn't been
+    /// read.
+    @ObservationIgnored private var detailsEntries: [String: EntryReference] = [:]
     /// How many creatures, ancestries and classes Foundry credits to each book, for the Sourcebooks screen.
     @ObservationIgnored private var counts: [String: SourcebookRow.Counts] = [:]
 
@@ -50,8 +51,9 @@ public final class SourcebookModel {
     /// nil for other entries.
     public func detailsHTML(of entryID: String) -> String? {
         if let lore = detailsLore[entryID] { return lore.html }
-        return detailsBooks[entryID].map { book in
-            "<p class=\"note\"><em>Add your copy of \(book) in Sourcebooks to read this lore.</em></p>"
+        return detailsEntries[entryID].map { entry in
+            "<p class=\"note\"><em>Add your copy of \(entry.credited) in Sourcebooks to read the lore for "
+                + "\(entry.name).</em></p>"
         }
     }
 
@@ -71,7 +73,7 @@ public final class SourcebookModel {
         self.lore = lore
         creatureLore = await Self.lore(of: subjects.creatures) { await store.lore(of: $0) }
         detailsLore = await Self.lore(of: subjects.details) { await store.details(of: $0) }
-        detailsBooks = Dictionary(subjects.details.map { ($0.id, $0.credited) }) { first, _ in first }
+        detailsEntries = Dictionary(subjects.details.map { ($0.id, $0) }) { first, _ in first }
         counts = SourcebookRow.Counts.of(subjects)
         progress = nil
     }

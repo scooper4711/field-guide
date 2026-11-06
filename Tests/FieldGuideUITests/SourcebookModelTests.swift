@@ -112,7 +112,7 @@ struct SourcebookModelTests {
                                     details: [fighter, wizard])
         await model.addFiles([file], subjects: subjects)
         #expect(model.detailsHTML(of: "id.fighter")?.contains("<h2>During Combat Encounters...</h2>") == true)
-        let note = "Add your copy of Pathfinder Player Core in Sourcebooks to read this lore."
+        let note = "Add your copy of Pathfinder Player Core in Sourcebooks to read the lore for Wizard."
         #expect(model.detailsHTML(of: "id.wizard") == "<p class=\"note\"><em>\(note)</em></p>")
         #expect(model.detailsHTML(of: "id.other") == nil)
         #expect(model.message == "Read \(SourcebookList.sample.title).")
