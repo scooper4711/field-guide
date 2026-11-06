@@ -86,6 +86,16 @@ struct SourcebookModelTests {
         #expect(model.progress == nil)
     }
 
+    @Test("Reading says which book it reads")
+    func readingMessage() {
+        let book = URL(filePath: "/Books/Pathfinder Lost Omens Test Gods.pdf")
+        #expect(SourcebookModel.readingMessage(for: [book], list: Self.list)
+            == "Reading Pathfinder Lost Omens Test Gods…")
+        #expect(SourcebookModel.readingMessage(for: [URL(filePath: "/Books/Notes.pdf")], list: Self.list)
+            == "Reading Notes…")
+        #expect(SourcebookModel.readingMessage(for: [book, book], list: Self.list) == "Reading sourcebooks…")
+    }
+
     @Test("Without a store there is no lore and nothing to read")
     func noStore() async {
         let model = SourcebookModel(store: nil, list: Self.list)

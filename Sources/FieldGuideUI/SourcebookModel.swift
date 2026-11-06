@@ -98,7 +98,7 @@ public final class SourcebookModel {
     /// Reads the sourcebooks among PDFs the user chose.
     public func addFiles(_ files: [URL], subjects: LoreSubjects) async {
         guard let store else { return }
-        progress = "Reading sourcebooks…"
+        progress = Self.readingMessage(for: files, list: list)
         report(await Self.attempt { try await store.addFiles(files, subjects: subjects) }, quietWhenNone: false)
         await refresh(subjects: subjects)
     }
@@ -112,6 +112,14 @@ public final class SourcebookModel {
         return list.books.map { book in
             SourcebookRow(book: book, counts: counts[book.title] ?? .init(), read: books[book.title])
         }
+    }
+
+    /// "Reading Pathfinder Monster Core…" for one book, else "Reading sourcebooks…".
+    static func readingMessage(for files: [URL], list: SourcebookList) -> String {
+        guard files.count == 1, let file = files.first else { return "Reading sourcebooks…" }
+        let title = SourcebookIdentifier(list: list).book(namedBy: file)?.title
+            ?? file.deletingPathExtension().lastPathComponent
+        return "Reading \(title)…"
     }
 
     private func report(_ result: Result<[String], Error>, quietWhenNone: Bool) {

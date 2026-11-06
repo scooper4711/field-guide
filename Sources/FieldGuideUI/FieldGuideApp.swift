@@ -54,10 +54,10 @@ extension FieldGuideApp {
         if url.pathExtension == ScrollkeeperLink.indexExtension {
             scrollkeeper.receiveIndex(url)
         } else if url.pathExtension.lowercased() == "pdf" {
-            Task {
-                await pdfArt.addFiles([url])
-                await sourcebooks.addFiles([url], subjects: store.loreSubjects())
-            }
+            // Side by side, so a PDF that takes long to search for art doesn't hold up its lore.
+            let subjects = store.loreSubjects()
+            Task { await pdfArt.addFiles([url]) }
+            Task { await sourcebooks.addFiles([url], subjects: subjects) }
         }
     }
 }
@@ -113,6 +113,9 @@ struct RootView: View {
             .toolbar {
                 ToolbarItem(placement: .navigation) {
                     Button("Search Everything", systemImage: "magnifyingglass", action: searchEverything)
+                }
+                ToolbarItem(placement: .status) {
+                    ReadingStatus()
                 }
             }
         }
