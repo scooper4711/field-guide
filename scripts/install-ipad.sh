@@ -34,6 +34,7 @@ PYTHON
 BUNDLE_ID="$(xcodebuild -project ios/FieldGuide.xcodeproj -scheme FieldGuide-iPad \
     -showBuildSettings 2>/dev/null | sed -n 's/^ *PRODUCT_BUNDLE_IDENTIFIER = //p' | head -n 1)"
 
+scripts/version.sh xcconfig > ios/Version.xcconfig
 echo "Building for ${IPAD}..."
 # A failed build must stop here: the app left by an earlier build would install with its old signature.
 if ! xcodebuild -project ios/FieldGuide.xcodeproj -scheme FieldGuide-iPad \

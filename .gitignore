@@ -9,6 +9,7 @@ tmp/
 coverage/
 ios/build/
 ios/Local.xcconfig
+ios/Version.xcconfig
 
 # Imported from the pf2e system and Paizo art: copyrighted, and rebuilt by `make import`.
 Generated/
