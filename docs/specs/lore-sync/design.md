@@ -46,11 +46,21 @@ CloudKit; the engine only moves records.
 Info.plist has `LoreSyncContainer` and `CKContainer.accountStatus()` is `.available`. Builds write that key only with
 the entitlements:
 
-- iPad and iPhone: `ios/App/FieldGuide.entitlements` (CloudKit container, `aps-environment`), with
-  `INFOPLIST_KEY_LoreSyncContainer` in the target.
-- Mac: `scripts/build-app.sh` adds the iCloud and push entitlements, `com.apple.application-identifier` and
-  `com.apple.developer.team-identifier`, and embeds the Developer ID provisioning profile, only when it signs for the
-  team and has the profile (`PROVISIONING_PROFILE`).
+- iPad and iPhone: `ios/FieldGuide.entitlements` (CloudKit container, `aps-environment`), and `ios/Info.plist`,
+  which Xcode merges into the Info.plist it generates, for `LoreSyncContainer` and the `remote-notification`
+  background mode (custom keys can't be `INFOPLIST_KEY_` settings). `make ipad-simulator` builds unsigned, so it
+  leaves `ios/Info.plist` out.
+- Mac: `scripts/build-app.sh` calls `scripts/add-icloud-entitlements.sh` when it signs for the team and has a
+  Developer ID provisioning profile with iCloud (`PROVISIONING_PROFILE`; the release workflow decodes it from the
+  `DEVELOPER_ID_PROVISIONING_PROFILE` secret). That adds the iCloud and push entitlements,
+  `com.apple.application-identifier` and `com.apple.developer.team-identifier`, embeds the profile and writes
+  `LoreSyncContainer`.
+
+### Environments
+CloudKit keeps a Development and a Production database per container, and they don't see each other. iPad builds
+installed from Xcode use Development; TestFlight and App Store builds use Production. The Mac build uses Production
+unless `ICLOUD_ENVIRONMENT=Development`, which is how to sync it with an iPad installed from Xcode. Before a release,
+deploy the schema to Production in the CloudKit Console.
 
 ## Privacy
 The privacy policy says lore syncs through the user's private iCloud database. The App Privacy answer stays "Data Not
