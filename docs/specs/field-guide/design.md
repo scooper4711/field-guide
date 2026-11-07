@@ -113,6 +113,9 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   Guide/Creature Art`, the `BestiaryStore` over `Generated/Creatures` and the `CardArtPieces` in
   `Generated/CardArt`. It matches art to creatures, and to items (`art(forItemNamed:game:)`), by name with `LibraryArtMatcher`, adds new PDFs from the
   watched folders at launch, and gives pages, thumbnails and cards their pictures and missing PDFs.
+- Sourcebooks shows watched folders and each PDF's folder by name, not by path, with tabletop-kit's
+  `FolderName` (`TablesideShared`): Scrollkeeper's downloads read "Scrollkeeper ▸ <title folder>" with "On this
+  Mac" or "On My iPad", in the App Group, its old Mac folder or an iPad app's Documents folder.
 - On a page whose id is `Compendium.<system>.<pack>.Actor.<id>` and whose creature the import wrote,
   `CreatureCardView` shows Tabletop Kit's `InteractiveBattleCard`: the `BattleCard`, and `CardBack` around an
   `ArtPicture`, with the card art, glossary and an `ArtPictureLoader` over `ArtModel` in the environment. When
