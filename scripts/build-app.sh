@@ -6,6 +6,8 @@
 # UNIVERSAL  set to 1 to build for both Apple silicon and Intel
 # TEAM_ID    team whose Tableside Toolkit App Group the app joins, to read Scrollkeeper's downloads (default: the
 #            team of the Developer ID certificate in the keychain; none when signing ad hoc)
+# PROVISIONING_PROFILE  Developer ID provisioning profile with iCloud; with a team, the app syncs sourcebook lore
+#            through iCloud (scripts/add-icloud-entitlements.sh, which ICLOUD_ENVIRONMENT also affects)
 set -eu
 
 cd "$(dirname "$0")/.."
@@ -157,6 +159,9 @@ if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ]; then
     /usr/libexec/PlistBuddy -c "Add :com.apple.security.application-groups array" \
         -c "Add :com.apple.security.application-groups:0 string $GROUP" "$ENTITLEMENTS"
     plutil -insert TablesideAppGroup -string "$GROUP" "$APP/Contents/Info.plist"
+fi
+if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ] && [ -n "${PROVISIONING_PROFILE:-}" ]; then
+    scripts/add-icloud-entitlements.sh "$APP" "$ENTITLEMENTS" "$TEAM_ID" "$PROVISIONING_PROFILE"
 fi
 scripts/sign-app.sh "$APP" "$ENTITLEMENTS"
 echo "Built $APP ($VERSION, build $BUILD_NUMBER)"

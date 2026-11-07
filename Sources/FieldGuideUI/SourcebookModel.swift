@@ -1,5 +1,6 @@
 import FieldGuideKit
 import Foundation
+import LoreSync
 import Observation
 import SourcebookLore
 
@@ -16,7 +17,14 @@ public final class SourcebookModel {
     public private(set) var progress: String?
     /// The result of the last import, shown until dismissed.
     public var message: String?
+    /// Whether lore syncs with the user's other devices.
+    public private(set) var syncStatus = LoreSyncStatus.unsupported
     @ObservationIgnored private let store: LoreStore?
+    /// The store's folder, which syncing keeps its state in.
+    @ObservationIgnored private let folder: URL?
+    @ObservationIgnored private var sync: LoreSync?
+    /// What the catalog asks the books for, kept to show lore that arrives from another device.
+    @ObservationIgnored private var subjects = LoreSubjects()
     @ObservationIgnored private var lore: [String: DeityLore] = [:]
     @ObservationIgnored private var creatureLore: [String: CreatureLore] = [:]
     @ObservationIgnored private var detailsLore: [String: DetailsLore] = [:]
@@ -26,15 +34,26 @@ public final class SourcebookModel {
     /// How many creatures, ancestries and classes Foundry credits to each book, for the Sourcebooks screen.
     @ObservationIgnored private var counts: [String: SourcebookRow.Counts] = [:]
 
-    public init(store: LoreStore?, list: SourcebookList = .bundled) {
+    public init(store: LoreStore?, list: SourcebookList = .bundled, folder: URL? = nil) {
         self.store = store
         self.list = list
+        self.folder = folder
     }
 
     /// The model over the store in `Application Support/Field Guide/Sourcebooks`.
     public static func standard() -> SourcebookModel {
         let folder = URL.applicationSupportDirectory.appendingPathComponent("Field Guide/Sourcebooks")
-        return SourcebookModel(store: try? LoreStore(folder: folder))
+        return SourcebookModel(store: try? LoreStore(folder: folder), folder: folder)
+    }
+
+    /// Syncs the books' lore with the user's other devices when this build may use iCloud (its Info.plist names the
+    /// container, `containerIdentifier`) and iCloud is on.
+    public func startSync(containerIdentifier: String = LoreSyncStatus.bundleContainer) async {
+        guard sync == nil, let store, let folder, !containerIdentifier.isEmpty else { return }
+        let onChange: @Sendable ([String]) async -> Void = { [weak self] _ in await self?.showSyncedLore() }
+        sync = await LoreSync.start(containerIdentifier: containerIdentifier, store: store, folder: folder,
+                                    onChange: onChange)
+        syncStatus = sync == nil ? .off : .on
     }
 
     /// The deity's lore from the user's books; nil when none of its books has been read.
@@ -63,8 +82,9 @@ public final class SourcebookModel {
         guard let store else { return }
         if addingNew {
             progress = "Looking for new sourcebooks…"
-            report(await Self.attempt { try await store.addNewFiles(subjects: subjects) }, quietWhenNone: true)
+            await finish(await Self.attempt { try await store.addNewFiles(subjects: subjects) }, quietWhenNone: true)
         }
+        self.subjects = subjects
         books = await store.books
         var lore: [String: DeityLore] = [:]
         for id in Set(list.deities.keys).union(subjects.deityNames.keys) {
@@ -91,7 +111,8 @@ public final class SourcebookModel {
     public func importFolder(_ folder: URL, subjects: LoreSubjects) async {
         guard let store else { return }
         progress = "Reading sourcebooks…"
-        report(await Self.attempt { try await store.importFolder(folder, subjects: subjects) }, quietWhenNone: false)
+        await finish(await Self.attempt { try await store.importFolder(folder, subjects: subjects) },
+                     quietWhenNone: false)
         await refresh(subjects: subjects)
     }
 
@@ -99,7 +120,7 @@ public final class SourcebookModel {
     public func addFiles(_ files: [URL], subjects: LoreSubjects) async {
         guard let store else { return }
         progress = Self.readingMessage(for: files, list: list)
-        report(await Self.attempt { try await store.addFiles(files, subjects: subjects) }, quietWhenNone: false)
+        await finish(await Self.attempt { try await store.addFiles(files, subjects: subjects) }, quietWhenNone: false)
         await refresh(subjects: subjects)
     }
 
@@ -120,6 +141,17 @@ public final class SourcebookModel {
         let title = SourcebookIdentifier(list: list).book(namedBy: file)?.title
             ?? file.deletingPathExtension().lastPathComponent
         return "Reading \(title)…"
+    }
+
+    /// Shows lore that arrived from another device.
+    private func showSyncedLore() async {
+        await refresh(subjects: subjects)
+    }
+
+    /// Reports what reading did, and uploads the books it read.
+    private func finish(_ result: Result<[String], Error>, quietWhenNone: Bool) async {
+        report(result, quietWhenNone: quietWhenNone)
+        if case .success(let titles) = result, !titles.isEmpty { await sync?.booksChanged(titles) }
     }
 
     private func report(_ result: Result<[String], Error>, quietWhenNone: Bool) {
@@ -174,6 +206,8 @@ public struct SourcebookRow: Identifiable, Equatable {
 
     public var id: String { book.id }
     public var isRead: Bool { read != nil }
+    /// Whether the book was read on another device: this one has its lore but not its PDF.
+    public var isReadElsewhere: Bool { read != nil && read?.location == nil }
 
     /// What the book supplies, such as "Deity lore: 3 deities · Creature lore: 497 creatures".
     public var supplies: String {
@@ -193,6 +227,32 @@ public struct SourcebookRow: Identifiable, Equatable {
         /// "Deity lore: 3 deities", or nil for none.
         func text(_ count: Int) -> String? {
             count > 0 ? "\(label): \(count) \(count == 1 ? one : many)" : nil
+        }
+    }
+}
+
+/// Whether lore syncs with the user's other devices, for the Sourcebooks screen.
+public enum LoreSyncStatus: Equatable, Sendable {
+    /// This build can't use iCloud, so nothing is said.
+    case unsupported
+    /// iCloud is off or signed out: lore stays on this device.
+    case off
+    case on
+
+    /// The Info.plist key naming the iCloud container, which builds with the iCloud entitlements write.
+    public static let containerKey = "LoreSyncContainer"
+
+    /// The container this build names, or empty.
+    public static var bundleContainer: String {
+        Bundle.main.object(forInfoDictionaryKey: containerKey) as? String ?? ""
+    }
+
+    /// The Sourcebooks screen's line about syncing, or nil for none.
+    public var text: String? {
+        switch self {
+        case .unsupported: nil
+        case .off: "iCloud is off: lore stays on this device."
+        case .on: "Lore syncs through your iCloud, so books read on your other devices show here too."
         }
     }
 }

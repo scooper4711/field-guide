@@ -118,9 +118,13 @@ struct SourcebooksView: View {
         } header: {
             Text("Sourcebooks")
         } footer: {
-            Text("Each deity's lore comes from one book for its edicts, anathema and other lines, and one for its "
-                 + "write-up. The free Divine Mysteries Web Supplement gives nearly every deity's lines. A creature "
-                 + "from a Bestiary takes its lore from Monster Core or Monster Core 2 when you have them.")
+            VStack(alignment: .leading, spacing: 6) {
+                if let sync = sourcebooks.syncStatus.text { Text(sync) }
+                Text("Each deity's lore comes from one book for its edicts, anathema and other lines, and one for its "
+                     + "write-up. The free Divine Mysteries Web Supplement gives nearly every deity's lines. A "
+                     + "creature from a Bestiary takes its lore from Monster Core or Monster Core 2 when you have "
+                     + "them.")
+            }
         }
     }
 
@@ -187,6 +191,9 @@ private struct SourcebookRowView: View {
                 Text(row.book.title)
                 Text(row.supplies)
                     .font(.caption).foregroundStyle(.secondary)
+                if row.isReadElsewhere {
+                    Text("Read on another device").font(.caption).foregroundStyle(.secondary)
+                }
             }
             Spacer()
             if row.isRead {

@@ -10,9 +10,11 @@ mkdir -p Generated
 DEVICE="$(scripts/ipad-simulator-id.sh)"
 [ -n "$DEVICE" ] || { echo "Starting the simulator failed: no iPad simulator is installed." >&2; exit 1; }
 
+# Unsigned, the app has no iCloud entitlement, so it leaves out ios/Info.plist, whose LoreSyncContainer would start
+# syncing and make CloudKit stop the app.
 xcodebuild -project ios/FieldGuide.xcodeproj -scheme FieldGuide-iPad \
     -destination "platform=iOS Simulator,id=$DEVICE" -derivedDataPath ios/build \
-    CODE_SIGNING_ALLOWED=NO build | tail -n 3
+    CODE_SIGNING_ALLOWED=NO INFOPLIST_FILE= build | tail -n 3
 
 APP="ios/build/Build/Products/Debug-iphonesimulator/FieldGuide.app"
 xcrun simctl boot "$DEVICE" 2>/dev/null || true

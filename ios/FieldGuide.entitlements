@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- The iPad and iPhone app's entitlements: the iCloud container that syncs sourcebook lore between the user's devices
+     (docs/specs/lore-sync), and push notifications, which CKSyncEngine uses to hear of changes. Xcode signs debug
+     builds for CloudKit's Development environment and App Store builds for Production. -->
+<plist version="1.0">
+<dict>
+    <key>aps-environment</key>
+    <string>development</string>
+    <key>com.apple.developer.icloud-container-identifiers</key>
+    <array>
+        <string>iCloud.io.github.scooper4711.FieldGuide</string>
+    </array>
+    <key>com.apple.developer.icloud-services</key>
+    <array>
+        <string>CloudKit</string>
+    </array>
+</dict>
+</plist>
