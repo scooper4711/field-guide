@@ -2,6 +2,7 @@ import CreatureArt
 import FieldGuideKit
 import SourcebookLore
 import SwiftUI
+import TablesideShared
 import UniformTypeIdentifiers
 
 /// Where art and deity lore come from: the user's own Paizo PDFs, used where Scrollkeeper keeps them or copied
