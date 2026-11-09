@@ -112,9 +112,10 @@ struct SourcebooksView: View {
 
     private var sourcebooksSection: some View {
         Section {
-            let rows = filter.rows(sourcebooks.rows)
+            let shown = filter.effective(owned: scrollkeeper.owned)
+            let rows = shown.rows(sourcebooks.rows, owned: scrollkeeper.owned)
             if rows.isEmpty {
-                Text(filter.emptyMessage).foregroundStyle(.secondary)
+                Text(shown.emptyMessage).foregroundStyle(.secondary)
             }
             ForEach(rows) { row in
                 SourcebookRowView(row: row)
@@ -123,12 +124,12 @@ struct SourcebooksView: View {
             HStack {
                 Text("Sourcebooks")
                 Spacer()
-                Picker("Show", selection: $filter) {
-                    ForEach(SourcebookFilter.allCases) { Text($0.title).tag($0) }
+                // Segmented when it fits beside the heading; a menu on narrow screens (the iPhone).
+                ViewThatFits {
+                    filterPicker.pickerStyle(.segmented).fixedSize()
+                    filterPicker.pickerStyle(.menu).fixedSize()
                 }
-                .pickerStyle(.segmented)
                 .labelsHidden()
-                .fixedSize()
                 .textCase(nil)
             }
         } footer: {
@@ -139,6 +140,14 @@ struct SourcebooksView: View {
                      + "creature from a Bestiary takes its lore from Monster Core or Monster Core 2 when you have "
                      + "them.")
             }
+        }
+    }
+
+    /// Shows the filter in effect; choosing one remembers it.
+    private var filterPicker: some View {
+        let selection = Binding(get: { filter.effective(owned: scrollkeeper.owned) }, set: { filter = $0 })
+        return Picker("Show", selection: selection) {
+            ForEach(SourcebookFilter.choices(owned: scrollkeeper.owned)) { Text($0.title).tag($0) }
         }
     }
 
