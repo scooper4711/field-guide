@@ -54,7 +54,7 @@ public final class ArtModel {
     /// Watches Scrollkeeper's download folder and uses the PDFs of creature art in it, where they are.
     public func importFolder(_ folder: URL) async {
         guard let store else { return }
-        progress = "Reading Scrollkeeper's PDFs…"
+        progress = "Processing Scrollkeeper's PDFs…"
         message = await store.importFolder(folder, progress: reporter()).message
         await refresh()
     }
@@ -62,7 +62,7 @@ public final class ArtModel {
     /// Keeps copies of PDFs the user chose and uses their creature art.
     public func addFiles(_ files: [URL]) async {
         guard let store else { return }
-        progress = "Reading PDFs…"
+        progress = "Processing PDFs…"
         message = await store.addFiles(files, progress: reporter()).message
         await refresh()
     }
@@ -133,7 +133,7 @@ public final class ArtModel {
     }
 
     private func reporter() -> @Sendable (String) -> Void {
-        { name in Task { @MainActor in self.progress = "Reading \(name)…" } }
+        { name in Task { @MainActor in self.progress = "Processing \(name)…" } }
     }
 }
 

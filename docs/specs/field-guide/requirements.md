@@ -126,9 +126,10 @@ device as art is. Lore the Paizo Blog published stays in the import.
 - R9.4 A PDF is recognized by its file or folder name as Paizo and Scrollkeeper name them, a `PZO…` SKU in its
   name, or its own copyright line, so a renamed copy bought anywhere works.
 - R9.5 Sourcebooks (sidebar toolbar; File ▸ Sourcebooks…, ⇧⌘A) lists every book lore comes from and what it
-  supplies, with a check mark once read. A book the user owns in Scrollkeeper for the Mac shows Download, which
+  supplies, with a check mark once processed. A book the user owns in Scrollkeeper for the Mac shows Download, which
   has Scrollkeeper download it and open it in Field Guide; a free one shows Get, its download page. No link to buy
-  a book is offered.
+  a book is offered. A picker filters the list to All, Processed or Not Processed (All at first, then the last
+  choice), and says so when the filter leaves no book. The screen calls reading a book for lore "processing" it.
 - R9.6 Each book's lore is kept with its PDF's digest and date, the reader's version and when it was read, so a
   later sync between devices can keep the newest; a newer reader reads books again.
 - R9.7 A creature's lore is the paragraphs its book prints before its stat block, then its family's
@@ -144,7 +145,7 @@ device as art is. Lore the Paizo Blog published stays in the import.
   Others Probably..., Physical Description, Society, Beliefs, Names, Roleplaying) from the book that introduces it,
   in its place on the page, with bullets and labeled lines as printed; until that book is read, a note there names
   it.
-- R9.11 While a book is read, the window's toolbar says which, wherever the user is; a book Scrollkeeper hands
+- R9.11 While a book is processed, the window's toolbar says which, wherever the user is; a book Scrollkeeper hands
   over is read for lore and art side by side. The Sourcebooks screen says a book isn't in the library only when
   Scrollkeeper's list says so.
 - R9.10 Text read from books has no words broken in two or run together, no hyphens left from line breaks, no

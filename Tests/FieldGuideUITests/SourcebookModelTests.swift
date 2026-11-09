@@ -58,7 +58,7 @@ struct SourcebookModelTests {
         #expect(spell.tabs.isEmpty)
     }
 
-    @Test("Reading a sourcebook lists it as read and gives its deities' lore")
+    @Test("Processing a sourcebook lists it as processed and gives its deities' lore")
     func readsABook() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Sourcebooks-\(UUID())")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -75,7 +75,7 @@ struct SourcebookModelTests {
         #expect(model.rows.map(\.counts.deities) == [1, 2])
         #expect(model.rows.map(\.supplies) == ["Deity lore: 1 deity", "Deity lore: 2 deities"])
         await model.addFiles([file], subjects: Self.subjects)
-        #expect(model.message == "Read Pathfinder Lost Omens Test Gods.")
+        #expect(model.message == "Processed Pathfinder Lost Omens Test Gods.")
         #expect(model.rows.map(\.isRead) == [true, false])
         #expect(model.lore(of: "id.abadar")?.paragraphs == ["Abadar keeps the First Vault."])
         #expect(model.lore(of: "id.arazni") == nil)
@@ -86,14 +86,14 @@ struct SourcebookModelTests {
         #expect(model.progress == nil)
     }
 
-    @Test("Reading says which book it reads")
+    @Test("Processing says which book it processes")
     func readingMessage() {
         let book = URL(filePath: "/Books/Pathfinder Lost Omens Test Gods.pdf")
         #expect(SourcebookModel.readingMessage(for: [book], list: Self.list)
-            == "Reading Pathfinder Lost Omens Test Gods…")
+            == "Processing Pathfinder Lost Omens Test Gods…")
         #expect(SourcebookModel.readingMessage(for: [URL(filePath: "/Books/Notes.pdf")], list: Self.list)
-            == "Reading Notes…")
-        #expect(SourcebookModel.readingMessage(for: [book, book], list: Self.list) == "Reading sourcebooks…")
+            == "Processing Notes…")
+        #expect(SourcebookModel.readingMessage(for: [book, book], list: Self.list) == "Processing sourcebooks…")
     }
 
     @Test("Without a store there is no lore and nothing to read")
@@ -125,7 +125,7 @@ struct SourcebookModelTests {
         let note = "Add your copy of Pathfinder Player Core in Sourcebooks to read the lore for Wizard."
         #expect(model.detailsHTML(of: "id.wizard") == "<p class=\"note\"><em>\(note)</em></p>")
         #expect(model.detailsHTML(of: "id.other") == nil)
-        #expect(model.message == "Read \(SourcebookList.sample.title).")
+        #expect(model.message == "Processed \(SourcebookList.sample.title).")
         #expect(model.creatureLore(of: "id.warrior")?.family == "Goblin")
         #expect(model.creatureLore(of: "id.warrior")?.paragraphs.isEmpty == false)
         #expect(model.creatureLore(of: "id.hunter")?.family == "Kholo")

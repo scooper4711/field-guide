@@ -16,6 +16,7 @@ struct SourcebooksView: View {
     // One file importer serves both buttons: SwiftUI presents only one of several on the same view.
     @State private var isChoosing = false
     @State private var choice = ArtChoice.pdfs
+    @AppStorage("sourcebookFilter") private var filter = SourcebookFilter.all
 
     var body: some View {
         NavigationStack {
@@ -111,11 +112,25 @@ struct SourcebooksView: View {
 
     private var sourcebooksSection: some View {
         Section {
-            ForEach(sourcebooks.rows) { row in
+            let rows = filter.rows(sourcebooks.rows)
+            if rows.isEmpty {
+                Text(filter.emptyMessage).foregroundStyle(.secondary)
+            }
+            ForEach(rows) { row in
                 SourcebookRowView(row: row)
             }
         } header: {
-            Text("Sourcebooks")
+            HStack {
+                Text("Sourcebooks")
+                Spacer()
+                Picker("Show", selection: $filter) {
+                    ForEach(SourcebookFilter.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .fixedSize()
+                .textCase(nil)
+            }
         } footer: {
             VStack(alignment: .leading, spacing: 6) {
                 if let sync = sourcebooks.syncStatus.text { Text(sync) }
@@ -191,13 +206,13 @@ private struct SourcebookRowView: View {
                 Text(row.supplies)
                     .font(.caption).foregroundStyle(.secondary)
                 if row.isReadElsewhere {
-                    Text("Read on another device").font(.caption).foregroundStyle(.secondary)
+                    Text("Processed on another device").font(.caption).foregroundStyle(.secondary)
                 }
             }
             Spacer()
             if row.isRead {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                    .accessibilityLabel("Read")
+                    .accessibilityLabel("Processed")
             } else if let sku = row.book.sku, scrollkeeper.owns(sku: sku) {
                 Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
             } else if let url = row.book.downloadURL {
@@ -206,7 +221,7 @@ private struct SourcebookRowView: View {
                 Text("Not in your library").font(.caption).foregroundStyle(.secondary)
             } else {
                 // Without Scrollkeeper's list, or a SKU to look the book up by, whether the user owns it is unknown.
-                Text("Add its PDF to read it").font(.caption).foregroundStyle(.secondary)
+                Text("Use Add PDFs… to process it").font(.caption).foregroundStyle(.secondary)
             }
         }
     }
