@@ -12,6 +12,10 @@ extension FocusedValues {
 
 /// The Mac's menu commands: Sourcebooks in File, and the Go menu.
 struct FieldGuideCommands: Commands {
+    // A literal URL that is known to parse.
+    // swiftlint:disable:next force_unwrapping
+    private static let privacyPolicy = URL(string: "https://github.com/scooper4711/field-guide/blob/main/PRIVACY.md")!
+
     let store: CatalogStore
     @FocusedValue(\.entryPath) private var entryPath
     @FocusedValue(\.isSearchingEverything) private var isSearchingEverything
@@ -22,6 +26,9 @@ struct FieldGuideCommands: Commands {
             Button("Sourcebooks…") { isShowingSourcebooks?.wrappedValue = true }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
                 .disabled(isShowingSourcebooks == nil)
+        }
+        CommandGroup(after: .help) {
+            Link("Field Guide Privacy Policy", destination: Self.privacyPolicy)
         }
         CommandMenu("Go") {
             Button("Search Everything") { isSearchingEverything?.wrappedValue = true }
