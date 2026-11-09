@@ -5,7 +5,7 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-[ -f Generated/catalog.sqlite ] || { echo "Archiving failed: Generated/ is missing; run \"make import\" first." >&2; exit 1; }
+scripts/check-generated.sh "Archiving"
 
 ARCHIVE="build/FieldGuide.xcarchive"
 rm -rf "$ARCHIVE"

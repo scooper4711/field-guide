@@ -223,6 +223,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   entitlements on the Mac and is `group.io.github.scooper4711.tableside` on iOS (`ios/FieldGuide.entitlements`);
   then Scrollkeeper's pre-sandbox Mac folder, which only an unsandboxed build reaches; otherwise the folder
   picker. `scripts/make-dmg.sh` packages it (`make dmg`).
+- `scripts/build-app.sh`, `scripts/archive-ipad.sh` and `scripts/install-ipad.sh` first run
+  `scripts/check-generated.sh`, which refuses to go on when `Generated/` is missing or its fingerprint differs from
+  the committed `import.sha256`, so a local build never bundles what an older importer made (such as lore a later
+  import leaves out). CI imports fresh on every run.
 - **Release workflow** (on `v*` tags, or called): fetches the `Artwork` submodule with the `ARTWORK_SSH_KEY`
   deploy key, installs `cwebp`, imports with `REXARD_PACKS=Artwork/rexard` and
   `COMMUNITY_USE=Artwork/community-use`, warns when `import.sha256` or `icon-matches.tsv` differs from the

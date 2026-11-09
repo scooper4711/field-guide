@@ -9,7 +9,7 @@
 set -eu
 
 cd "$(dirname "$0")/.."
-[ -f Generated/catalog.sqlite ] || { echo "Installing failed: run make import first." >&2; exit 1; }
+scripts/check-generated.sh "Installing"
 
 DEVICES="$(mktemp)"
 BUILD_LOG="$(mktemp)"
