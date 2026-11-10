@@ -1,4 +1,6 @@
+import ArtExtraction
 import Foundation
+import PDFKit
 import Testing
 import SourcebookLoreTestSupport
 @testable import SourcebookLore
@@ -9,6 +11,7 @@ import SourcebookLoreTestSupport
         let creatures = CreatureWriteups().writeups(in: document)
         for family in SampleSourcebook.families {
             for creature in family.creatures {
+                #expect(SampleSourcebook.statBlocks[creature.name] != nil, "\(creature.name)")
                 let lore = try #require(creatures[TextRepair.matchKey(creature.name)], "\(creature.name)")
                 #expect(!lore.paragraphs.isEmpty, "\(creature.name)")
                 if family.creatures.count > 1 || family.name != creature.name {
@@ -31,5 +34,21 @@ import SourcebookLoreTestSupport
         let file = URL(filePath: "/Downloads/Field Guide Sample Monster Core.pdf")
         #expect(SourcebookIdentifier(list: SourcebookList(books: [SourcebookList.sample])).book(namedBy: file)
             == SourcebookList.sample)
+    }
+
+    /// Each creature's page holds its one picture, and no other page has any, so a picture is found by its page.
+    @Test func everyCreatureHasItsPictureOnItsOwnPage() throws {
+        let document = try #require(SampleSourcebook.document())
+        let counts = (0..<document.pageCount).map { index in
+            document.page(at: index)?.pageRef.map { PageScanner.images(on: $0).count } ?? 0
+        }
+        let pictured = counts.indices.filter { counts[$0] == 1 }
+        let pictureless = counts.indices.filter { counts[$0] == 0 }
+        #expect(pictured.count == SampleSourcebook.creatures.count)
+        #expect(pictured.count + pictureless.count == document.pageCount)
+        for (index, creature) in zip(pictured, SampleSourcebook.creatures) {
+            let text = document.page(at: index)?.string ?? ""
+            #expect(text.contains("\(creature.name.uppercased()) CREATURE"), "\(creature.name)")
+        }
     }
 }

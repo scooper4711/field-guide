@@ -115,10 +115,10 @@ struct SourcebookModelTests {
         let model = SourcebookModel(store: try LoreStore(folder: folder.appendingPathComponent("Store"), list: list),
                                     list: list)
         let warrior = EntryReference(id: "id.warrior", name: "Goblin Warrior", credited: "Pathfinder Monster Core")
-        let athraxer = EntryReference(id: "id.athraxer", name: "Athraxer", credited: "Starfinder Alien Core")
+        let hunter = EntryReference(id: "id.hunter", name: "Kholo Hunter", credited: "Pathfinder Monster Core")
         let fighter = EntryReference(id: "id.fighter", name: "Fighter", credited: "Pathfinder Player Core")
         let wizard = EntryReference(id: "id.wizard", name: "Wizard", credited: "Pathfinder Player Core")
-        let subjects = LoreSubjects(deityNames: ["id.abadar": "Abadar"], creatures: [warrior, athraxer],
+        let subjects = LoreSubjects(deityNames: ["id.abadar": "Abadar"], creatures: [warrior, hunter],
                                     details: [fighter, wizard])
         await model.addFiles([file], subjects: subjects)
         #expect(model.detailsHTML(of: "id.fighter")?.contains("<h2>During Combat Encounters...</h2>") == true)
@@ -128,7 +128,7 @@ struct SourcebookModelTests {
         #expect(model.message == "Read \(SourcebookList.sample.title).")
         #expect(model.creatureLore(of: "id.warrior")?.family == "Goblin")
         #expect(model.creatureLore(of: "id.warrior")?.paragraphs.isEmpty == false)
-        #expect(model.creatureLore(of: "id.athraxer")?.family == "The Swarm")
+        #expect(model.creatureLore(of: "id.hunter")?.family == "Kholo")
         #expect(model.lore(of: "id.abadar")?.statLines.contains { $0.label == "Edicts" } == true)
         #expect(model.rows.first?.supplies == "Placeholder lore for trying Field Guide")
     }
