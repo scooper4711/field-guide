@@ -36,7 +36,9 @@ let package = Package(
         ], resources: [.process("Resources")]),
         .executableTarget(name: "FieldGuide", dependencies: ["FieldGuideUI"]),
         .testTarget(name: "FieldGuideKitTests", dependencies: ["FieldGuideKit"]),
-        .target(name: "SourcebookLoreTestSupport", dependencies: ["SourcebookLore"]),
+        .target(name: "SourcebookLoreTestSupport", dependencies: [
+            "SourcebookLore", .product(name: "ArtExtractionTestSupport", package: "tabletop-kit")
+        ]),
         .testTarget(name: "SourcebookLoreTests", dependencies: ["SourcebookLore", "SourcebookLoreTestSupport"]),
         .testTarget(name: "LoreSyncTests", dependencies: ["LoreSync", "SourcebookLore"]),
         .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),

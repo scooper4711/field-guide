@@ -20,11 +20,25 @@ public struct PDFFixture: Sendable {
     public static let regular = "Helvetica"
     public static let bold = "Helvetica-Bold"
 
+    /// A picture drawn into `rect`, as a book's art is.
+    public struct Picture: @unchecked Sendable {
+        public var image: CGImage
+        public var rect: CGRect
+
+        public init(image: CGImage, rect: CGRect) {
+            self.image = image
+            self.rect = rect
+        }
+    }
+
     public var pageSize = CGSize(width: 600, height: 780)
     public var pages: [[Piece]] = []
+    /// The pictures on each page, by the page's index; drawn before its text.
+    public var pictures: [Int: [Picture]] = [:]
 
-    public init(pages: [[Piece]]) {
+    public init(pages: [[Piece]], pictures: [Int: [Picture]] = [:]) {
         self.pages = pages
+        self.pictures = pictures
     }
 
     /// A piece in one font, its baseline starting at (`left`, `baseline`).
@@ -44,8 +58,9 @@ public struct PDFFixture: Sendable {
         var box = CGRect(origin: .zero, size: pageSize)
         guard let consumer = CGDataConsumer(data: data as CFMutableData),
               let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return nil }
-        for page in pages {
+        for (index, page) in pages.enumerated() {
             context.beginPDFPage(nil)
+            pictures[index, default: []].forEach { context.draw($0.image, in: $0.rect) }
             page.forEach { draw($0, in: context) }
             context.endPDFPage()
         }

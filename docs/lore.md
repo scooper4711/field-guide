@@ -44,10 +44,13 @@ ATTRIBUTE", "LOW-LIGHT VISION") are left out. Bullets stay bulleted and "Popular
 
 ## The sample sourcebook
 
-`Field Guide Sample Monster Core.pdf` (`Resources/Review/`, written by `FieldGuideLoreSurvey sample`) has placeholder
-text under real names: creatures (Goblin Warrior, Goblin Commando, Wolf, Dire Wolf, Athraxer), deities (Abadar,
-Iomedae), an ancestry (Elf) and a class (Fighter), laid out as Paizo's books are. It is for App Review and anyone
-without the books; its lore comes after any real book's.
+`Field Guide Sample Monster Core.pdf` (`Resources/Review/`, written by
+`FieldGuideLoreSurvey sample <pdf> --art <community-use-artwork folder>`) has placeholder lore under real names:
+creatures (Goblin Warrior, Goblin Pyro, Hobgoblin Soldier, Kholo Hunter), deities (Abadar, Iomedae), an ancestry
+(Elf) and a class (Fighter), laid out as Paizo's books are. Each creature has its own page with Monster Core's stat
+block (ORC license; the notice and attribution are on the last page) and its picture from the Paizo blog art in
+`community-use-artwork/paizo-blog` (Community Use Policy), so Pluck shows one picture per creature page. It is for
+App Review and anyone without the books; its lore comes after any real book's.
 
 ## How well the books read
 

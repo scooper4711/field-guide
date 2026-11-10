@@ -149,8 +149,9 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   Dragon" for "Horned Dragon (Adult)"), so `LoreStore` can choose among editions when shown
   (`SourcebookList.creatureBooks(for:)`). `FieldGuideLoreSurvey creatures` checks a book against Foundry's text;
   `lore-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
-  whose text Foundry copied; `sample` writes `Resources/Review/Field Guide Sample Monster Core.pdf`
-  (`SampleSourcebook`).
+  whose text Foundry copied; `sample <pdf> --art <community-use-artwork folder>` writes
+  `Resources/Review/Field Guide Sample Monster Core.pdf` (`SampleSourcebook`, with Monster Core's stat blocks in
+  `SampleStatBlocks` and each creature's Paizo blog picture; it fails if a picture is missing).
 - Ancestry and class lore: the import keeps a Details page's rules and puts `DetailsPage.loreMarker` where its lore
   was (`DetailsPage.loreRange`: from a class's "Roleplaying" heading, or the page's start, to "Mechanics" or
   "Initial Proficiencies"). `DetailsWriteups` finds the entry's title (chapter-sized, else section-sized; of several,
