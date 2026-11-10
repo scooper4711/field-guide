@@ -76,8 +76,11 @@ Remastered rules come first.
 
 ### Paizo's and others' material
 
-The repository holds no Paizo text, art or PDFs. Don't commit any, nor screenshots of them, nor other publishers'
-art (such as Rexard's packs) or fonts whose licenses don't allow it.
+The repository holds no Paizo text, art or PDFs, with two exceptions in the demo files: art Paizo shares under
+its [Community Use Policy](https://paizo.com/licenses/communityuse) (the Community Use Package and paizo.com blog
+art), and rules text Paizo publishes under the [ORC License](https://paizo.com/orclicense), such as Monster Core's
+stat blocks, with the ORC notice and Paizo's attribution beside it. Don't commit any other Paizo material, nor
+screenshots of it, nor other publishers' art (such as Rexard's packs) or fonts whose licenses don't allow it.
 
 Rules text the app shows comes from the [Foundry VTT pf2e system](https://github.com/foundryvtt/pf2e) under the ORC
 License and OGL, imported when the app is built rather than kept in the repository; anything else of Paizo's is read
