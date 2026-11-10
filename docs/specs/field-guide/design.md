@@ -28,7 +28,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
 - `GMScreen` reads `packs/<system>/journals/*.json`: each page with more than a line of text becomes an entry
   with ID `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`. A GM Screen page's
   section is the last level-1 page before it in sort order; the other journals' pages are in the category of
-  their journal (Archetypes, Domains, Remaster Changes, else Journals, sectioned by journal name). Relative links
+  their journal (Archetypes, Domains, else Journals, sectioned by journal name). The Remaster Changes journal is
+  skipped (`GMScreen.skippedFiles`), so links to its pages are unresolved and read as plain text. Relative links
   (`@UUID[.<page>]`) are made absolute before enriching, and `LinkIndex` resolves page links (ignoring
   `#anchors`).
 - `RulesDiagrams` inserts the inline SVG diagrams (`DetectionDiagram`, `CounteractDiagram`) after an anchor

@@ -26,7 +26,8 @@ Foundry VTT's compendium browser.
 - R3.1 Foundry's compendium browser tabs: Actions, Bestiary, Campaign Features, Equipment, Feats, Hazards
   and Spells.
 - R3.2 Also: Conditions, Ancestries, Heritages, Backgrounds, Classes and Deities; and from the rules journals,
-  Archetypes, Domains and Remaster Changes, each page an entry.
+  Archetypes and Domains, each page an entry. The Remaster Changes journal is not imported, and links to its
+  pages read as plain text.
 - R3.3 A category with no entries in a system, such as Campaign Features in Starfinder, is not shown.
 - R3.4 GM Screen, first in the list: each page of the system's GM Screen journal (such as DCs by Level,
   Simple DCs and Encounter Budget) is an entry, filterable by its section (Playing the Game, Running the

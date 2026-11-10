@@ -19,21 +19,23 @@ struct JournalPage: Equatable {
 
 /// Reads the system's journals (`packs/<system>/journals/*.json`) into pages. GM Screen pages go under the
 /// last level-1 page before them, their section, and level-1 pages with little text are only headings; the
-/// other journals' pages go under the journal's name. Archetypes, Domains and Remaster Changes are categories of
-/// their own; the Ancestries and Classes pages are their entries' Details; the rest are Journals.
+/// other journals' pages go under the journal's name. Archetypes and Domains are categories of their own; the
+/// Ancestries and Classes pages are their entries' Details; the rest are Journals. The Remaster Changes journal is
+/// left out, and links to its pages read as plain text.
 enum GMScreen {
     static let minimumText = 120
     static let gmScreenFile = "gm-screen.json"
     static let categories: [String: EntryCategory] = [
-        gmScreenFile: .gmScreen, "archetypes.json": .archetypes, "domains.json": .domains,
-        "remaster-changes.json": .remasterChanges
+        gmScreenFile: .gmScreen, "archetypes.json": .archetypes, "domains.json": .domains
     ]
+    /// Journals Field Guide does not show.
+    static let skippedFiles: Set<String> = ["remaster-changes.json"]
     static let details: [String: EntryCategory] = ["ancestries.json": .ancestries, "classes.json": .classes]
 
     static func pages(repository: URL, system: GameSystem) -> [JournalPage] {
         let folder = repository.appendingPathComponent("packs/\(system.rawValue)/journals")
         let files = ((try? FileManager.default.contentsOfDirectory(atPath: folder.path)) ?? [])
-            .filter { $0.hasSuffix(".json") && !$0.hasPrefix("_") }.sorted()
+            .filter { $0.hasSuffix(".json") && !$0.hasPrefix("_") && !skippedFiles.contains($0) }.sorted()
         return files.flatMap { pages(in: folder.appendingPathComponent($0), system: system) }
     }
 
