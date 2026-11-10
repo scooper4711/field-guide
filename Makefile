@@ -1,4 +1,4 @@
-.PHONY: build test lint coverage import update app dmg run ipad-install ipad-simulator ipad-archive icon clean
+.PHONY: build test lint coverage import update app dmg appstore run ipad-install ipad-simulator ipad-archive icon clean
 
 build:
 	swift build
@@ -28,6 +28,11 @@ app:
 
 dmg: app
 	scripts/make-dmg.sh
+
+# Builds the Mac App Store package, build/appstore/Field Guide.pkg (see scripts/build-app.sh for the variables).
+appstore:
+	swift package resolve
+	CHANNEL=appstore scripts/build-app.sh
 
 # Runs the Mac build against Generated/.
 run:

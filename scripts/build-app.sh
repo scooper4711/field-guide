@@ -8,6 +8,11 @@
 #            team of the Developer ID certificate in the keychain; none when signing ad hoc)
 # PROVISIONING_PROFILE  Developer ID provisioning profile with iCloud; with a team, the app syncs sourcebook lore
 #            through iCloud (scripts/add-icloud-entitlements.sh, which ICLOUD_ENVIRONMENT also affects)
+# CHANNEL    "appstore" also builds the Mac App Store package, build/appstore/Field Guide.pkg, from the same sources,
+#            compiled with -DAPP_STORE; PROVISIONING_PROFILE is then the Mac App Store profile (with iCloud), and
+#            the variables of tabletop-kit's scripts/package-appstore.sh are needed (PACKAGER names another copy;
+#            TRIAL=1 checks the package without them). iCloud is the Production environment unless
+#            ICLOUD_ENVIRONMENT says otherwise.
 set -eu
 
 cd "$(dirname "$0")/.."
@@ -19,13 +24,18 @@ EXECUTABLE="FieldGuide"
 
 [ -f Generated/catalog.sqlite ] || { echo "Building the app failed: Generated/ is missing; run \"make import\" first." >&2; exit 1; }
 
+SWIFT_FLAGS=""
+[ "${CHANNEL:-}" = "appstore" ] && SWIFT_FLAGS="-Xswiftc -DAPP_STORE"
+
 if [ "${UNIVERSAL:-0}" = "1" ]; then
-    swift build -c release --arch arm64 --arch x86_64 --product "$EXECUTABLE"
+    # shellcheck disable=SC2086 # SWIFT_FLAGS is a list of words
+    swift build -c release $SWIFT_FLAGS --arch arm64 --arch x86_64 --product "$EXECUTABLE"
     # Asked rather than assumed: newer SwiftPM moved universal builds out of .build/apple, and a copy left
     # there by an older toolchain would otherwise be bundled instead.
     BINARY="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)/$EXECUTABLE"
 else
-    swift build -c release --product "$EXECUTABLE"
+    # shellcheck disable=SC2086
+    swift build -c release $SWIFT_FLAGS --product "$EXECUTABLE"
     BINARY="$(swift build -c release --show-bin-path)/$EXECUTABLE"
 fi
 
@@ -165,3 +175,9 @@ if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ] && [ -n "${PROVISIONING_PROFILE
 fi
 scripts/sign-app.sh "$APP" "$ENTITLEMENTS"
 echo "Built $APP ($VERSION, build $BUILD_NUMBER)"
+
+if [ "${CHANNEL:-}" = "appstore" ]; then
+    # Found beside the package after "swift package resolve", so the script follows the dependency pin.
+    "${PACKAGER:-.build/checkouts/tabletop-kit/scripts/package-appstore.sh}" "$APP" "$ENTITLEMENTS" \
+        io.github.scooper4711.FieldGuide
+fi
