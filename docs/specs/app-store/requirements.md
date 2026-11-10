@@ -18,5 +18,4 @@ Field Guide 2.0 is listed on the Mac App Store beside its notarized disk image a
 
 ## R3 Review
 - R3.1 `APP-STORE-REVIEW.md` holds the checklist and the review notes, with a use named for every entitlement. The
-  file is kept out of the
-  repository (`.git/info/exclude`).
+  file is kept out of the repository (`.git/info/exclude`).
