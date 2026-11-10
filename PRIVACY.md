@@ -1,6 +1,6 @@
 # Field Guide Privacy Policy
 
-Effective November 6, 2026, updated for iCloud lore sync. This policy covers Field Guide for iPhone, iPad and Mac.
+Effective November 10, 2026. This policy covers Field Guide for iPhone, iPad and Mac.
 
 **Field Guide collects no data.** It has no account, no analytics, no advertising, no tracking and no
 third-party code that reports anything. Nothing you do in the app is sent to the developer or anyone else.
@@ -15,7 +15,8 @@ The only thing that leaves your device is the sourcebook lore it syncs to your o
 - **Your settings**, such as the game system, category and battle-card view you last chose, are saved on your
   device.
 
-Deleting the app deletes all of this.
+Deleting the app from an iPhone or iPad deletes all of this. On a Mac, macOS keeps an app's saved data in the
+Containers folder of your Library folder until you delete the folder named Field Guide there.
 
 ## Sourcebook lore in your iCloud
 
