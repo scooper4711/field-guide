@@ -93,14 +93,6 @@ public struct SourcebookList: Codable, Equatable, Sendable {
         "Pathfinder Monster Core", "Pathfinder Monster Core 2", "Pathfinder Bestiary", "Pathfinder Bestiary 2",
         "Pathfinder Bestiary 3"
     ]
-    /// The sample sourcebook (`SampleSourcebook`): placeholder text under real creatures' and deities' names, for
-    /// App Review and anyone without Paizo's books to try reading lore. Its lore comes after any real book's.
-    public static let sample = Sourcebook(
-        title: "Field Guide Sample Monster Core",
-        downloadURL: URL(string: "https://github.com/scooper4711/field-guide/raw/main/Resources/Review/"
-                         + "Field%20Guide%20Sample%20Monster%20Core.pdf"),
-        supplies: [.deityLore, .creatureLore, .detailsLore])
-
     /// The new editions, which come first in `pathfinderBestiaries`.
     static let newEditions: Set<String> = ["Pathfinder Monster Core", "Pathfinder Monster Core 2"]
 
@@ -131,20 +123,20 @@ public struct SourcebookList: Codable, Equatable, Sendable {
     }
 
     /// The books a creature Foundry credits to `credited` may take its lore from, best first: for a bestiary, the
-    /// new editions, then the book itself, then the other bestiaries; for any other book, that book.
+    /// new editions, then the book itself, then the other bestiaries; for any other book, that book. The sample of
+    /// the creature's game comes after these (`LoreStore`).
     public static func creatureBooks(for credited: String) -> [String] {
-        guard pathfinderBestiaries.contains(credited) else { return [credited, sample.title] }
+        guard pathfinderBestiaries.contains(credited) else { return [credited] }
         let others = pathfinderBestiaries.filter { $0 != credited }
         return others.filter(newEditions.contains) + [credited] + others.filter { !newEditions.contains($0) }
-            + [sample.title]
     }
 
-    /// The list shipped with the app, with the sample sourcebook; only the sample when the list is missing.
+    /// The list shipped with the app, with the sample sourcebooks; only the samples when the list is missing.
     public static let bundled: SourcebookList = {
         let url = Bundle.module.url(forResource: "sourcebooks", withExtension: "json")
         var list = url.flatMap { try? JSONDecoder().decode(SourcebookList.self, from: Data(contentsOf: $0)) }
             ?? SourcebookList()
-        list.books.append(sample)
+        list.books += samples
         return list
     }()
 

@@ -86,6 +86,28 @@ struct SourcebookModelTests {
         #expect(model.progress == nil)
     }
 
+    @Test("A book gives its write-up to every deity it's assigned with the name, not one picked at random")
+    func readsADeityTwoEntriesShare() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Sourcebooks-\(UUID())")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let file = folder.appendingPathComponent("Pathfinder Lost Omens Test Gods.pdf")
+        let pdf = PDFFixture(pages: [[
+            PDFFixture.text("Abadar", at: 80, 700, font: PDFFixture.bold, size: 34),
+            PDFFixture.text("Abadar keeps the First Vault.", at: 80, 660)
+        ]])
+        #expect(pdf.document()?.write(to: file) == true)
+        let list = SourcebookList(books: [Self.book], deities: [
+            "id.abadar": LoreSources(prose: Self.book.title), "id.abadar.other": LoreSources(prose: Self.book.title)
+        ])
+        let model = SourcebookModel(store: try LoreStore(folder: folder.appendingPathComponent("Store"), list: list),
+                                    list: list)
+        await model.addFiles([file], subjects: LoreSubjects(deityNames: ["id.abadar": "Abadar",
+                                                                         "id.abadar.other": "Abadar"]))
+        #expect(model.lore(of: "id.abadar")?.paragraphs == ["Abadar keeps the First Vault."])
+        #expect(model.lore(of: "id.abadar.other")?.paragraphs == ["Abadar keeps the First Vault."])
+    }
+
     @Test("Processing says which book it processes")
     func readingMessage() {
         let book = URL(filePath: "/Books/Pathfinder Lost Omens Test Gods.pdf")
@@ -104,32 +126,83 @@ struct SourcebookModelTests {
         #expect(model.lore(of: "id.abadar") == nil && model.books.isEmpty)
     }
 
-    @Test("The sample sourcebook gives creatures and deities placeholder lore, after any real book's")
-    func readsTheSample() async throws {
+    @Test("The sample sourcebooks give creatures and deities placeholder lore, after any real book's")
+    func readsTheSamples() async throws {
+        let (model, folder) = try await Self.modelReadingTheSamples()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        #expect(model.detailsHTML(of: Sample.fighter.id)?.contains("<h2>During Combat Encounters...</h2>") == true)
+        let note = "Add your copy of Pathfinder Player Core in Sourcebooks to read the lore for Wizard."
+        #expect(model.detailsHTML(of: Sample.wizard.id) == "<p class=\"note\"><em>\(note)</em></p>")
+        #expect(model.detailsHTML(of: "id.other") == nil)
+        #expect(model.message == "Processed 2 sourcebooks.")
+        #expect(model.creatureLore(of: Sample.warrior.id)?.family == "Goblin")
+        #expect(model.creatureLore(of: Sample.warrior.id)?.paragraphs.first?.hasPrefix(SampleSourcebook.marker) == true)
+        #expect(model.creatureLore(of: Sample.hunter.id)?.family == "Kholo")
+        #expect(model.creatureLore(of: Sample.alloid.id)?.family == "Alloid")
+        #expect(model.lore(of: Sample.pathfinderAbadar)?.statLines.contains { $0.label == "Edicts" } == true)
+        #expect(model.rows.allSatisfy { $0.supplies == "Placeholder lore for trying Field Guide" })
+    }
+
+    @Test("Each game's sample gives its lore only to that game's entries, whatever the dictionaries' order")
+    func eachSampleGivesLoreToItsOwnGame() async throws {
+        let (model, folder) = try await Self.modelReadingTheSamples()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let pathfinder = try #require(model.lore(of: Sample.pathfinderAbadar)?.paragraphs)
+        let starfinder = try #require(model.lore(of: Sample.starfinderAbadar)?.paragraphs)
+        #expect(pathfinder != starfinder)
+        #expect(pathfinder.first?.hasPrefix(SampleSourcebook.marker) == true)
+        #expect(starfinder.first?.hasPrefix(SampleSourcebook.marker) == true)
+        #expect(model.lore(of: Sample.aakriti)?.paragraphs.isEmpty == false)
+        // Angradd is only in the Starfinder sample, and Aakriti only in the Pathfinder one.
+        #expect(model.lore(of: Sample.starfinderAngradd)?.paragraphs.isEmpty == false)
+        #expect(model.lore(of: Sample.pathfinderAngradd) == nil)
+        #expect(model.creatureLore(of: Sample.pathfinderTroll.id) == nil)
+        #expect(model.creatureLore(of: Sample.troll.id)?.paragraphs.first?.hasPrefix(SampleSourcebook.marker) == true)
+        #expect(model.detailsHTML(of: Sample.android.id)?.contains(SampleSourcebook.marker) == true)
+    }
+
+    /// Entries of both games that the samples print, or don't.
+    enum Sample {
+        static let warrior = creature("pf2e", "Goblin Warrior", "Pathfinder Monster Core")
+        static let hunter = creature("pf2e", "Kholo Hunter", "Pathfinder Monster Core")
+        static let alloid = creature("sf2e", "Alloid (Ship Stealer)", "Starfinder Alien Core")
+        static let troll = creature("sf2e", "Mutant Troll", "Starfinder Alien Core")
+        static let pathfinderTroll = creature("pf2e", "Mutant Troll", "Pathfinder Monster Core")
+        static let fighter = details("pf2e", "Fighter", "Pathfinder Player Core")
+        static let wizard = details("pf2e", "Wizard", "Pathfinder Player Core")
+        static let android = details("sf2e", "Android", "Starfinder Player Core")
+        static let pathfinderAbadar = "Compendium.pf2e.deities.Item.abadar"
+        static let starfinderAbadar = "Compendium.sf2e.deities.Item.abadar"
+        static let aakriti = "Compendium.pf2e.deities.Item.aakriti"
+        static let pathfinderAngradd = "Compendium.pf2e.deities.Item.angradd"
+        static let starfinderAngradd = "Compendium.sf2e.deities.Item.angradd"
+        static let subjects = LoreSubjects(
+            deityNames: [pathfinderAbadar: "Abadar", starfinderAbadar: "Abadar", aakriti: "Aakriti",
+                         pathfinderAngradd: "Angradd", starfinderAngradd: "Angradd"],
+            creatures: [warrior, hunter, alloid, troll, pathfinderTroll],
+            details: [fighter, wizard, android])
+
+        static func creature(_ game: String, _ name: String, _ credited: String) -> EntryReference {
+            EntryReference(id: "Compendium.\(game).bestiary.Actor.\(name)", name: name, credited: credited)
+        }
+
+        static func details(_ game: String, _ name: String, _ credited: String) -> EntryReference {
+            EntryReference(id: "Compendium.\(game).classes.Item.\(name)", name: name, credited: credited)
+        }
+    }
+
+    /// A model that has read both samples, and the temporary folder that holds them.
+    static func modelReadingTheSamples() async throws -> (SourcebookModel, URL) {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Sample-\(UUID())")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: folder) }
-        let file = folder.appendingPathComponent("\(SourcebookList.sample.title).pdf")
-        #expect(SampleSourcebook.document()?.write(to: file) == true)
-        let list = SourcebookList(books: [SourcebookList.sample])
+        let files = SampleSourcebook.all.map { folder.appendingPathComponent("\($0.title).pdf") }
+        for (sample, file) in zip(SampleSourcebook.all, files) {
+            #expect(sample.document()?.write(to: file) == true)
+        }
+        let list = SourcebookList(books: SourcebookList.samples)
         let model = SourcebookModel(store: try LoreStore(folder: folder.appendingPathComponent("Store"), list: list),
                                     list: list)
-        let warrior = EntryReference(id: "id.warrior", name: "Goblin Warrior", credited: "Pathfinder Monster Core")
-        let hunter = EntryReference(id: "id.hunter", name: "Kholo Hunter", credited: "Pathfinder Monster Core")
-        let fighter = EntryReference(id: "id.fighter", name: "Fighter", credited: "Pathfinder Player Core")
-        let wizard = EntryReference(id: "id.wizard", name: "Wizard", credited: "Pathfinder Player Core")
-        let subjects = LoreSubjects(deityNames: ["id.abadar": "Abadar"], creatures: [warrior, hunter],
-                                    details: [fighter, wizard])
-        await model.addFiles([file], subjects: subjects)
-        #expect(model.detailsHTML(of: "id.fighter")?.contains("<h2>During Combat Encounters...</h2>") == true)
-        let note = "Add your copy of Pathfinder Player Core in Sourcebooks to read the lore for Wizard."
-        #expect(model.detailsHTML(of: "id.wizard") == "<p class=\"note\"><em>\(note)</em></p>")
-        #expect(model.detailsHTML(of: "id.other") == nil)
-        #expect(model.message == "Processed \(SourcebookList.sample.title).")
-        #expect(model.creatureLore(of: "id.warrior")?.family == "Goblin")
-        #expect(model.creatureLore(of: "id.warrior")?.paragraphs.isEmpty == false)
-        #expect(model.creatureLore(of: "id.hunter")?.family == "Kholo")
-        #expect(model.lore(of: "id.abadar")?.statLines.contains { $0.label == "Edicts" } == true)
-        #expect(model.rows.first?.supplies == "Placeholder lore for trying Field Guide")
+        await model.addFiles(files, subjects: Sample.subjects)
+        return (model, folder)
     }
 }

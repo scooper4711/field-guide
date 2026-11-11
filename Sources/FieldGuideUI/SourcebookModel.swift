@@ -211,7 +211,7 @@ public struct SourcebookRow: Identifiable, Equatable {
 
     /// What the book supplies, such as "Deity lore: 3 deities · Creature lore: 497 creatures".
     public var supplies: String {
-        if book == SourcebookList.sample { return "Placeholder lore for trying Field Guide" }
+        if SourcebookList.isSample(book.title) { return "Placeholder lore for trying Field Guide" }
         let parts = [Wording(label: "Deity lore", one: "deity", many: "deities").text(counts.deities),
                      Wording(label: "Creature lore", one: "creature", many: "creatures").text(counts.creatures),
                      Wording(label: "Ancestry and class lore", one: "entry", many: "entries").text(counts.details)]

@@ -138,9 +138,12 @@ device as art is. Lore the Paizo Blog published stays in the import.
   any of them takes its lore from the first of them read that prints it (Monster Core, Monster Core 2, the book
   Foundry credits, the other Bestiaries), whichever order the books were read in. An adventure's creature whose
   lore is a bestiary creature's (`sourcebooks.json`) takes that creature's.
-- R9.8 A sample sourcebook (placeholder text under real creatures', deities', an ancestry's and a class's names, laid
-  out as Paizo's books are) lets App Review and anyone without the books try it; its lore comes after any real
-  book's.
+- R9.8 A sample sourcebook for each game (placeholder text under real creatures', deities', ancestries' and classes'
+  names, laid out as Paizo's books are) lets App Review and anyone without the books try it: Field Guide Sample
+  Monster Core for Pathfinder, Field Guide Sample Alien Core for Starfinder. Each covers entries at the top of its
+  game's lists, and prints its bestiary's stat blocks (Monster Core's, Alien Core's) with Paizo blog art. Every
+  write-up in them opens with "This lore has been imported from the sample PDF." A sample's lore goes only to its
+  own game's entries, the same ones on every launch, and comes after any real book's.
 - R9.9 An ancestry's or class's Details keep their rules from the import (key attribute and Hit Points, mechanics,
   heritages, initial proficiencies, class features) and show the setting's prose (introduction, You Might...,
   Others Probably..., Physical Description, Society, Beliefs, Names, Roleplaying) from the book that introduces it,

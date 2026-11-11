@@ -56,8 +56,8 @@ public struct BookLore: Codable, Equatable, Sendable {
 /// Reads a sourcebook's lore for the deities `sourcebooks.json` assigns it.
 public struct BookReader: Sendable {
     /// Raised when the rules for reading books change, so books are read again. 2: creature lore; 3: ancestries'
-    /// and classes' Details.
-    public static let version = 3
+    /// and classes' Details; 4: a sample per game, whose lore goes only to its own game's entries.
+    public static let version = 4
 
     public let list: SourcebookList
     /// The deities, creatures, ancestries and classes, as the catalog names them.
@@ -81,35 +81,52 @@ public struct BookReader: Sendable {
                         creatures: creatures, details: detailsLore(of: book, from: document))
     }
 
-    /// The Details of the ancestries and classes Foundry credits to the book (to the sample, every one it prints),
-    /// by the match key of their names.
+    /// The Details of the ancestries and classes Foundry credits to the book (to a sample, every one of its game it
+    /// prints), by the match key of their names.
     private func detailsLore(of book: Sourcebook, from document: PDFDocument) -> [String: DetailsLore] {
         guard book.supplies.contains(.detailsLore) else { return [:] }
-        let isSample = book.title == SourcebookList.sample.title
-        let names = Set(subjects.details.filter { isSample || list.title(of: $0.credited) == book.title }.map(\.name))
+        let isSample = SourcebookList.isSample(book.title)
+        let names = Set(subjects.details.filter { entry in
+            isSample
+                ? SourcebookList.sample(book.title, covers: entry.id)
+                : list.title(of: entry.credited) == book.title
+        }.map(\.name))
         guard !names.isEmpty else { return [:] }
         let writeups = DetailsWriteups(names: Array(names)).writeups(in: document)
         return Dictionary(writeups.map { (TextRepair.matchKey($0.key), $0.value) }) { first, _ in first }
     }
 
-    /// The lore the book gives the deities `sourcebooks.json` assigns it; the sample's, every deity it prints.
+    /// The lore the book gives the deities `sourcebooks.json` assigns it; a sample's, every deity of its game it
+    /// prints.
     private func deityLore(of book: Sourcebook, from document: PDFDocument) -> [String: DeityLore] {
-        if book.title == SourcebookList.sample.title { return sampleDeityLore(from: document) }
+        if SourcebookList.isSample(book.title) { return sampleDeityLore(of: book, from: document) }
         let sources = list.deities(from: book)
         guard !sources.isEmpty else { return [:] }
-        let ids = Dictionary(sources.keys.compactMap { id in names[id].map { ($0, id) } }) { first, _ in first }
+        let ids = ids(byName: sources.keys)
         var deities: [String: DeityLore] = [:]
         if sources.values.contains(where: { $0.stats == book.title }) {
             for (name, lines) in DeityTable(names: Array(ids.keys)).rows(in: document) {
-                if let id = ids[name], sources[id]?.stats == book.title { deities[id] = DeityLore(statLines: lines) }
+                for id in ids[name, default: []] where sources[id]?.stats == book.title {
+                    deities[id] = DeityLore(statLines: lines)
+                }
             }
         }
         for (name, writeup) in DeityWriteups(names: Array(ids.keys)).writeups(in: document) {
-            guard let id = ids[name], let source = sources[id] else { continue }
-            let lore = Self.lore(deities[id] ?? DeityLore(), adding: writeup, from: source, book: book.title)
-            if !lore.isEmpty { deities[id] = lore }
+            for id in ids[name, default: []] {
+                guard let source = sources[id] else { continue }
+                let lore = Self.lore(deities[id] ?? DeityLore(), adding: writeup, from: source, book: book.title)
+                if !lore.isEmpty { deities[id] = lore }
+            }
         }
         return deities
+    }
+
+    /// The entry IDs among `entryIDs` by each deity's name. Two games' deities may share a name, so a name can have
+    /// more than one ID.
+    private func ids(byName entryIDs: some Sequence<String>) -> [String: [String]] {
+        entryIDs.reduce(into: [:]) { ids, id in
+            if let name = names[id] { ids[name, default: []].append(id) }
+        }
     }
 
     /// `lore` with the parts of `writeup` that `source` assigns to `book`.
@@ -122,10 +139,13 @@ public struct BookReader: Sendable {
         return lore
     }
 
-    private func sampleDeityLore(from document: PDFDocument) -> [String: DeityLore] {
-        let ids = Dictionary(names.map { ($1, $0) }) { first, _ in first }
+    /// The sample's deity lore, given to every deity of the sample's game with the name it prints.
+    private func sampleDeityLore(of sample: Sourcebook, from document: PDFDocument) -> [String: DeityLore] {
+        let ids = ids(byName: names.keys.filter { SourcebookList.sample(sample.title, covers: $0) })
         let writeups = DeityWriteups(names: Array(ids.keys)).writeups(in: document)
-        return Dictionary(writeups.compactMap { name, lore in ids[name].map { ($0, lore) } }) { first, _ in first }
+        return writeups.reduce(into: [:]) { deities, writeup in
+            for id in ids[writeup.key, default: []] { deities[id] = writeup.value }
+        }
     }
 
     /// The file's SHA-256, in hexadecimal, read a megabyte at a time.
