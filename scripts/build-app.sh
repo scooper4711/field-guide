@@ -168,7 +168,6 @@ if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ]; then
     GROUP="$TEAM_ID.io.github.scooper4711.tableside"
     /usr/libexec/PlistBuddy -c "Add :com.apple.security.application-groups array" \
         -c "Add :com.apple.security.application-groups:0 string $GROUP" "$ENTITLEMENTS"
-    plutil -insert TablesideAppGroup -string "$GROUP" "$APP/Contents/Info.plist"
 fi
 if [ -n "$TEAM_ID" ] && [ "$TEAM_ID" != "none" ] && [ -n "${PROVISIONING_PROFILE:-}" ]; then
     scripts/add-icloud-entitlements.sh "$APP" "$ENTITLEMENTS" "$TEAM_ID" "$PROVISIONING_PROFILE"

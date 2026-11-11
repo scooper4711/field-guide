@@ -52,13 +52,16 @@ After that it opens normally. The iPad app is not in the App Store yet; build it
   book you own in Scrollkeeper can be downloaded from there. It also reads creature art from your own Paizo
   pawn, token and Battle Cards PDFs, and item art from your item decks (Potions & Talismans, Magic Armaments, Alchemy, Guns, Gears, Relics, Deck
   of Endless Treasure, and Weapons & Armor, sold as pictures), shown on equipment in place of the Rexard icon:
-  Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are (on the iPad, pick On My iPad ▸
-  Scrollkeeper), and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
+  Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, in the folder the Tableside
+  Toolkit apps share, and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
   were deleted from Scrollkeeper are listed as missing, and creatures that lose their art say which PDF it
   needs.
 - On the Mac, the Go menu has Search Everything (⌘F), Back (⌘[) and Pathfinder and Starfinder (⌘1, ⌘2), and
-  File has Sourcebooks… (⇧⌘A). Import from Scrollkeeper reads Scrollkeeper's downloads without asking where
-  they are.
+  File has Sourcebooks… (⇧⌘A).
+- Import from Scrollkeeper reads Scrollkeeper's downloads without asking where they are, on the Mac and, with
+  Scrollkeeper 2.0, on the iPad. Earlier versions of Scrollkeeper for the iPad kept them in On My iPad ▸
+  Scrollkeeper, which is still offered when the shared folder isn't there. PDFs imported from there show as
+  missing once Scrollkeeper 2.0 moves them; Import from Scrollkeeper again restores them.
 
 ## Updating
 `make update` switches `pf2e.release` to pf2e's newest release, imports again and installs on the iPad. Run it
