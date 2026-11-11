@@ -99,6 +99,7 @@ icons/commodities/bones/tooth-molar-white.webp	fantasyiconsmegapack/LootIcons/Lo
 icons/commodities/bones/tooth-spiked-brown.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_64_b.PNG	6
 icons/commodities/claws/claw-bear-brown.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/paw_b_03.png	4
 icons/commodities/claws/claw-insect-brown.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/78_b.PNG	2
+icons/commodities/claws/claw-pincer-pink.webp	fairytaleiconsmegapack/HuntingIcons/HuntingIcons_bg/HuntingIcons_51.PNG	3
 icons/commodities/claws/claw-pincer-yellow.webp	fantasyiconsmegapack/BlueLootBox/BlueLootBox_bg/BlueLootBox_29_b.PNG	5
 icons/commodities/claws/talon-blue.webp	fairytaleiconsmegapack/HuntingIcons/HuntingIcons_bg/HuntingIcons_52.PNG	10
 icons/commodities/cloth/cloth-bolt-embroidered-pink.webp	fantasyiconsmegapack/WeaponAndArmorIcons/WeaponAndArmorIcons_png/black/cloaks/cl_b_02.png	3
@@ -114,11 +115,14 @@ icons/commodities/cloth/cloth-roll-worn-blue.webp	fantasyiconsmegapack/Resources
 icons/commodities/cloth/cloth-roll-worn-red.webp	fairytaleiconsmegapack/BarbarianIcons/Barbarian_icons_b/Barbarian_icons_97_b.png	8
 icons/commodities/cloth/cloth-roll-worn-tan.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/leather/leather_strip_b.png	5
 icons/commodities/cloth/cloth-worn-green.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/165_b.png	5
+icons/commodities/cloth/cloth-worn-leaf-green.webp	fantasyiconsmegapack/RPG_ArmorSets/RPG_ArmorSets_png/light_armor/l_a_04/rg_cl_b_01.PNG	2
 icons/commodities/cloth/ribbon-bolt-red.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/cloth/cs_b_06.PNG	5
 icons/commodities/cloth/ribbon-bow-red.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/ribbon_b_01.png	5
 icons/commodities/cloth/ribbon-bow-yellow.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/ribbon_b_03.png	4
 icons/commodities/cloth/ribbon-green.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/addons/ForestIcons_112_b.PNG	5
 icons/commodities/cloth/ribbon-worn-pink.webp	fairytaleiconsmegapack/TradingIcons/TradingIcons_b/TradingIcons_01.png	3
+icons/commodities/cloth/thread-and-needle.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/parts/ni_b_08.PNG	1
+icons/commodities/cloth/thread-spindle-green.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/132_b.PNG	4
 icons/commodities/cloth/thread-spindle-grey.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/parts/pt_b_05.png	1
 icons/commodities/cloth/thread-spindle-white-grey.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/parts/pt_b_08.png	4
 icons/commodities/cloth/thread-spindle-white-needle.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/130_b.PNG	7
@@ -140,6 +144,7 @@ icons/commodities/currency/coin-inset-snail-silver.webp	fairytaleiconsmegapack/F
 icons/commodities/currency/coin-inset-swirl-gold.webp	fantasyiconsmegapack/BlueLootBox/BlueLootBox_bg/BlueLootBox_18_b.png	4
 icons/commodities/currency/coin-yingyang.webp	fairytaleiconsmegapack/TradingIcons/TradingIcons_b/addons/TradingIcons_112_b.png	2
 icons/commodities/currency/coins-assorted-mix-copper.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/coins_b_03.png	6
+icons/commodities/currency/coins-plain-gold.webp	fairytaleiconsmegapack/PiratesIconsPack/bg/pirates_27.png	6
 icons/commodities/currency/coins-plain-stack-gold-yellow.webp	spellbookmegapack/StrategyGameIcons/SGI_59.png	1
 icons/commodities/flowers/blooms-pink.webp	fantasyiconsmegapack/Herbal_Icons/Herbal_Icons_png/Addons/124_b.PNG	5
 icons/commodities/flowers/bouquet-pink.webp	fantasyiconsmegapack/Herbal_Icons/Herbal_Icons_png/Addons/h_21_b.PNG	3
@@ -255,6 +260,7 @@ icons/commodities/materials/material-feathers-purple.webp	fairytaleiconsmegapack
 icons/commodities/materials/material-feathers-violet.webp	fantasyiconsmegapack/BlueLootBox/BlueLootBox_bg/BlueLootBox_41_b.png	1
 icons/commodities/materials/orb-tassle-blue-yellow.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/162_b.png	7
 icons/commodities/materials/parchment-secrets.webp	fairytaleiconsmegapack/NecromancerIcons/NecromancerIcons_b/NecromancerIcons_34_b.PNG	0
+icons/commodities/materials/plant-pot-empty.webp	moderntoolsicons/transparent/modern_80_t.png	3
 icons/commodities/materials/plant-sprout-seed-brown-green.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/artifact_06_b.PNG	1
 icons/commodities/materials/pottery-jug.webp	fairytaleiconsmegapack/FishingIcons/FishingIcons_png/fishing_68_b.png	3
 icons/commodities/materials/powder-black.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_74_b.PNG	8
@@ -265,10 +271,12 @@ icons/commodities/materials/slime-red.webp	fantasyiconsmegapack/LootIcons/LootIc
 icons/commodities/materials/slime-thick-blue.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_34_b.PNG	4
 icons/commodities/materials/slime-thick-green.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/reagents/am_b_05.png	5
 icons/commodities/materials/slime-thick-orange.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_22_b.PNG	2
+icons/commodities/materials/slime-white.webp	fairytaleiconsmegapack/HuntingIcons/HuntingIcons_bg/HuntingIcons_57.PNG	4
 icons/commodities/materials/slime-yellow.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/slime_b_05.png	2
 icons/commodities/metal/barstock-heated-steel.webp	fairytaleiconsmegapack/PiratesIconsPack/bg/pirates_51.PNG	5
 icons/commodities/metal/chain-silver.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_29_b.PNG	2
 icons/commodities/metal/chain-steel.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/124_b.png	1
+icons/commodities/metal/clasp-skull-jeweled-red.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_66.png	2
 icons/commodities/metal/clasp-steel-braid-glowing.webp	spellbookmegapack/SpellBookPage01/SpellBook01_02.png	2
 icons/commodities/metal/clasp-steel-braid.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/decor_t.png	1
 icons/commodities/metal/fragments-steel-ring.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_100.PNG	3
@@ -312,6 +320,7 @@ icons/commodities/stone/stone-white-quartz-ball.webp	spellbookmegapack/SpellBook
 icons/commodities/tech/antenna-powered-purple.webp	scifiskilliconpack/violet/p_08.png	1
 icons/commodities/tech/battery-arcane-crystal-cube.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_43.png	1
 icons/commodities/tech/battery-arcane-crystal-green.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_22.png	2
+icons/commodities/tech/battery-coil-tesla.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_48.png	0
 icons/commodities/tech/bearing-steel-green.webp	fairytaleiconsmegapack/TradingIcons/TradingIcons_b/TradingIcons_101.PNG	6
 icons/commodities/tech/blueprint.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_79.png	1
 icons/commodities/tech/bulb-vacuum.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/en_craft_24.png	0
@@ -414,7 +423,9 @@ icons/commodities/treasure/trinket-wing-white.webp	fantasyiconsmegapack/LootIcon
 icons/commodities/treasure/wood-tiki.webp	fairytaleiconsmegapack/PiratesIconsPack/bg/pirates_90.png	2
 icons/commodities/wood/bark-beige.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/198_b.png	1
 icons/commodities/wood/bark-grey.webp	fairytaleiconsmegapack/HuntingIcons/HuntingIcons_bg/HuntingIcons_10.png	2
+icons/commodities/wood/bark-tan.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_11_b.PNG	11
 icons/commodities/wood/fence-posts-brown.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_45_b.PNG	4
+icons/commodities/wood/kindling-stick-brown.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/wood/wd_b_02.PNG	12
 icons/commodities/wood/kindling-sticks-yellow.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_10_b.PNG	0
 icons/commodities/wood/log-cut-cherry-brown.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/193_b.PNG	3
 icons/consumables/drinks/alcohol-beer-mug-yellow.webp	spellbookmegapack/SpellBookPage08/SpellBook08_20.png	2
@@ -437,6 +448,7 @@ icons/consumables/food/berries-cream-bowl-mint-red.webp	fantasyiconsmegapack/Foo
 icons/consumables/food/berries-ration-round-red.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/166_b.PNG	0
 icons/consumables/food/bowl-stew-brown.webp	fairytaleiconsmegapack/PrehistoricAgeIcons/black/addons/PrehistoricIcon_162_b.PNG	0
 icons/consumables/food/bowl-stew-tofu-potato-red.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_97_b.png	12
+icons/consumables/food/candy-bar.webp	moderntoolsicons/black/modern_24_b.PNG	1
 icons/consumables/food/candy-pattie-pink-white.webp	spellbookmegapack/SpellBookPage01/SpellBook01_93.PNG	3
 icons/consumables/food/candy-taffy-blue-white.webp	fantasyiconsmegapack/FoodIconPack/Addons/food_08_b.PNG	4
 icons/consumables/food/candy-taffy-yellow.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/gem_cd_b_01.png	3
@@ -459,6 +471,7 @@ icons/consumables/fruit/durian-cut-yellow.webp	fairytaleiconsmegapack/FruitAndVe
 icons/consumables/fruit/nectarine-ripe-orange.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Peach_01_b.png	2
 icons/consumables/fruit/passion-ripe-cut-purple.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Passionfruit_01_b.png	6
 icons/consumables/fruit/pickly-pear-cactus-red-yellow.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Pickly pear_01_b.png	2
+icons/consumables/fruit/pomegranate-ripe-red.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Pomegranate_01_b.png	4
 icons/consumables/fruit/serrano-chili-pepper-red.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Chilli_01_b.png	7
 icons/consumables/fruit/sweetsop-seed-green.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Sweetsop_01_b.png	5
 icons/consumables/grains/bread-loaf-boule-tan.webp	fairytaleiconsmegapack/PrehistoricAgeIcons/black/PrehistoricIcon_103_b.png	3
@@ -468,11 +481,19 @@ icons/consumables/grains/waffle-golden-yellow.webp	fairytaleiconsmegapack/Mining
 icons/consumables/meat/fish-whole-blue.webp	spellbookmegapack/SpellBookPage09/SpellBookPage09_102.png	9
 icons/consumables/meat/ribs-bones-glowing-pink.webp	fairytaleiconsmegapack/PrehistoricAgeIcons/black/PrehistoricIcon_99_b.png	4
 icons/consumables/meat/steak-alien-orange.webp	fairytaleiconsmegapack/HuntingIcons/HuntingIcons_bg/HuntingIcons_94.PNG	5
+icons/consumables/meat/steak-raw-red-pink.webp	fairytaleiconsmegapack/PrehistoricAgeIcons/black/PrehistoricIcon_33_b.png	5
+icons/consumables/mushrooms/conical-bell-pink.webp	fantasyiconsmegapack/Herbal_Icons/Herbal_Icons_png/Addons/109_b.PNG	1
+icons/consumables/mushrooms/conical-bell-yellow.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_15_b.PNG	5
 icons/consumables/mushrooms/convex-green-brown.webp	spellbookmegapack/SpellBookPage09/SpellBookPage09_58.PNG	2
+icons/consumables/mushrooms/convex-green.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_17_b.png	3
+icons/consumables/mushrooms/convex-spotted-orange-white.webp	fairytaleiconsmegapack/PrehistoricAgeIcons/black/PrehistoricIcon_17_b.png	3
+icons/consumables/mushrooms/helm-brown.webp	fairytaleiconsmegapack/TradingIcons/TradingIcons_b/TradingIcons_104.PNG	5
+icons/consumables/mushrooms/mushroom-spotted-red.webp	spellbookmegapack/SpellBookPage08/SpellBook08_06.png	3
 icons/consumables/mushrooms/ovate-blue.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_66_b.PNG	2
 icons/consumables/mushrooms/ovate-thin-blue.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_43_b.PNG	7
 icons/consumables/mushrooms/umbontae-bumpy-purple.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_69_b.PNG	4
 icons/consumables/mushrooms/umbontae-green.webp	fairytaleiconsmegapack/NecromancerIcons/NecromancerIcons_b/NecromancerIcons_43_b.PNG	0
+icons/consumables/mushrooms/umbontae-pink-purple.webp	fairytaleiconsmegapack/NecromancerIcons/NecromancerIcons_b/NecromancerIcons_09_b.PNG	2
 icons/consumables/nuts/pine-cone-red.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_111_b.png	6
 icons/consumables/nuts/walnut-shell-orange.webp	fairytaleiconsmegapack/PrehistoricAgeIcons/black/PrehistoricIcon_01_b.PNG	2
 icons/consumables/plants/aloe-succulent-green.webp	fairytaleiconsmegapack/WitchCraftIcons/WitchCraftIcons_back/WitchCraftIcons_94_b.png	8
@@ -539,6 +560,7 @@ icons/consumables/potions/potion-tube-corked-glowing-red.webp	fantasyiconsmegapa
 icons/consumables/potions/potion-tube-corked-green.webp	fantasyiconsmegapack/PotionIcons/addons/PotionIconsAdd_06_b.png	10
 icons/consumables/potions/potion-tube-corked-orange.webp	fantasyiconsmegapack/PotionIcons/addons/PotionIconsAdd_11_b.png	1
 icons/consumables/potions/potion-tube-corked-red.webp	fairytaleiconsmegapack/WitchCraftIcons/WitchCraftIcons_back/WitchCraftIcons_88_b.PNG	9
+icons/consumables/potions/potion-tube-corked-tied-green.webp	fairytaleiconsmegapack/NecromancerIcons/NecromancerIcons_b/NecromancerIcons_56_b.png	7
 icons/consumables/potions/potion-vial-corked-labeled-purple.webp	fairytaleiconsmegapack/NecromancerIcons/NecromancerIcons_b/NecromancerIcons_104_b.png	4
 icons/consumables/potions/potion-vial-corked-purple.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/potion_12_b.png	4
 icons/consumables/vegetable/broccoli-crown-green.webp	fairytaleiconsmegapack/FruitAndVegetablesIcons/png/Brocoli_01_b.png	3
@@ -580,6 +602,7 @@ icons/containers/bags/satchel-leather-gold-brown.webp	fantasyiconsmegapack/Resou
 icons/containers/bags/satchel-leather-white-tan.webp	fairytaleiconsmegapack/BagsAndBoxesIcons/BagsAndBoxesIcons_png/BagsAndBoxes_11.png	4
 icons/containers/bags/satchel-worn-leather-blue.webp	fairytaleiconsmegapack/BagsAndBoxesIcons/BagsAndBoxesIcons_png/BagsAndBoxes_63.png	2
 icons/containers/barrels/barrel-oak-steel-brown.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/packs/pk_b_02.png	5
+icons/containers/barrels/barrel-steel-drum-red.webp	moderntoolsicons/black/modern_09_b.PNG	2
 icons/containers/boxes/box-gift-blue.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/136_b.PNG	2
 icons/containers/boxes/box-gift-white.webp	fairytaleiconsmegapack/BagsAndBoxesIcons/BagsAndBoxesIcons_png/BagsAndBoxes_79.png	0
 icons/containers/boxes/crate-reinforced-green.webp	fairytaleiconsmegapack/BagsAndBoxesIcons/BagsAndBoxesIcons_png/BagsAndBoxes_80.PNG	1
@@ -595,6 +618,7 @@ icons/containers/kitchenware/goblet-clay-gold-yellow.webp	fantasyiconsmegapack/M
 icons/containers/kitchenware/goblet-clay-orange.webp	fairytaleiconsmegapack/TrophyIcons/TrophyIcons_bg/TrophyIcons_05_b.png	2
 icons/containers/kitchenware/goblet-gold-red.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/148_b.PNG	3
 icons/containers/kitchenware/goblet-handled-beige.webp	fairytaleiconsmegapack/TrophyIcons/TrophyIcons_bg/TrophyIcons_07_b.PNG	12
+icons/containers/kitchenware/goblet-jeweled-gold-green.webp	fairytaleiconsmegapack/TrophyIcons/TrophyIcons_bg/TrophyIcons_61_b.png	12
 icons/containers/kitchenware/goblet-jeweled-red.webp	fairytaleiconsmegapack/NecromancerIcons/NecromancerIcons_b/NecromancerIcons_35_b.PNG	3
 icons/containers/kitchenware/goblet-wood-engraved-brown.webp	fantasyiconsmegapack/BlueLootBox/BlueLootBox_bg/BlueLootBox_65_b.PNG	5
 icons/containers/kitchenware/jug-terracotta-orange.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/145_b.png	3
@@ -748,6 +772,7 @@ icons/creatures/reptiles/dragon-horned-blue.webp	spellbookmegapack/SpellBookPage
 icons/creatures/reptiles/dragon-winged-blue.webp	spellbookmegapack/SpellBookPage02/SpellBook02_79.png	6
 icons/creatures/reptiles/lizard-mouth-glowing-red.webp	spellbookmegapack/SciFi_Skill_Icon/r_40.PNG	3
 icons/creatures/reptiles/serpent-horned-green.webp	spellbookmegapack/Skill_Icon_Pack/green/green_22.PNG	2
+icons/creatures/reptiles/snake-fangs-bite-green-yellow.webp	spellbookmegapack/SpellBookPage03/SpellBook03_37.png	3
 icons/creatures/reptiles/snake-fangs-bite-green.webp	spellbookmegapack/SpellBookPage04/SpellBook04_83.png	4
 icons/creatures/reptiles/snake-poised-white.webp	spellbookmegapack/SpellBookPage02/SpellBook02_71.png	3
 icons/creatures/reptiles/turtle-shell-glowing-green.webp	spellbookmegapack/SpellBookPage04/SpellBook04_17.png	4
@@ -765,6 +790,7 @@ icons/creatures/tentacles/tentacle-earth-green.webp	spellbookmegapack/SpellBookP
 icons/creatures/tentacles/tentacle-eyes-yellow-pink.webp	spellbookmegapack/SpellBookPage07/SpellBook07_98.png	5
 icons/creatures/tentacles/tentacles-octopus-black-pink.webp	spellbookmegapack/SpellBookPage01/SpellBook01_51.PNG	1
 icons/creatures/tentacles/tentacles-suctioncups-pink.webp	spellbookmegapack/SpellBookPage07/SpellBook07_99.png	12
+icons/creatures/tentacles/tentacles-thing-green.webp	spellbookmegapack/Skill_Icon_Pack/green/green_02.PNG	4
 icons/creatures/unholy/demon-female-succubus-orange.webp	spellbookmegapack/SpellBookPage07/SpellBook07_78.png	2
 icons/creatures/unholy/demon-fire-horned-mask.webp	spellbookmegapack/SpellBookPage07/SpellBook07_39.png	5
 icons/creatures/unholy/demon-fire-horned-winged-roar.webp	spellbookmegapack/SpellBookPage07/SpellBook07_58.png	7
@@ -872,6 +898,7 @@ icons/equipment/back/cloak-collared-red.webp	fantasyiconsmegapack/ArmorIcons/Arm
 icons/equipment/back/cloak-fur-brown.webp	fairytaleiconsmegapack/BarbarianIcons/Barbarian_icons_b/Barbarian_icons_67_b.png	0
 icons/equipment/back/cloak-heavy-black-red.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/cloaks/cloaks_17.png	12
 icons/equipment/back/cloak-hooded-green-gold.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/cloaks/cloaks_20.png	6
+icons/equipment/back/cloak-hooded-jewels-green.webp	fantasyiconsmegapack/WeaponAndArmorIcons/WeaponAndArmorIcons_png/black/addons/025_b.png	2
 icons/equipment/back/cloak-hooded-pink.webp	fantasyiconsmegapack/BlueLootBox/BlueLootBox_bg/BlueLootBox_94_b.png	1
 icons/equipment/back/cloak-hooded-red.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/cloaks/cloaks_4.png	1
 icons/equipment/back/cloak-layered-pink.webp	fantasyiconsmegapack/WeaponAndArmorIcons/WeaponAndArmorIcons_png/sets/gatekeeper/black/L_cl_01b.png	4
@@ -1205,6 +1232,7 @@ icons/equipment/wrist/bracelet-spiked-steel.webp	fantasyiconsmegapack/ArmorIcons
 icons/equipment/wrist/bracer-armored-steel-worn.webp	fantasyiconsmegapack/RPG_ArmorSets/RPG_ArmorSets_png/heavy_armor/h_a_02/pp_brs_b_01.PNG	4
 icons/equipment/wrist/bracer-banded-leather.webp	fantasyiconsmegapack/WeaponAndArmorIcons/WeaponAndArmorIcons_png/black/addons/dfg_15_b.png	6
 icons/equipment/wrist/bracer-engraved-leather-black.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/bracers/bracers_22.png	4
+icons/equipment/wrist/bracer-orange-fancy.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/bracers/bracers_23.png	6
 icons/equipment/wrist/bracer-ornate-gold-purple.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/bracers/bracers_2.png	5
 icons/equipment/wrist/bracer-red-silver.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/bracers/bracers_1.png	3
 icons/equipment/wrist/bracer-segmented-leather.webp	fantasyiconsmegapack/WeaponAndArmorIcons/WeaponAndArmorIcons_png/black/bracers/combat_bracelets_b.png	3
@@ -1554,6 +1582,7 @@ icons/magic/nature/tree-twisted-glow-yellow.webp	spellbookmegapack/SpellBookPage
 icons/magic/perception/eye-ringed-green.webp	spellbookmegapack/SpellBookPage08/SpellBook08_69.png	2
 icons/magic/perception/eye-slit-orange.webp	spellbookmegapack/SpellBookPage07/SpellBook07_11.png	6
 icons/magic/perception/eye-tendrils-web-purple.webp	spellbookmegapack/Skill_Icon_Pack/violet/violet_10.PNG	3
+icons/magic/perception/eye-winged-pink.webp	spellbookmegapack/SpellBookPage08/SpellBook08_95.png	3
 icons/magic/perception/hand-eye-fire-blue.webp	spellbookmegapack/SpellBookPage03/SpellBook03_82.png	1
 icons/magic/perception/hand-eye-pink.webp	spellbookmegapack/SpellBookPage09/SpellBookPage09_60.PNG	2
 icons/magic/perception/mask-stone-eyes-orange.webp	spellbookmegapack/SpellBookPage09/SpellBookPage09_100.PNG	1
@@ -1864,6 +1893,7 @@ icons/sundries/books/symbol-axe-gold-grey.webp	fairytaleiconsmegapack/ScrollsAnd
 icons/sundries/documents/blueprint-recipe-alchemical.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/scroll_02_b.png	6
 icons/sundries/documents/blueprints-teal.webp	fantasyiconsmegapack/EngineeringCraftIcons/EngineeringCraftIcons_png/black/addons/engeniring_14_b.PNG	6
 icons/sundries/documents/document-bound-white-tan.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/addons/addons_15_b.png	2
+icons/sundries/documents/document-brown.webp	fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_b/ScrollsAndBooks_85.PNG	3
 icons/sundries/documents/document-letter-blue.webp	fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_b/ScrollsAndBooks_11.png	1
 icons/sundries/documents/document-letter-formal-tan.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/addons/addons_49_b.PNG	3
 icons/sundries/documents/document-official-brownl.webp	fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_b/ScrollsAndBooks_66.PNG	4
@@ -1902,6 +1932,7 @@ icons/sundries/gaming/chess-knight-white.webp	spellbookmegapack/StrategyGameIcon
 icons/sundries/gaming/chess-rook-gray.webp	spellbookmegapack/SpellBookPage05/SpellBook05_42.png	5
 icons/sundries/gaming/dice-pair-white-green.webp	spellbookmegapack/SpellBookPage08/SpellBook08_31.png	6
 icons/sundries/gaming/dice-runed-brown.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/dice_b_01.png	7
+icons/sundries/gaming/game-magic-eight-ball.webp	moderntoolsicons/black/addons/N_130.png	1
 icons/sundries/gaming/playing-cards-black.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/addons/addons_40_b.PNG	1
 icons/sundries/gaming/playing-cards-grey.webp	fairytaleiconsmegapack/WitchCraftIcons/WitchCraftIcons_back/addons/WitchCraftIcons_113_b.png	3
 icons/sundries/gaming/playing-cards.webp	fairytaleiconsmegapack/WitchCraftIcons/WitchCraftIcons_back/WitchCraftIcons_102_b.PNG	2
@@ -1943,6 +1974,7 @@ icons/sundries/scrolls/scroll-yellow-teal.webp	spellbookmegapack/SpellBookPage08
 icons/sundries/survival/bedroll-pink.webp	fairytaleiconsmegapack/TradingIcons/TradingIcons_b/TradingIcons_67.png	5
 icons/sundries/survival/climbing-anchor-steel-grey.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/addons/159_b.PNG	1
 icons/sundries/survival/cuffs-shackles-steel.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_24_b.PNG	3
+icons/sundries/survival/cuffs-shackles-tan.webp	spellbookmegapack/SpellBookPage02/SpellBook02_102.png	7
 icons/sundries/survival/mirror-plain.webp	fairytaleiconsmegapack/TrophyIcons/TrophyIcons_bg/TrophyIcons_45_b.PNG	8
 icons/sundries/survival/rope-coiled-wrapped-brown.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/addons/186_b.png	4
 icons/sundries/survival/rope-wrapped-brown.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/parts/pt_b_06.png	2
@@ -1970,6 +2002,7 @@ icons/tools/hand/hammer-mason-white-grey.webp	fairytaleiconsmegapack/TradingIcon
 icons/tools/hand/lockpicks-steel-grey.webp	fantasyiconsmegapack/LootIcons/LootIcons_png/black/Lock_Picks_b_01.png	7
 icons/tools/hand/saw-surgical-steel-grey.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_39_b.PNG	6
 icons/tools/hand/scale-balances-merchant-brown.webp	spellbookmegapack/StrategyGameIcons/SGI_137.png	2
+icons/tools/hand/sewing-needle-thread.webp	moderntoolsicons/black/modern_62_b.png	4
 icons/tools/hand/shovel-spade-steel-brown-grey.webp	fairytaleiconsmegapack/MiningIcons/MiningIcons_bg/MiningIcons_25_b.PNG	10
 icons/tools/hand/sickle-steel-grey.webp	fairytaleiconsmegapack/ForestIcons/ForestIcons_back/ForestIcons_28_b.PNG	3
 icons/tools/hand/sickle-worn-steel-grey.webp	fantasyiconsmegapack/ResourcesAndCraftIcons/ResourcesAndCraftIcons_png/black/parts/sickle_b_01.png	10
@@ -2301,6 +2334,7 @@ icons/weapons/thrown/shuriken-triple-purple.webp	fantasyiconsmegapack/MagicItems
 icons/weapons/wands/wand-carved-fire.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/staff_10_b.png	4
 icons/weapons/wands/wand-crook-yellow.webp	spellbookmegapack/SpellBookPage08/SpellBook08_90.png	6
 icons/weapons/wands/wand-gem-blue.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/addons/addons_35_b.PNG	5
+icons/weapons/wands/wand-gem-green.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/staff_12_b.png	5
 icons/weapons/wands/wand-gem-purple.webp	fantasyiconsmegapack/BlueLootBox/BlueLootBox_bg/BlueLootBox_54_b.PNG	1
 icons/weapons/wands/wand-gem-teal.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/staff_09_b.png	9
 icons/weapons/wands/wand-gem-violet.webp	fantasyiconsmegapack/MagicItems/MagicItems_png/bg/addons/addons_32_b.PNG	1
@@ -2408,6 +2442,7 @@ systems/pf2e/icons/spells/wall-of-shadow.webp	scifiskilliconpack/violet/p_12.PNG
 systems/pf2e/icons/spells/web-of-eyes.webp	spellbookmegapack/Skill_Icon_Pack/violet/violet_03.png	10
 systems/pf2e/icons/unarmed-attacks/claw.webp	fairytaleiconsmegapack/HuntingIcons/HuntingIcons_bg/HuntingIcons_43.PNG	9
 systems/sf2e/icons/actions/LongerAction.webp	actionrpgloot/ActionLoot_20.png	0
+systems/sf2e/icons/conditions/untethered.webp	spellbookmegapack/SpellBookPage09/SpellBookPage09_27.png	2
 systems/sf2e/icons/deities/chaldira.webp	fantasyrunesicons/FantasyRunesIcons_png/Badges_14.png	11
 systems/sf2e/icons/equipment/weapons/jezail.webp	fairytaleiconsmegapack/FantasyWeaponIcons/FantasyWeaponIcons_png/guns/gun_01_b.PNG	10
 systems/sf2e/icons/equipment/worn-items/other-worn-items/basic-prothesis.webp	fantasyiconsmegapack/ArmorIcons/ArmorIcons_png/black/gloves/gloves_4.PNG	12
