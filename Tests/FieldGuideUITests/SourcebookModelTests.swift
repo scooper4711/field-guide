@@ -86,6 +86,24 @@ struct SourcebookModelTests {
         #expect(model.progress == nil)
     }
 
+    @Test("The samples are listed until the user processes a book of their own")
+    func hidesTheSamplesOnceABookIsProcessed() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Sourcebooks-\(UUID())")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let file = folder.appendingPathComponent("\(Self.book.title).pdf")
+        let pdf = PDFFixture(pages: [[PDFFixture.text("Abadar", at: 80, 700, font: PDFFixture.bold, size: 34)]])
+        #expect(pdf.document()?.write(to: file) == true)
+        var list = Self.list
+        list.books += SourcebookList.samples
+        let model = SourcebookModel(store: try LoreStore(folder: folder.appendingPathComponent("Store"), list: list),
+                                    list: list)
+        let titles = { model.rows.map(\.book.title) }
+        #expect(titles() == list.books.map(\.title))
+        await model.addFiles([file], subjects: Self.subjects)
+        #expect(titles() == [Self.book.title, Self.supplement.title])
+    }
+
     @Test("A book gives its write-up to every deity it's assigned with the name, not one picked at random")
     func readsADeityTwoEntriesShare() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Sourcebooks-\(UUID())")

@@ -146,7 +146,8 @@ device as art is. Lore the Paizo Blog published stays in the import.
   Monster Core for Pathfinder, Field Guide Sample Alien Core for Starfinder. Each covers entries at the top of its
   game's lists, and prints its bestiary's stat blocks (Monster Core's, Alien Core's) with Paizo blog art. Every
   write-up in them opens with "This lore has been imported from the sample PDF." A sample's lore goes only to its
-  own game's entries, the same ones on every launch, and comes after any real book's.
+  own game's entries, the same ones on every launch, and comes after any real book's. Sourcebooks lists the
+  samples only until the user has processed a book of their own; their lore still stands in after that.
 - R9.9 An ancestry's or class's Details keep their rules from the import (key attribute and Hit Points, mechanics,
   heritages, initial proficiencies, class features) and show the setting's prose (introduction, You Might...,
   Others Probably..., Physical Description, Society, Beliefs, Names, Roleplaying) from the book that introduces it,
