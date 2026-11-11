@@ -124,13 +124,15 @@ public final class SourcebookModel {
         await refresh(subjects: subjects)
     }
 
-    /// The state of each book in the list, for the Sourcebooks screen.
+    /// The state of each book in the list, for the Sourcebooks screen. The sample sourcebooks are only for trying
+    /// Field Guide, so they drop out once the user has processed a book of their own; their lore still stands in.
     public var rows: [SourcebookRow] {
         var counts = self.counts
         for sources in list.deities.values {
             sources.books.forEach { counts[$0, default: .init()].deities += 1 }
         }
-        return list.books.map { book in
+        let hasOwnBook = books.keys.contains { !SourcebookList.isSample($0) }
+        return list.books.filter { !hasOwnBook || !SourcebookList.isSample($0.title) }.map { book in
             SourcebookRow(book: book, counts: counts[book.title] ?? .init(), read: books[book.title])
         }
     }
