@@ -49,6 +49,7 @@ struct SourcebooksView: View {
                 if case .success(let urls) = result { chose(urls) }
             }
             .task {
+                scrollkeeper.readSharedLibrary()
                 scrollkeeper.requestIndex()
                 await model.refresh()
                 await sourcebooks.refresh(subjects: store.loreSubjects())
@@ -223,7 +224,13 @@ private struct SourcebookRowView: View {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                     .accessibilityLabel("Processed")
             } else if let sku = row.book.sku, scrollkeeper.owns(sku: sku) {
-                Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
+                if scrollkeeper.downloadsOnRequest {
+                    Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
+                } else {
+                    Text(scrollkeeper.owned[sku] == true ? "Use Import from Scrollkeeper… to process it"
+                                                         : "Download it in Scrollkeeper")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
             } else if let url = row.book.downloadURL {
                 Link("Get", destination: url).formRowButtonStyle()
             } else if scrollkeeper.lacks(sku: row.book.sku) {

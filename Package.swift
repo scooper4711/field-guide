@@ -43,7 +43,8 @@ let package = Package(
         .testTarget(name: "LoreSyncTests", dependencies: ["LoreSync", "SourcebookLore"]),
         .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),
         .testTarget(name: "FieldGuideUITests", dependencies: [
-            "FieldGuideUI", "FieldGuideKit", "SourcebookLore", "SourcebookLoreTestSupport"
+            "FieldGuideUI", "FieldGuideKit", "SourcebookLore", "SourcebookLoreTestSupport",
+            .product(name: "TablesideShared", package: "tabletop-kit")
         ])
     ]
 )

@@ -176,7 +176,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   broken, hyphenated and run-together words, split paragraphs and stray characters.
 - `ScrollkeeperLink` follows Scrollkeeper's app-handoff contract (`scrollkeeper://index` and `open`, the
   `scrollkeeperindex` list, `fieldguide://handoff` status links), as Pluck's bridge does; the Mac's Info.plist
-  declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed.
+  declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed
+  and `downloadsOnRequest` is false. `readSharedLibrary(in:)` reads `library.json` in
+  `ToolkitGroup.scrollkeeperFolder()` (tabletop-kit's `ScrollkeeperLibrary`): every title listed is owned, and
+  downloaded when an up-to-date copy is on disk. Sourcebooks reads it when it opens, before asking for the index.
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices are formatted in American English at import, whatever the Mac's locale.
 - Search Everything: `GlobalSearch` (FieldGuideKit) holds every entry of the system, read once with

@@ -2,6 +2,7 @@ import Foundation
 #if os(macOS)
 import AppKit
 #endif
+import TablesideShared
 import Testing
 @testable import FieldGuideUI
 
@@ -49,7 +50,7 @@ struct ScrollkeeperLinkTests {
         let json = #"{"formatVersion": 1, "generatedAt": "2026-10-22T03:00:00Z", "titles": ["#
             + #"{"sku": "PZO13003E", "title": "Divine Mysteries", "kind": "Lost Omens", "downloaded": false}]}"#
         try Data(json.utf8).write(to: file)
-        let link = ScrollkeeperLink(launcher: FakeLauncher())
+        let link = ScrollkeeperLink(launcher: ScrollkeeperLinkTests.FakeLauncher())
         link.receiveIndex(file)
         #expect(link.owns(sku: "PZO13003E") && !link.owns(sku: "PZO9303WS") && !link.owns(sku: nil))
         #expect(link.lacks(sku: "PZO9303WS") && !link.lacks(sku: "PZO13003E") && !link.lacks(sku: nil))
@@ -64,7 +65,7 @@ struct ScrollkeeperLinkTests {
         ("other://handoff?sku=X&state=done", "Asking Scrollkeeper…")
     ])
     func status(link url: String, status: String) throws {
-        let link = ScrollkeeperLink(launcher: FakeLauncher())
+        let link = ScrollkeeperLink(launcher: ScrollkeeperLinkTests.FakeLauncher())
         link.open(sku: "X")
         link.receiveStatus(try #require(URL(string: url)))
         #expect(link.requested?.status == status)
@@ -86,5 +87,33 @@ struct ScrollkeeperLinkStandardTests {
         #expect(!link.isInstalled)
         #endif
         #expect(link.owned.isEmpty && link.requested == nil)
+    }
+
+    @Test("Scrollkeeper's library list in the App Group says what the user owns, without asking Scrollkeeper")
+    func readsTheSharedLibrary() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Scrollkeeper-\(UUID())")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let library = ScrollkeeperLibrary(generatedAt: Date(), downloadFolder: .init(isShared: true), titles: [
+            Self.title("PZO13003E", downloaded: true), Self.title("PZO2101E", downloaded: false)
+        ])
+        try library.encoded().write(to: folder.appendingPathComponent(ScrollkeeperLibrary.fileName))
+        let link = ScrollkeeperLink(launcher: nil)
+        link.readSharedLibrary(in: folder)
+        #expect(link.owned == ["PZO13003E": true, "PZO2101E": false])
+        #expect(link.lacks(sku: "PZO9999E") && !link.downloadsOnRequest)
+    }
+
+    @Test("Without a library list, what the user owns stays unknown", arguments: [false, true])
+    func noSharedLibrary(hasFolder: Bool) {
+        let link = ScrollkeeperLink(launcher: ScrollkeeperLinkTests.FakeLauncher())
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("Missing-\(UUID())")
+        link.readSharedLibrary(in: hasFolder ? folder : nil)
+        #expect(link.owned.isEmpty && link.downloadsOnRequest)
+    }
+
+    private static func title(_ sku: String, downloaded: Bool) -> ScrollkeeperLibrary.Title {
+        ScrollkeeperLibrary.Title(sku: sku, title: sku, kind: "Rulebooks", gameSystem: "Pathfinder 2E",
+                                  downloaded: downloaded, editions: [])
     }
 }

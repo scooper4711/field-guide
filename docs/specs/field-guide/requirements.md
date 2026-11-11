@@ -127,7 +127,10 @@ device as art is. Lore the Paizo Blog published stays in the import.
   name, or its own copyright line, so a renamed copy bought anywhere works.
 - R9.5 Sourcebooks (sidebar toolbar; File ▸ Sourcebooks…, ⇧⌘A) lists every book lore comes from and what it
   supplies, with a check mark once processed. A book the user owns in Scrollkeeper for the Mac shows Download, which
-  has Scrollkeeper download it and open it in Field Guide; a free one shows Get, its download page. No link to buy
+  has Scrollkeeper download it and open it in Field Guide; on the iPad, where Scrollkeeper takes no requests, it says
+  to download it in Scrollkeeper, or to Import from Scrollkeeper once it's downloaded. What the user owns comes
+  from Scrollkeeper's library list in the Tableside Toolkit's App Group, on the iPad and the Mac alike, and on the
+  Mac also from asking Scrollkeeper. A free one shows Get, its download page. No link to buy
   a book is offered. A picker filters the list to All, Processed, Not Processed or Not Downloaded (All at first,
   then the last choice), and says so when the filter leaves no book. Not Downloaded lists the unprocessed books the
   user owns in Scrollkeeper but hasn't downloaded there; it's offered once Scrollkeeper's list of titles is in. The screen calls reading a book for lore "processing" it.
