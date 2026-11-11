@@ -22,4 +22,15 @@ final class TabletLayoutUITests: XCTestCase {
         let system = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "System")).firstMatch
         XCTAssertTrue(system.waitForExistence(timeout: 15), app.debugDescription)
     }
+
+    /// In portrait the side columns are hidden by default, which with nothing chosen left only an empty page (#42).
+    func testPortraitWithNothingChosenShowsTheCategories() {
+        app.terminate()
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        // On the iPad the categories are rows of text in the sidebar.
+        let bestiary = app.staticTexts["Bestiary"]
+        XCTAssertTrue(bestiary.waitForExistence(timeout: 15), app.debugDescription)
+        XCTAssertTrue(bestiary.isHittable, "The categories are there but covered or off screen.")
+    }
 }
