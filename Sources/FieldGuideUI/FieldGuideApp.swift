@@ -65,14 +65,14 @@ extension FieldGuideApp {
 
 /// Sidebar of categories under the system switch, the entry list, and the entry.
 struct RootView: View {
-    @Environment(CatalogStore.self) private var store
     /// `FIELD_GUIDE_SELECT` opens an entry at launch, for trying pages out from a script.
-    @State private var selection = ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"]
-    @State private var columns = NavigationSplitViewVisibility.automatic
+    private static let launchSelection = ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"]
+    @Environment(CatalogStore.self) private var store
+    @State private var selection = launchSelection
+    @State private var columns = ColumnChoice(selection: launchSelection)
     /// The one column an iPhone shows: the categories at launch, so a new user sees them all, or the entry that
     /// `FIELD_GUIDE_SELECT` opens.
-    @State private var compactColumn: NavigationSplitViewColumn =
-        ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"] == nil ? .sidebar : .detail
+    @State private var compactColumn: NavigationSplitViewColumn = launchSelection == nil ? .sidebar : .detail
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
@@ -85,7 +85,7 @@ struct RootView: View {
     @State private var isShowingSearchSheet = false
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columns, preferredCompactColumn: $compactColumn) {
+        NavigationSplitView(columnVisibility: $columns.visibility, preferredCompactColumn: $compactColumn) {
             SidebarView(selection: $selection, isSearching: $isSearchingEverything, opened: openedMatch,
                         showList: { compactColumn = .content })
                 .navigationSplitViewColumnWidth(min: 220, ideal: 250)
@@ -125,7 +125,10 @@ struct RootView: View {
             if !store.results.contains(where: { $0.id == selection }) { selection = nil }
         }
         .onChange(of: store.system) { selection = nil }
-        .onChange(of: selection) { path = [] }
+        .onChange(of: selection) {
+            path = []
+            columns.selectionChanged(to: selection)
+        }
         // Only while there is a page to go back to, so the menu sees Back become available.
         .focusedSceneValue(\.entryPath, path.isEmpty ? nil : $path)
         .focusedSceneValue(\.isSearchingEverything, Binding(get: { isSearchingEverything }, set: { isOn in
@@ -157,25 +160,25 @@ struct RootView: View {
             isShowingSearchSheet = true
             return
         }
-        searchShowedSidebar = columns != .all
+        searchShowedSidebar = columns.visibility != .all
         isSearchingEverything = true
         // From the entry alone iOS goes one step, to the list and the entry, so the sidebar is asked for once that
         // step is done.
-        guard columns == .detailOnly else {
-            columns = .all
+        guard columns.visibility == .detailOnly else {
+            columns.visibility = .all
             return
         }
-        columns = .doubleColumn
+        columns.visibility = .doubleColumn
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(400))
-            columns = .all
+            columns.visibility = .all
         }
     }
 
     private func openedMatch() {
         compactColumn = .detail
         guard searchShowedSidebar else { return }
-        columns = .automatic
+        columns.visibility = .automatic
         searchShowedSidebar = false
     }
 }
