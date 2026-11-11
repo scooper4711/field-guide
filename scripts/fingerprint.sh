@@ -1,6 +1,6 @@
 #!/bin/sh
 # Prints a SHA-256 fingerprint of the imported compendium (the catalog's entries and traits, and the creatures
-# for the battle cards), which "make import" keeps in import.sha256. The weekly pf2e update releases only when a
+# for the battle cards), which "make import" keeps in import.sha256. The pf2e update workflow releases only when a
 # new pf2e release changes it. Fonts and pictures are left out: their bytes can differ with the tools' versions
 # while showing the same.
 set -eu

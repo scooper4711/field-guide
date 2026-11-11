@@ -61,10 +61,11 @@ After that it opens normally. The iPad app is not in the App Store yet; build it
   they are.
 
 ## Updating
-`make update` switches `pf2e.release` to pf2e's newest release, imports again and installs on the iPad. GitHub
-makes the same switch every Monday, and when the new release changes the compendium and Field Guide has a
-release, it builds the next patch version into a draft release. Commit `pf2e.release`, `import.sha256` and
-`icon-matches.tsv` after a local import. The steps on their own:
+`make update` switches `pf2e.release` to pf2e's newest release, imports again and installs on the iPad. Run it
+on a Mac with the Foundry app, which the import needs to match icons that are new to `icon-matches.tsv`. Commit
+`pf2e.release`, `import.sha256` and `icon-matches.tsv` afterward. The pf2e update workflow on GitHub makes the
+same switch when run by hand, and builds the next patch version into a draft release when the compendium
+changed, but without the Foundry app it can't match new icons. The steps on their own:
 
 - `make import` reads the pf2e release named in `pf2e.release`, which it downloads into `build/pf2e` (set
   `PF2E_REPO` to read your own checkout), and writes `Generated/`: `catalog.sqlite`, the icons, the fonts,

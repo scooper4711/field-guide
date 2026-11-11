@@ -8,7 +8,8 @@ Foundry VTT's compendium browser.
   systems), at the release named in `pf2e.release`, which the import downloads from `foundryvtt/pf2e`.
   `PF2E_REPO` reads another checkout instead, for development.
 - R1.2 `make update` switches `pf2e.release` to pf2e's newest release, imports again and installs the app on
-  the iPad, so new and corrected content arrives with one command. Weekly, GitHub makes the same switch and,
+  the iPad, so new and corrected content arrives with one command. Run by hand, a GitHub workflow makes the same
+  switch and,
   when the new release changes the imported compendium and the app has a release, tags the next patch version
   and builds it into a draft release to publish; a pf2e release that changes nothing Field Guide shows makes
   no release.

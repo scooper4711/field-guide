@@ -1,11 +1,12 @@
 name: pf2e update
 
-# Weekly, switches pf2e.release to pf2e's newest release when there is one. When the new release changes what
+# Run by hand, switches pf2e.release to pf2e's newest release when there is one. When the new release changes what
 # Field Guide imports (its fingerprint in import.sha256) and the app has a release, it also tags the next patch
 # version and builds its disk image into a draft release, ready to publish.
+#
+# It has no schedule: a runner has no Foundry app, so its import can't match icons that are new to
+# icon-matches.tsv and would release without them. "make update" on a Mac with Foundry is the usual way.
 on:
-  schedule:
-    - cron: '17 9 * * 1'
   workflow_dispatch:
 
 permissions:

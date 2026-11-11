@@ -1,7 +1,7 @@
 name: Release
 
 # Builds the app and attaches a disk image to the GitHub release for a version tag, creating a draft release if
-# none exists yet. It runs when a tag is pushed, and from the weekly pf2e update. Run by hand, it builds the
+# none exists yet. It runs when a tag is pushed, and from the pf2e update workflow. Run by hand, it builds the
 # branch and keeps the disk image as a workflow artifact instead, to try the build without releasing. The
 # compendium is imported from the pf2e release in pf2e.release and the Artwork submodule, as a local "make
 # import" does; icon-matches.tsv stands in for the Foundry app's icons.
