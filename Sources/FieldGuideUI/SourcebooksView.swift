@@ -16,6 +16,7 @@ struct SourcebooksView: View {
     // One file importer serves both buttons: SwiftUI presents only one of several on the same view.
     @State private var isChoosing = false
     @State private var choice = ArtChoice.pdfs
+    @AppStorage("sourcebookFilter") private var filter = SourcebookFilter.all
 
     var body: some View {
         NavigationStack {
@@ -48,6 +49,7 @@ struct SourcebooksView: View {
                 if case .success(let urls) = result { chose(urls) }
             }
             .task {
+                scrollkeeper.readSharedLibrary()
                 scrollkeeper.requestIndex()
                 await model.refresh()
                 await sourcebooks.refresh(subjects: store.loreSubjects())
@@ -111,11 +113,26 @@ struct SourcebooksView: View {
 
     private var sourcebooksSection: some View {
         Section {
-            ForEach(sourcebooks.rows) { row in
+            let shown = filter.effective(owned: scrollkeeper.owned)
+            let rows = shown.rows(sourcebooks.rows, owned: scrollkeeper.owned)
+            if rows.isEmpty {
+                Text(shown.emptyMessage).foregroundStyle(.secondary)
+            }
+            ForEach(rows) { row in
                 SourcebookRowView(row: row)
             }
         } header: {
-            Text("Sourcebooks")
+            HStack {
+                Text("Sourcebooks")
+                Spacer()
+                // Segmented when it fits beside the heading; a menu on narrow screens (the iPhone).
+                ViewThatFits {
+                    filterPicker.pickerStyle(.segmented).fixedSize()
+                    filterPicker.pickerStyle(.menu).fixedSize()
+                }
+                .labelsHidden()
+                .textCase(nil)
+            }
         } footer: {
             VStack(alignment: .leading, spacing: 6) {
                 if let sync = sourcebooks.syncStatus.text { Text(sync) }
@@ -124,6 +141,14 @@ struct SourcebooksView: View {
                      + "creature from a Bestiary takes its lore from Monster Core or Monster Core 2 when you have "
                      + "them.")
             }
+        }
+    }
+
+    /// Shows the filter in effect; choosing one remembers it.
+    private var filterPicker: some View {
+        let selection = Binding(get: { filter.effective(owned: scrollkeeper.owned) }, set: { filter = $0 })
+        return Picker("Show", selection: selection) {
+            ForEach(SourcebookFilter.choices(owned: scrollkeeper.owned)) { Text($0.title).tag($0) }
         }
     }
 
@@ -191,22 +216,28 @@ private struct SourcebookRowView: View {
                 Text(row.supplies)
                     .font(.caption).foregroundStyle(.secondary)
                 if row.isReadElsewhere {
-                    Text("Read on another device").font(.caption).foregroundStyle(.secondary)
+                    Text("Processed on another device").font(.caption).foregroundStyle(.secondary)
                 }
             }
             Spacer()
             if row.isRead {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                    .accessibilityLabel("Read")
+                    .accessibilityLabel("Processed")
             } else if let sku = row.book.sku, scrollkeeper.owns(sku: sku) {
-                Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
+                if scrollkeeper.downloadsOnRequest {
+                    Button("Download") { scrollkeeper.open(sku: sku) }.formRowButtonStyle()
+                } else {
+                    Text(scrollkeeper.owned[sku] == true ? "Use Import from Scrollkeeper… to process it"
+                                                         : "Download it in Scrollkeeper")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
             } else if let url = row.book.downloadURL {
                 Link("Get", destination: url).formRowButtonStyle()
             } else if scrollkeeper.lacks(sku: row.book.sku) {
                 Text("Not in your library").font(.caption).foregroundStyle(.secondary)
             } else {
                 // Without Scrollkeeper's list, or a SKU to look the book up by, whether the user owns it is unknown.
-                Text("Add its PDF to read it").font(.caption).foregroundStyle(.secondary)
+                Text("Use Add PDFs… to process it").font(.caption).foregroundStyle(.secondary)
             }
         }
     }

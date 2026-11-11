@@ -71,26 +71,33 @@ import SourcebookLoreTestSupport
     @Test func anAncestrysDetailsComeFromItsBookElseTheSample() async throws {
         let folder = try Self.temporaryFolder()
         defer { try? FileManager.default.removeItem(at: folder) }
-        let file = folder.appendingPathComponent("\(SourcebookList.sample.title).pdf")
-        try #require(SampleSourcebook.document()?.write(to: file) == true)
+        let sample = SampleSourcebook.pathfinder
+        let file = folder.appendingPathComponent("\(sample.title).pdf")
+        try #require(sample.document()?.write(to: file) == true)
         let store = try LoreStore(folder: folder.appendingPathComponent("Store"),
-                                  list: SourcebookList(books: [SourcebookList.sample]))
-        let elf = EntryReference(id: "id.elf", name: "Elf", credited: "Pathfinder Player Core")
+                                  list: SourcebookList(books: [sample.book]))
+        let elf = EntryReference(id: "Compendium.pf2e.ancestries.Item.elf", name: "Elf",
+                                 credited: "Pathfinder Player Core")
+        // Another game's ancestry with the name gets none of this sample's lore.
+        let starfinderElf = EntryReference(id: "Compendium.sf2e.ancestries.Item.elf", name: "Elf",
+                                           credited: "Starfinder Player Core")
         #expect(await store.details(of: elf) == nil)
-        _ = try await store.addFiles([file], subjects: LoreSubjects(details: [elf]))
+        _ = try await store.addFiles([file], subjects: LoreSubjects(details: [elf, starfinderElf]))
         #expect(await store.details(of: elf)?.sections.map(\.heading).contains("Society") == true)
-        let goblin = EntryReference(id: "id.goblin", name: "Goblin", credited: "Pathfinder Player Core")
+        #expect(await store.details(of: starfinderElf) == nil)
+        let goblin = EntryReference(id: "Compendium.pf2e.ancestries.Item.goblin", name: "Goblin",
+                                    credited: "Pathfinder Player Core")
         #expect(await store.details(of: goblin) == nil)
     }
 
     @Test func theNewEditionsComeFirstThenTheBookThenTheOtherBestiaries() {
         #expect(SourcebookList.creatureBooks(for: "Pathfinder Bestiary 2") == [
             "Pathfinder Monster Core", "Pathfinder Monster Core 2", "Pathfinder Bestiary 2", "Pathfinder Bestiary",
-            "Pathfinder Bestiary 3", SourcebookList.sample.title
+            "Pathfinder Bestiary 3"
         ])
         #expect(SourcebookList.creatureBooks(for: "Pathfinder Monster Core 2").prefix(2)
             == ["Pathfinder Monster Core", "Pathfinder Monster Core 2"])
-        #expect(SourcebookList.creatureBooks(for: Self.adventure) == [Self.adventure, SourcebookList.sample.title])
+        #expect(SourcebookList.creatureBooks(for: Self.adventure) == [Self.adventure])
     }
 
     @Test func aCompilationsCreaturesTakeLoreFromItsVolumesAndABooksOtherTitleFindsIt() {
@@ -99,7 +106,7 @@ import SourcebookLoreTestSupport
                        supplies: [.creatureLore])
         ], volumes: ["Season of Ghosts Compilation": ["#196", "#197"]])
         #expect(list.creatureBookTitles(for: "Season of Ghosts Compilation")
-            == ["Season of Ghosts Compilation", "#196", "#197", SourcebookList.sample.title])
+            == ["Season of Ghosts Compilation", "#196", "#197"])
         #expect(list.creatureBookTitles(for: "Pathfinder #217: Death Sails").first
             == "Pathfinder Adventure Path #217: Death Sails")
         #expect(list.title(of: "Unlisted") == "Unlisted")
@@ -115,9 +122,9 @@ import SourcebookLoreTestSupport
         #expect(book.creatures.isEmpty && book.location == nil && book.sourceDate == nil)
     }
 
-    @Test func theBundledListHasTheSampleAndCreatureBooks() {
+    @Test func theBundledListHasTheSamplesAndCreatureBooks() {
         let list = SourcebookList.bundled
-        #expect(list.books.last == SourcebookList.sample)
+        #expect(Array(list.books.suffix(2)) == SourcebookList.samples)
         #expect(list.books.contains { $0.title == "Starfinder Alien Core" && $0.supplies.contains(.creatureLore) })
         #expect(!list.creatures.isEmpty)
     }

@@ -110,7 +110,7 @@ public final class SourcebookModel {
     /// Watches Scrollkeeper's download folder and reads the sourcebooks in it.
     public func importFolder(_ folder: URL, subjects: LoreSubjects) async {
         guard let store else { return }
-        progress = "Reading sourcebooks…"
+        progress = "Processing sourcebooks…"
         await finish(await Self.attempt { try await store.importFolder(folder, subjects: subjects) },
                      quietWhenNone: false)
         await refresh(subjects: subjects)
@@ -135,12 +135,12 @@ public final class SourcebookModel {
         }
     }
 
-    /// "Reading Pathfinder Monster Core…" for one book, else "Reading sourcebooks…".
+    /// "Processing Pathfinder Monster Core…" for one book, else "Processing sourcebooks…".
     static func readingMessage(for files: [URL], list: SourcebookList) -> String {
-        guard files.count == 1, let file = files.first else { return "Reading sourcebooks…" }
+        guard files.count == 1, let file = files.first else { return "Processing sourcebooks…" }
         let title = SourcebookIdentifier(list: list).book(namedBy: file)?.title
             ?? file.deletingPathExtension().lastPathComponent
-        return "Reading \(title)…"
+        return "Processing \(title)…"
     }
 
     /// Shows lore that arrived from another device.
@@ -159,9 +159,9 @@ public final class SourcebookModel {
         case .success(let titles) where titles.isEmpty:
             if !quietWhenNone { message = "No new sourcebooks found." }
         case .success(let titles):
-            message = titles.count == 1 ? "Read \(titles[0])." : "Read \(titles.count) sourcebooks."
+            message = titles.count == 1 ? "Processed \(titles[0])." : "Processed \(titles.count) sourcebooks."
         case .failure(let error):
-            message = "Reading sourcebooks failed: \(error.localizedDescription)"
+            message = "Processing sourcebooks failed: \(error.localizedDescription)"
         }
     }
 
@@ -211,7 +211,7 @@ public struct SourcebookRow: Identifiable, Equatable {
 
     /// What the book supplies, such as "Deity lore: 3 deities · Creature lore: 497 creatures".
     public var supplies: String {
-        if book == SourcebookList.sample { return "Placeholder lore for trying Field Guide" }
+        if SourcebookList.isSample(book.title) { return "Placeholder lore for trying Field Guide" }
         let parts = [Wording(label: "Deity lore", one: "deity", many: "deities").text(counts.deities),
                      Wording(label: "Creature lore", one: "creature", many: "creatures").text(counts.creatures),
                      Wording(label: "Ancestry and class lore", one: "entry", many: "entries").text(counts.details)]

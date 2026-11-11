@@ -22,7 +22,7 @@ BUILD_NUMBER="${BUILD_NUMBER:-$(scripts/version.sh build)}"
 APP="build/Field Guide.app"
 EXECUTABLE="FieldGuide"
 
-[ -f Generated/catalog.sqlite ] || { echo "Building the app failed: Generated/ is missing; run \"make import\" first." >&2; exit 1; }
+scripts/check-generated.sh "Building the app"
 
 SWIFT_FLAGS=""
 [ "${CHANNEL:-}" = "appstore" ] && SWIFT_FLAGS="-Xswiftc -DAPP_STORE"

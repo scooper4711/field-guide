@@ -157,9 +157,11 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   Dragon" for "Horned Dragon (Adult)"), so `LoreStore` can choose among editions when shown
   (`SourcebookList.creatureBooks(for:)`). `FieldGuideLoreSurvey creatures` checks a book against Foundry's text;
   `lore-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
-  whose text Foundry copied; `sample <pdf> --art <community-use-artwork folder>` writes
-  `Resources/Review/Field Guide Sample Monster Core.pdf` (`SampleSourcebook`, with Monster Core's stat blocks in
-  `SampleStatBlocks` and each creature's Paizo blog picture; it fails if a picture is missing).
+  whose text Foundry copied; `sample <folder> --art <community-use-artwork folder>` writes each game's sample
+  (`SampleSourcebook.all`: `pathfinder`, `starfinder`) into the folder as `<title>.pdf`. Each prints its bestiary's
+  stat blocks (Monster Core's in `SampleStatBlocks`, Alien Core's in `SampleStatBlocks+AlienCore`) with that book's
+  ORC attribution, and each creature's Paizo blog picture; it fails if a picture is missing. `SourcebookList.samples` routes each
+  sample's lore only to entries whose IDs name its game (`Compendium.pf2e.…`, `Compendium.sf2e.…`).
 - Ancestry and class lore: the import keeps a Details page's rules and puts `DetailsPage.loreMarker` where its lore
   was (`DetailsPage.loreRange`: from a class's "Roleplaying" heading, or the page's start, to "Mechanics" or
   "Initial Proficiencies"). `DetailsWriteups` finds the entry's title (chapter-sized, else section-sized; of several,
@@ -174,7 +176,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   broken, hyphenated and run-together words, split paragraphs and stray characters.
 - `ScrollkeeperLink` follows Scrollkeeper's app-handoff contract (`scrollkeeper://index` and `open`, the
   `scrollkeeperindex` list, `fieldguide://handoff` status links), as Pluck's bridge does; the Mac's Info.plist
-  declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed.
+  declares the types and scheme. Scrollkeeper for the iPad doesn't answer handoffs, so there it's never installed
+  and `downloadsOnRequest` is false. `readSharedLibrary(in:)` reads `library.json` in
+  `ToolkitGroup.scrollkeeperFolder()` (tabletop-kit's `ScrollkeeperLibrary`): every title listed is owned, and
+  downloaded when an up-to-date copy is on disk. Sourcebooks reads it when it opens, before asking for the index.
 - `CatalogStore` (`@Observable`) holds the system, category, query and results, and keeps the system and
   category in user defaults. Prices are formatted in American English at import, whatever the Mac's locale.
 - Search Everything: `GlobalSearch` (FieldGuideKit) holds every entry of the system, read once with
@@ -223,6 +228,10 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   entitlements on the Mac and is `group.io.github.scooper4711.tableside` on iOS (`ios/FieldGuide.entitlements`);
   then Scrollkeeper's pre-sandbox Mac folder, which only an unsandboxed build reaches; otherwise the folder
   picker. `scripts/make-dmg.sh` packages it (`make dmg`).
+- `scripts/build-app.sh`, `scripts/archive-ipad.sh` and `scripts/install-ipad.sh` first run
+  `scripts/check-generated.sh`, which refuses to go on when `Generated/` is missing or its fingerprint differs from
+  the committed `import.sha256`, so a local build never bundles what an older importer made (such as lore a later
+  import leaves out). CI imports fresh on every run.
 - **Release workflow** (on `v*` tags, or called): fetches the `Artwork` submodule with the `ARTWORK_SSH_KEY`
   deploy key, installs `cwebp`, imports with `REXARD_PACKS=Artwork/rexard` and
   `COMMUNITY_USE=Artwork/community-use`, warns when `import.sha256` or `icon-matches.tsv` differs from the

@@ -38,15 +38,15 @@ public actor LoreStore {
         return lore.isEmpty ? sampleLore(of: entryID) : lore
     }
 
-    /// The deity's lore from the sample sourcebook, which stands in for books the user hasn't read.
+    /// The deity's lore from its game's sample sourcebook, which stands in for books the user hasn't read.
     private func sampleLore(of entryID: String) -> DeityLore? {
-        stored.books[SourcebookList.sample.title]?.deities[entryID]
+        SourcebookList.sample(forEntry: entryID).flatMap { stored.books[$0.title]?.deities[entryID] }
     }
 
     /// What the user's books give the creature: for an adventure's creature whose lore is a bestiary creature's
     /// (`SourcebookList.creatures`), that creature's; else from the first of its books
-    /// (`SourcebookList.creatureBooks(for:)`) that has been read and prints it, so Monster Core's lore is used over a
-    /// Bestiary's whichever was read first; nil when none has.
+    /// (`SourcebookList.creatureBooks(for:)`, then its game's sample) that has been read and prints it, so Monster
+    /// Core's lore is used over a Bestiary's whichever was read first; nil when none has.
     public func lore(of creature: EntryReference) -> CreatureLore? {
         if let source = list.creatures[creature.id],
            let lore = printedLore(of: EntryReference(id: creature.id, name: source.name, credited: source.book)) {
@@ -56,17 +56,22 @@ public actor LoreStore {
     }
 
     /// What the user's books give the ancestry or class for its Details: from the book Foundry credits, else the
-    /// sample; nil when neither has been read.
+    /// sample of its game; nil when neither has been read.
     public func details(of entry: EntryReference) -> DetailsLore? {
         let key = TextRepair.matchKey(entry.name)
-        return [list.title(of: entry.credited), SourcebookList.sample.title].lazy
+        return ([list.title(of: entry.credited)] + Self.sampleTitles(for: entry.id)).lazy
             .compactMap { self.stored.books[$0]?.details[key] }
             .first
     }
 
+    /// The sample sourcebook of the entry's game, which comes after every real book.
+    private static func sampleTitles(for entryID: String) -> [String] {
+        SourcebookList.sample(forEntry: entryID).map { [$0.title] } ?? []
+    }
+
     private func printedLore(of creature: EntryReference) -> CreatureLore? {
         let keys = CreatureLore.keys(for: creature.name)
-        for title in list.creatureBookTitles(for: creature.credited) {
+        for title in list.creatureBookTitles(for: creature.credited) + Self.sampleTitles(for: creature.id) {
             guard let creatures = stored.books[title]?.creatures else { continue }
             if let lore = keys.lazy.compactMap({ creatures[$0] }).first { return lore }
         }

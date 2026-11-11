@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import TablesideShared
 #if os(macOS)
 import AppKit
 #endif
@@ -14,7 +15,8 @@ public protocol ApplicationLauncher {
 
 /// Scrollkeeper as Field Guide sees it, following its app-handoff contract: Field Guide asks for the list of titles
 /// the user owns, which Scrollkeeper hands over as a file, and asks it to open a title, whose PDFs Scrollkeeper
-/// downloads when needed and opens in Field Guide. Only Scrollkeeper for the Mac answers these requests.
+/// downloads when needed and opens in Field Guide. Only Scrollkeeper for the Mac answers these requests; on the iPad
+/// Field Guide reads the library list Scrollkeeper keeps in the Tableside Toolkit's App Group instead.
 @MainActor
 @Observable
 public final class ScrollkeeperLink {
@@ -42,6 +44,18 @@ public final class ScrollkeeperLink {
     }
 
     public var isInstalled: Bool { launcher?.isInstalled(Self.bundleIdentifier) ?? false }
+
+    /// True when Scrollkeeper downloads a title on request (`open(sku:)`): on the Mac. On the iPad the user
+    /// downloads it in Scrollkeeper.
+    public var downloadsOnRequest: Bool { launcher != nil }
+
+    /// Takes what the user owns from Scrollkeeper's library list in its App Group folder, without asking
+    /// Scrollkeeper: every title it lists is owned, and downloaded when an up-to-date copy is on disk. Leaves
+    /// `owned` as it is when there is no list Field Guide can read.
+    public func readSharedLibrary(in folder: URL? = ToolkitGroup.scrollkeeperFolder()) {
+        guard let folder, case let .loaded(library) = ScrollkeeperLibrary.read(from: folder) else { return }
+        owned = Dictionary(library.titles.map { ($0.sku, $0.downloaded) }) { first, _ in first }
+    }
 
     /// True when the user owns the title, so Scrollkeeper can download it.
     public func owns(sku: String?) -> Bool {

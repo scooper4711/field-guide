@@ -23,9 +23,10 @@ import SourcebookLoreTestSupport
 // FieldGuideLoreSurvey lore-books --pf2e <repository> --scrollkeeper <catalog.json> --list <sourcebooks.json>
 //     adds the books Foundry credits creatures' and ancestries' and classes' lore to to the sourcebook list, with
 //     Scrollkeeper's SKUs and names
-// FieldGuideLoreSurvey sample <pdf> --art <community-use-artwork folder>
-//     writes the sample sourcebook (placeholder lore under real names, Monster Core's stat blocks, and each creature's
-//     picture from the folder's paizo-blog art) for App Review and anyone without the books
+// FieldGuideLoreSurvey sample <folder> --art <community-use-artwork folder>
+//     writes the sample sourcebooks, one per game, into the folder (placeholder lore under real names; Pathfinder's
+//     with Monster Core's stat blocks and each creature's picture from the art folder's paizo-blog art) for App
+//     Review and anyone without the books
 // FieldGuideLoreSurvey survey --pf2e <repository> --library <folder> [--scrollkeeper <catalog.json>]
 //         [--extra <title>=<pdf>]... --output <sourcebooks.json>
 //     reads every book in the library folder (laid out as Scrollkeeper downloads them) and writes the sourcebook
@@ -39,7 +40,7 @@ let usage = """
            FieldGuideLoreSurvey details-of <pdf> <name>...
            FieldGuideLoreSurvey details --pf2e <repository> <title>=<pdf>...
            FieldGuideLoreSurvey lore-books --pf2e <repository> --scrollkeeper <catalog.json> --list <json>
-           FieldGuideLoreSurvey sample <pdf> --art <community-use-artwork folder>
+           FieldGuideLoreSurvey sample <folder> --art <community-use-artwork folder>
            FieldGuideLoreSurvey survey --pf2e <repository> --library <folder> [--scrollkeeper <catalog.json>]
                [--extra <title>=<pdf>]... --output <sourcebooks.json>
 
@@ -103,7 +104,7 @@ case "lore-books":
     try addLoreBooks(pf2e: pf2e, catalog: catalog, list: list)
 case "sample":
     guard arguments.count >= 2, let art = value(of: "--art") else { fail(usage, code: 2) }
-    try writeSample(to: URL(filePath: arguments[1]), art: URL(filePath: art))
+    try writeSamples(to: URL(filePath: arguments[1]), art: URL(filePath: art))
 case "survey":
     guard let pf2e = value(of: "--pf2e"), let library = value(of: "--library"), let output = value(of: "--output")
     else { fail(usage, code: 2) }
