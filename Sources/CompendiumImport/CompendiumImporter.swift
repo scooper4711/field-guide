@@ -41,7 +41,9 @@ public struct CompendiumImporter {
         let documents = try documents(scanner: scanner)
         let localizer = try Localizer(languageDirectory: repository.appendingPathComponent("static/lang"))
         let glossary = TraitGlossary(repository: repository, localizer: localizer)
-        let journalPages = GameSystem.allCases.flatMap { GMScreen.pages(repository: repository, system: $0) }
+        let journals = GameSystem.allCases.map { GMScreen.read(repository: repository, system: $0) }
+        let journalPages = journals.flatMap(\.pages)
+        let unplacedJournals = journals.reduce(into: [String: Int]()) { $0.merge($1.unplaced) { first, _ in first } }
         let details = JournalDetails(pages: journalPages, documents: documents)
         var links = LinkIndex(documents: documents)
         journalPages.forEach { links.add($0, target: details.linkTarget(of: $0)) }
@@ -60,9 +62,8 @@ public struct CompendiumImporter {
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
         try copyFonts()
         try writeIconTables(images.icons, documents: documents)
-        let report = ImportReport(rows: rows, enricher: enricher, images: images)
-        try report.markdown.write(to: options.output.appendingPathComponent("import-report.md"), atomically: true,
-                                  encoding: .utf8)
+        let report = ImportReport(rows: rows, enricher: enricher, images: images, unplacedJournals: unplacedJournals)
+        try report.write(to: options.output.appendingPathComponent("import-report.md"))
         return report
     }
 
@@ -141,6 +142,8 @@ public struct ImportReport {
     public let counts: [String: Int]
     public let unconverted: [String: Int]
     public let unresolvedLinks: [String: Int]
+    /// Journals no rule places, with their page counts; their pages are left out.
+    public let unplacedJournals: [String: Int]
     /// How many entries got their icon by each rule.
     public let iconRules: [String: Int]
     /// The Foundry icons of entries left without one, with how many entries use each.
@@ -148,7 +151,8 @@ public struct ImportReport {
     public let withImages: Int
     public let total: Int
 
-    init(rows: [EntryRow], enricher: Enricher, images: ImageCollector) {
+    init(rows: [EntryRow], enricher: Enricher, images: ImageCollector, unplacedJournals: [String: Int] = [:]) {
+        self.unplacedJournals = unplacedJournals
         counts = Dictionary(grouping: rows) { "\($0.system.title) \($0.category.title)" }.mapValues(\.count)
         unconverted = enricher.unconverted
         unresolvedLinks = enricher.unresolvedLinks
@@ -164,11 +168,16 @@ public struct ImportReport {
             + "\(unresolvedIcons.values.reduce(0, +)) entries without icons."
     }
 
+    func write(to url: URL) throws {
+        try markdown.write(to: url, atomically: true, encoding: .utf8)
+    }
+
     public var markdown: String {
         var lines = ["# Import report", "", summary, "", "## Entries", ""]
         lines += counts.sorted { $0.key < $1.key }.map { "- \($0.key): \($0.value)" }
         lines += ["", "## Unconverted enrichers", ""] + Self.top(unconverted)
         lines += ["", "## Unresolved links (most frequent)", ""] + Self.top(unresolvedLinks)
+        lines += ["", "## Journals no rule places (left out)", ""] + Self.top(unplacedJournals)
         lines += ["", "## Icons by rule", ""] + Self.top(iconRules)
         lines += ["", "## Foundry icons left without a Rexard icon", ""] + Self.top(unresolvedIcons)
         return lines.joined(separator: "\n") + "\n"
