@@ -128,8 +128,9 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   `ArtPicture`, with the card art, glossary and an `ArtPictureLoader` over `ArtModel` in the environment. When
   the page has lore (from the user's books through `SourcebookModel.creatureLore(of:)`, else the Paizo Blog's
   `EntryPage.lore`, the `PageDescription` section the import writes after the stat block), a toolbar picker
-  switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it to
-  the column's width. An entry with Details gets an [Overview | Details] picker instead (`EntryTab`, opened on
+  switches to it in the web view. `FittedCard` lays the card out 440 points wide and scales it up to
+  the column's width; a narrower column (a phone) lays it out at the column's width, unscaled, so its text is
+  not shrunk. An entry with Details gets an [Overview | Details] picker instead (`EntryTab`, opened on
   Details by `entry:<id>#details` links). `RootView` is the Mac's `battleCardFullScreenHost()`. The web
   fonts in `Generated` are registered at launch for the cards.
 - `SourcebooksView` ("Sourcebooks"), from the sidebar's toolbar, is Turnkeeper's creature art settings adapted (a

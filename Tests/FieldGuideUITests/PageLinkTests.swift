@@ -39,10 +39,17 @@ struct PageLinkTests {
 @Suite("Fitting a battle card to its column")
 @MainActor
 struct FittedCardTests {
-    @Test("The card grows to fill a wide column and shrinks to fit a narrow one", arguments: [
-        (CGFloat(880), CGFloat(2)), (440, 1), (220, 0.5), (0, 1)
+    @Test("The card grows to fill a wide column and is never shrunk to fit a narrow one", arguments: [
+        (CGFloat(880), CGFloat(2)), (440, 1), (370, 1), (0, 1)
     ])
     func scale(width: CGFloat, scale: CGFloat) {
         #expect(FittedCard<EmptyView>.scale(toFit: width) == scale)
+    }
+
+    @Test("A narrow column lays the card out at its own width, so the text keeps its size", arguments: [
+        (CGFloat(880), CGFloat(440)), (440, 440), (370, 370), (0, 440)
+    ])
+    func layoutWidth(width: CGFloat, layoutWidth: CGFloat) {
+        #expect(FittedCard<EmptyView>.layoutWidth(toFit: width) == layoutWidth)
     }
 }
