@@ -151,7 +151,8 @@ device as art is. Lore the Paizo Blog published stays in the import.
 - R8.1 A creature's page switches between its battle card (Tabletop Kit's interactive card, in the Rexard
   style, as in Turnkeeper) and its lore from the user's books (R9.7); the choice is remembered. A
   creature without lore shows only its card. The card fills the width of its column, padded, and grows when
-  the sidebar is hidden.
+  the sidebar is hidden. In a column narrower than the card's own width (a phone) its text keeps its size and wraps
+  instead of shrinking.
 - R8.2 Tapping an empty part of the card shows its corner icons and a second tap hides them; with a pointer,
   each icon shows while the pointer is over its corner. The top-right icon turns the card over to its back:
   the creature's art in a backdrop chosen by its traits, with its name. The bottom-right icon, or a pinch
