@@ -233,7 +233,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   Apple's notary service check it (the `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID` and `NOTARY_PASSWORD` secrets, or a
   notarytool keychain profile on a Mac) and staples the ticket to it. The team ID is kept only in the secrets and
   the keychain.
-- **pf2e update workflow** (Mondays, or by hand): when pf2e has a newer release, a Linux job lists the files
+- **pf2e update workflow** (by hand only; a runner can't match icons new to `icon-matches.tsv`): when pf2e has a
+  newer release, a Linux job lists the files
   changed between the two commits (fetched without their contents). If none is under `packs` or `static`, it
   commits `pf2e.release` alone. Otherwise a macOS job imports the new release; an unchanged fingerprint commits
   `pf2e.release` alone, and a changed one commits it with `import.sha256` and `icon-matches.tsv` and, if the

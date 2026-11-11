@@ -44,6 +44,6 @@ mkdir -p Generated/Licenses
 cp Resources/Licenses/* Generated/Licenses/
 cp "$PF2E_REPO/static/licenses/OpenGameLicense.md" "Generated/Licenses/Open Game License.md"
 cp "$PF2E_REPO/static/licenses/ORCLicense.md" "Generated/Licenses/ORC License.md"
-# The weekly pf2e update compares this to decide whether a new pf2e release changes anything Field Guide shows.
+# The pf2e update workflow compares this to decide whether a new pf2e release changes anything Field Guide shows.
 scripts/fingerprint.sh > import.sha256
 echo "See Generated/import-report.md for what could not be converted."

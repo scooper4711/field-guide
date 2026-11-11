@@ -18,7 +18,7 @@ coverage:
 import:
 	scripts/import.sh
 
-# Switches to pf2e's newest release, imports and installs on the iPad. GitHub switches weekly too.
+# Switches to pf2e's newest release, imports and installs on the iPad.
 update:
 	scripts/update.sh
 
