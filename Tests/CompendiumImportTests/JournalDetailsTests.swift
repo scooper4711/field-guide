@@ -27,8 +27,7 @@ import Testing
         defer { repository.remove() }
         let catalog = try importedCatalog(repository)
         for (category, name, subtitle) in [(EntryCategory.archetypes, "Acrobat", "Archetype"),
-                                           (.domains, "Fire Domain", "Domain"),
-                                           (.remasterChanges, "Spells", "Remaster Change")] {
+                                           (.domains, "Fire Domain", "Domain")] {
             let entries = try catalog.summaries(of: category, in: .pathfinder)
             #expect(entries.map(\.name) == [name] && entries.first?.subtitle == subtitle)
             #expect(entries.first?.facets.isEmpty == true)
@@ -57,5 +56,15 @@ import Testing
         #expect(index.html.contains("<a href=\"entry:Compendium.pf2e.ancestries.Item.el1#details\">Elf</a>"))
         #expect(try catalog.summaries(of: .journals, in: .pathfinder).map(\.name)
             == ["Draconic Connections", "Index", "Last Stand"])
+    }
+
+    @Test func theJournalOfRulesRevisionsIsLeftOut() throws {
+        let repository = try FakeRepository()
+        defer { repository.remove() }
+        let catalog = try importedCatalog(repository)
+
+        #expect(try catalog.page(of: "\(Self.journalPage).re1.JournalEntryPage.reS") == nil)
+        #expect(try catalog.search("renamed spells", in: .journals, of: .pathfinder).isEmpty)
+        #expect(!GMScreen.pages(repository: repository.root, system: .pathfinder).contains { $0.journalID == "re1" })
     }
 }

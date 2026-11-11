@@ -122,8 +122,8 @@ extension FakeRepository {
     }
 
     /// The other rules journals: the Elf and Fighter pages (whose entries the fake packs hold) and the
-    /// Ancestries index linking the Elf page, one page each of Archetypes, Domains, Remaster Changes and the Hero
-    /// Point Deck, and a Classes page no class is named for.
+    /// Ancestries index linking the Elf page, one page each of Archetypes, Domains and the Hero Point Deck, a
+    /// Remaster Changes page (which the import leaves out), and a Classes page no class is named for.
     func writeRulesJournals() throws {
         struct Page {
             let id: String

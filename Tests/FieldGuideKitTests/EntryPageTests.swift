@@ -34,8 +34,6 @@ import Testing
     }
 
     @Test func newCategoriesHaveTheirOwnTitles() {
-        #expect(EntryCategory.remasterChanges.title == "Remaster Changes")
-        #expect(EntryCategory.remasterChanges.singularTitle == "Remaster Change")
         #expect(EntryCategory.archetypes.singularTitle == "Archetype" && !EntryCategory.domains.hasLevels)
     }
 }

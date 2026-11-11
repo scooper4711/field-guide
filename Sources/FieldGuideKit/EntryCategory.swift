@@ -6,8 +6,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     case gmScreen
     case actions, bestiary, campaignFeatures, equipment, feats, hazards, spells
     case conditions, ancestries, heritages, backgrounds, classes, archetypes, deities, domains
-    // swiftlint:disable:next inclusive_language - "Remaster" is Paizo's name for its revised rules
-    case remasterChanges, journals
+    case journals
 
     public var id: String { rawValue }
 
@@ -15,7 +14,6 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         switch self {
         case .campaignFeatures: "Campaign Features"
         case .gmScreen: "GM Screen"
-        case .remasterChanges: "Remaster Changes"
         default: rawValue.prefix(1).uppercased() + rawValue.dropFirst()
         }
     }
@@ -26,7 +24,6 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .ancestries: "Ancestry"
         case .classes: "Class"
         case .deities: "Deity"
-        case .remasterChanges: "Remaster Change"
         case .bestiary: "Creature"
         case .gmScreen: "GM Screen"
         default: String(title.dropLast())
@@ -52,7 +49,6 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .archetypes: "person.crop.rectangle.stack"
         case .deities: "sun.max"
         case .domains: "circle.hexagongrid"
-        case .remasterChanges: "arrow.triangle.2.circlepath"
         case .journals: "books.vertical"
         }
     }
@@ -61,7 +57,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     public var hasLevels: Bool {
         switch self {
         case .gmScreen, .journals, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities,
-             .archetypes, .domains, .remasterChanges:
+             .archetypes, .domains:
             false
         default: true
         }
