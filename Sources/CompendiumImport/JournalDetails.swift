@@ -3,7 +3,7 @@ import Foundation
 
 /// The Ancestries and Classes journals' pages, each the Details of the ancestry or class of the same name in its
 /// system. The import keeps their rules and leaves out their lore (`DetailsPage`), which the app reads from the
-/// user's book. Pages no entry is named for (Index, Versatile Heritages) stay in the journals.
+/// user's book. Pages no entry is named for (Index, Versatile Heritages) are guides, listed with the entries.
 struct JournalDetails {
     /// The pages that are an entry's Details, by the entry's ID.
     private var pagesByOwner: [String: JournalPage] = [:]

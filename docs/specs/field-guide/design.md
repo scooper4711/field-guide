@@ -27,16 +27,22 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   tables, vehicles and characters are skipped.
 - `GMScreen` reads `packs/<system>/journals/*.json`: each page with more than a line of text becomes an entry
   with ID `Compendium.<system>.journals.JournalEntry.<journal>.JournalEntryPage.<page>`. A GM Screen page's
-  section is the last level-1 page before it in sort order; the other journals' pages are in the category of
-  their journal (Archetypes, Domains, else Journals, sectioned by journal name). The Remaster Changes journal is
-  skipped (`GMScreen.skippedFiles`), so links to its pages are unresolved and read as plain text. Relative links
+  section is the last level-1 page before it in sort order; the other journals' pages go where
+  `JournalPlacement` puts them: Archetypes and Domains are categories of their own, and the Ancestries and Classes
+  journals' pages are Details or guides (below). The Remaster Changes and Hero Point Deck journals are skipped
+  (`JournalPlacement.skippedFiles`), so links to their pages are unresolved and read as plain text. A journal no
+  rule places is left out and listed in the import report. Relative links
   (`@UUID[.<page>]`) are made absolute before enriching, and `LinkIndex` resolves page links (ignoring
   `#anchors`).
 - `RulesDiagrams` inserts the inline SVG diagrams (`DetectionDiagram`, `CounteractDiagram`) after an anchor
   passage in the Detecting Creatures and Counteracting pages, when the page's text contains it.
 - `JournalDetails` makes each page of the Ancestries and Classes journals the Details of the ancestry or class
   of the same name in its system: the row's `details` column (also searched), with links to the page leading to
-  `entry:<id>#details` (`EntryLink`). Pages without such an entry stay in Journals.
+  `entry:<id>#details` (`EntryLink`). Pages without such an entry are guides
+  (`JournalPlacement.guides`): Index and Standardized Ancestry Feats are Ancestries entries, Versatile Heritages a
+  Heritages entry, Draconic Sorcerer Bloodlines and Draconic Connections Classes entries. An entry's `sort_name`
+  column, when it differs from its name, orders the list (`Catalog.summaries`): a key starting with a space puts a
+  guide first, and the Draconic pages are keyed to follow the Sorcerer.
 - `AreaGeometry` lists the squares an area covers, by the rules: a square counts when the squares moved to reach
   its far side, `max + min / 2` (rounded down), times 5 feet is within the area's size. Bursts start at a grid
   corner, emanations at the edges of the creature's space, reach likewise except that 10-foot reach takes every

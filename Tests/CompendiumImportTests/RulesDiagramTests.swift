@@ -30,7 +30,7 @@ import Testing
     @Test func otherPagesAreUnchanged() {
         let table = "<table></table>"
         #expect(RulesDiagrams.adding(to: table, of: page("Senses", html: table)) == table)
-        let journal = page("Detecting Creatures", category: .journals, html: table)
+        let journal = page("Detecting Creatures", category: .archetypes, html: table)
         #expect(RulesDiagrams.adding(to: table, of: journal) == table)
         #expect(RulesDiagrams.adding(to: "<p>Rewritten</p>", of: page("Counteracting", html: "")) == "<p>Rewritten</p>")
     }

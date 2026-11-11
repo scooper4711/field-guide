@@ -32,9 +32,12 @@ import Testing
             #expect(entries.map(\.name) == [name] && entries.first?.subtitle == subtitle)
             #expect(entries.first?.facets.isEmpty == true)
         }
-        let journals = try catalog.summaries(of: .journals, in: .pathfinder)
-        #expect(journals.map(\.name) == ["Draconic Connections", "Index", "Last Stand"])
-        #expect(journals.map { $0.values(of: .section) } == [["Classes"], ["Ancestries"], ["Hero Point Deck"]])
+        let ancestries = try catalog.summaries(of: .ancestries, in: .pathfinder)
+        #expect(ancestries.map(\.name) == ["Index", "Standardized Ancestry Feats", "Elf"])
+        #expect(ancestries.first?.subtitle == "Ancestries")
+        #expect(try catalog.summaries(of: .heritages, in: .pathfinder).first?.name == "Versatile Heritages")
+        #expect(try catalog.summaries(of: .classes, in: .pathfinder).map(\.name)
+            == ["Fighter", "Draconic Sorcerer Bloodlines", "Draconic Connections"])
         #expect(try catalog.categories(in: .pathfinder).contains(.archetypes))
     }
 
@@ -51,22 +54,24 @@ import Testing
         #expect(fighter.contains(DetailsPage.loreMarker) && !fighter.contains("Fighters train hard."))
         #expect(try catalog.search("elves", in: .ancestries, of: .pathfinder).isEmpty)
         #expect(try catalog.page(of: "\(Self.journalPage).an1.JournalEntryPage.anE") == nil)
-        // Links to a Details page open its entry, and the journals' other pages stay.
+        // Links to a Details page open its entry, and the journals' other pages stay, as guides.
         let index = try #require(try catalog.page(of: "\(Self.journalPage).an1.JournalEntryPage.anI"))
         #expect(index.html.contains("<a href=\"entry:Compendium.pf2e.ancestries.Item.el1#details\">Elf</a>"))
-        #expect(try catalog.summaries(of: .journals, in: .pathfinder).map(\.name)
-            == ["Draconic Connections", "Index", "Last Stand"])
     }
 
-    @Test func theJournalOfRulesRevisionsIsLeftOut() throws {
+    @Test func journalsNoRulePlacesAreReportedAndTheOnesNotShownAreLeftOut() throws {
         let repository = try FakeRepository()
         defer { repository.remove() }
         let catalog = try importedCatalog(repository)
+        let reading = GMScreen.read(repository: repository.repository, system: .pathfinder)
 
+        #expect(reading.unplaced == ["Compendium.pf2e.journals.JournalEntry.Mystery": 1])
+        #expect(reading.pages.contains { $0.journalID == "an1" })
+        // Remaster Changes and the Hero Point Deck are skipped without a mention.
+        #expect(!reading.pages.contains { ["re1", "he1", "my1"].contains($0.journalID) })
         #expect(try catalog.page(of: "\(Self.journalPage).re1.JournalEntryPage.reS") == nil)
-        #expect(try catalog.search("renamed spells", in: .journals, of: .pathfinder).isEmpty)
-        let pages = GMScreen.pages(repository: repository.repository, system: .pathfinder)
-        #expect(pages.contains { $0.journalID == "an1" })
-        #expect(!pages.contains { $0.journalID == "re1" })
+        #expect(try catalog.page(of: "\(Self.journalPage).he1.JournalEntryPage.heC") == nil)
+        #expect(try catalog.page(of: "\(Self.journalPage).my1.JournalEntryPage.myH") == nil)
+        #expect(try catalog.search("renamed spells", in: .ancestries, of: .pathfinder).isEmpty)
     }
 }
