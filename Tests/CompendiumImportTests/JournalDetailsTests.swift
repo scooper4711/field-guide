@@ -65,6 +65,8 @@ import Testing
 
         #expect(try catalog.page(of: "\(Self.journalPage).re1.JournalEntryPage.reS") == nil)
         #expect(try catalog.search("renamed spells", in: .journals, of: .pathfinder).isEmpty)
-        #expect(!GMScreen.pages(repository: repository.root, system: .pathfinder).contains { $0.journalID == "re1" })
+        let pages = GMScreen.pages(repository: repository.repository, system: .pathfinder)
+        #expect(pages.contains { $0.journalID == "an1" })
+        #expect(!pages.contains { $0.journalID == "re1" })
     }
 }
