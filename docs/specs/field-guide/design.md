@@ -218,8 +218,11 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   process won't start without it, though pages are local), read-only access to files the user picks, and app-scoped
   bookmarks for the art library's PDFs and watched folders. `Resources/container-migration.plist` goes into the
   bundle's Resources; on the first sandboxed launch macOS moves `Application Support/Field Guide` and the
-  preferences into the container. On the Mac, "Import from Scrollkeeper…" then can't read Scrollkeeper's folder and
-  opens the folder picker instead. `scripts/make-dmg.sh` packages it (`make dmg`).
+  preferences into the container. "Import from Scrollkeeper…" reads `ScrollkeeperDownloads.standard`: the `Files`
+  folder in `ToolkitGroup.scrollkeeperFolder()` (tabletop-kit), which finds the group from the app's own
+  entitlements on the Mac and is `group.io.github.scooper4711.tableside` on iOS (`ios/FieldGuide.entitlements`);
+  then Scrollkeeper's pre-sandbox Mac folder, which only an unsandboxed build reaches; otherwise the folder
+  picker. `scripts/make-dmg.sh` packages it (`make dmg`).
 - **Release workflow** (on `v*` tags, or called): fetches the `Artwork` submodule with the `ARTWORK_SSH_KEY`
   deploy key, installs `cwebp`, imports with `REXARD_PACKS=Artwork/rexard` and
   `COMMUNITY_USE=Artwork/community-use`, warns when `import.sha256` or `icon-matches.tsv` differs from the

@@ -74,15 +74,13 @@ struct SourcebooksView: View {
         .disabled(model.progress != nil || sourcebooks.progress != nil)
     }
 
-    /// On the Mac, Scrollkeeper's downloads are used straight away when they're there (the shared App Group folder
-    /// first); otherwise, and on the iPad, the user picks the folder (in Files, On My iPad ▸ Scrollkeeper).
+    /// Scrollkeeper's downloads are used straight away when they're there (the shared App Group folder first);
+    /// otherwise the user picks the folder.
     private func importFromScrollkeeper() {
-        #if os(macOS)
-        if let folder = ScrollkeeperDownloads.standard.folder(group: ScrollkeeperDownloads.bundleGroup) {
+        if let folder = ScrollkeeperDownloads.standard.folder {
             importFolder(folder)
             return
         }
-        #endif
         choose(.folder)
     }
 

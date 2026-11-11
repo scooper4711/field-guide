@@ -103,7 +103,9 @@ Foundry VTT's compendium browser.
 - R6.2c Action icons are Paizo's Pathfinder-Icons font, bundled unaltered under the Paizo Compatibility
   License and kept out of the repository.
 - R6.3 Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, without copying them,
-  and picks up new downloads at launch; Add PDFs copies other PDFs into the app.
+  and picks up new downloads at launch; Add PDFs copies other PDFs into the app. On the Mac and the iPad alike
+  it reads Scrollkeeper's folder in the Tableside Toolkit's App Group without asking (scrollkeeper#52), and
+  asks for a folder only when that isn't there.
 - R6.4 PDFs deleted or moved since they were read are listed as missing in Sourcebooks, and a creature's
   card says which missing PDF its art needs.
 
