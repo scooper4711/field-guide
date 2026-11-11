@@ -17,7 +17,7 @@ struct EntryListView: View {
         .searchable(text: $store.query.text, prompt: store.query.searchesText ? "Search text" : "Search names")
         .navigationTitle(store.category?.title ?? "")
         .toolbar { toolbar }
-        .safeAreaInset(edge: .bottom) { countBar }
+        .safeAreaInset(edge: Self.countEdge) { countBar }
         .sheet(isPresented: $showsFilters) {
             FilterView()
                 .environment(store)
@@ -63,6 +63,15 @@ struct EntryListView: View {
         }
     }
 
+    /// iOS puts the search field at the bottom, where it would cover the count, so there the count is at the top.
+    private static var countEdge: VerticalEdge {
+        #if os(iOS)
+        .top
+        #else
+        .bottom
+        #endif
+    }
+
     private var countBar: some View {
         HStack {
             Text("\(store.results.count.formatted()) of \(store.entries.count.formatted())")
@@ -75,7 +84,8 @@ struct EntryListView: View {
         .foregroundStyle(.secondary)
         .padding(.horizontal)
         .padding(.vertical, 6)
-        .background(.bar)
+        // Kept to the bar: reaching into the safe area, at the top it would cover the category's title.
+        .background(.bar, ignoresSafeAreaEdges: [])
     }
 }
 
