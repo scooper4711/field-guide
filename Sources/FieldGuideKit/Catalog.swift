@@ -17,7 +17,7 @@ public final class Catalog {
         return EntryCategory.allCases.filter(found.contains)
     }
 
-    /// Every entry of a category, by name.
+    /// Every entry of a category, by name; a guide page comes where its entry or the top of the list puts it.
     public func summaries(of category: EntryCategory, in system: GameSystem) throws -> [EntrySummary] {
         try summaries(where: "system = ? AND category = ?", [.text(system.rawValue), .text(category.rawValue)])
     }
@@ -31,7 +31,7 @@ public final class Catalog {
         var result: [EntrySummary] = []
         let sql = """
             SELECT id, system, category, name, level, subtitle, image, facets FROM entries
-            WHERE \(condition) ORDER BY name COLLATE NOCASE
+            WHERE \(condition) ORDER BY sort_name COLLATE NOCASE, name COLLATE NOCASE
             """
         try database.query(sql, values) { row in
             guard let category = EntryCategory(rawValue: row.text(2)) else { return }

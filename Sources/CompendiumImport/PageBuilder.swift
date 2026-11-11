@@ -19,6 +19,8 @@ public struct EntryRow: Sendable {
     public var traitSlugs: [String]
     /// An ancestry's or class's journal page, its Details; empty for other entries.
     public var details = ""
+    /// What the list sorts the entry by instead of its name; empty to sort by name.
+    public var sortKey = ""
 }
 
 /// Builds an entry's page: header with image, traits, details or stat block, description and source.

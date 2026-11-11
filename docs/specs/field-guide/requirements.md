@@ -44,9 +44,11 @@ Foundry VTT's compendium browser.
   color-blind-safe palette (Okabe-Ito: blue, orange, green, yellow, sky blue, from the smallest outward) and
   outlined in a stronger tone of that color, with a key. The diagrams are inline SVG that follows light and dark
   mode, and use no Paizo art.
-- R3.6 Journals: the rest of the rules journals, filterable by journal: the Hero Point Deck, and the pages of
-  the Ancestries and Classes journals that no ancestry or class is named for (Index, Versatile Heritages,
-  Draconic Sorcerer Bloodlines). Links to skill-action macros open the action they run.
+- R3.6 Guides: the pages of the Ancestries and Classes journals that no ancestry or class is named for are
+  listed with what they concern: Index and Standardized Ancestry Feats at the top of Ancestries, Versatile
+  Heritages at the top of Heritages, and Draconic Sorcerer Bloodlines and Draconic Connections after the Sorcerer
+  in Classes. There is no Journals section: the Hero Point Deck is left out, and a journal no rule places is
+  reported by the import instead of shown. Links to skill-action macros open the action they run.
 
 ## R4 Browsing
 - R4.1 Each category lists its entries with a small image, name, level (where it has one) and type.
