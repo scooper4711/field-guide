@@ -35,6 +35,9 @@ public struct PDFFixture: Sendable {
     public var pages: [[Piece]] = []
     /// The pictures on each page, by the page's index; drawn before its text.
     public var pictures: [Int: [Picture]] = [:]
+    /// Paizo's Pathfinder-Icons font file: runs in `ActionIcon.fontName` are drawn with it, and it goes into the
+    /// PDF whole and unaltered (`ActionIconEmbedder`).
+    public var actionIcons: Data?
 
     public init(pages: [[Piece]], pictures: [Int: [Picture]] = [:]) {
         self.pages = pages
@@ -54,6 +57,13 @@ public struct PDFFixture: Sendable {
     }
 
     public func document() -> PDFDocument? {
+        data().flatMap(PDFDocument.init(data:))
+    }
+
+    /// The PDF file; nil when it couldn't be drawn, or the action icons' font couldn't be put into it.
+    public func data() -> Data? {
+        let icons = actionIcons.flatMap { CGDataProvider(data: $0 as CFData) }.flatMap(CGFont.init)
+        if actionIcons != nil, icons == nil { return nil }
         let data = NSMutableData()
         var box = CGRect(origin: .zero, size: pageSize)
         guard let consumer = CGDataConsumer(data: data as CFMutableData),
@@ -61,18 +71,23 @@ public struct PDFFixture: Sendable {
         for (index, page) in pages.enumerated() {
             context.beginPDFPage(nil)
             pictures[index, default: []].forEach { context.draw($0.image, in: $0.rect) }
-            page.forEach { draw($0, in: context) }
+            page.forEach { draw($0, in: context, icons: icons) }
             context.endPDFPage()
         }
         context.closePDF()
-        return PDFDocument(data: data as Data)
+        guard let actionIcons else { return data as Data }
+        return ActionIconEmbedder(font: actionIcons).embedding(in: data as Data)
     }
 
-    private func draw(_ piece: Piece, in context: CGContext) {
+    private func draw(_ piece: Piece, in context: CGContext, icons: CGFont?) {
         let text = NSMutableAttributedString()
         let fontKey = NSAttributedString.Key(kCTFontAttributeName as String)
         for run in piece.runs {
-            let font = CTFontCreateWithName(run.font as CFString, run.size, nil)
+            let font = if let icons, run.font == ActionIcon.fontName {
+                CTFontCreateWithGraphicsFont(icons, run.size, nil, nil)
+            } else {
+                CTFontCreateWithName(run.font as CFString, run.size, nil)
+            }
             text.append(NSAttributedString(string: run.text, attributes: [fontKey: font]))
         }
         context.textPosition = piece.origin
