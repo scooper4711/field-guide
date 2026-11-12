@@ -4,16 +4,22 @@ import ImageIO
 import PDFKit
 import SourcebookLoreTestSupport
 
-/// Writing a sample sourcebook failed: a creature's picture is missing, or the PDF couldn't be written.
+/// Writing a sample sourcebook failed: a creature's picture or the action icons' font is missing, or the PDF
+/// couldn't be written.
 struct SampleError: Error, CustomStringConvertible {
     let description: String
 }
 
 /// Writes each game's sample sourcebook into `folder` as "<title>.pdf", each creature beside its picture from the
 /// `paizo-blog` folder in the Community Use Package artwork folder `art`. Every picture a sample names must be there,
-/// so the published samples have them all.
-func writeSamples(to folder: URL, art: URL) throws {
-    for sample in SampleSourcebook.all {
+/// so the published samples have them all. Their action icons are drawn in Paizo's Pathfinder-Icons font, the file
+/// `icons`, which goes into each PDF whole.
+func writeSamples(to folder: URL, art: URL, icons: URL) throws {
+    guard let font = try? Data(contentsOf: icons) else {
+        throw SampleError(description: "Writing the samples failed: the action icons' font, \(icons.path), is missing.")
+    }
+    for var sample in SampleSourcebook.all {
+        sample.actionIcons = font
         try write(sample, to: folder.appending(path: "\(sample.title).pdf"), art: art.appending(path: "paizo-blog"))
     }
 }
@@ -28,8 +34,14 @@ private func write(_ sample: SampleSourcebook, to file: URL, art folder: URL) th
         }
         pictures[creature.name] = image
     }
-    guard sample.document(art: pictures)?.write(to: file) == true else {
-        throw SampleError(description: "Writing \(sample.title) failed: couldn't write \(file.path).")
+    guard let data = sample.data(art: pictures) else {
+        throw SampleError(description: "Writing \(sample.title) failed: couldn't draw it, or put the action icons' "
+                          + "font into it.")
+    }
+    do {
+        try data.write(to: file)
+    } catch {
+        throw SampleError(description: "Writing \(sample.title) failed: couldn't write \(file.path): \(error).")
     }
 }
 

@@ -157,10 +157,14 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   Dragon" for "Horned Dragon (Adult)"), so `LoreStore` can choose among editions when shown
   (`SourcebookList.creatureBooks(for:)`). `FieldGuideLoreSurvey creatures` checks a book against Foundry's text;
   `lore-books` lists the books with Scrollkeeper's SKUs and maps adventure creatures to the bestiary creature
-  whose text Foundry copied; `sample <folder> --art <community-use-artwork folder>` writes each game's sample
+  whose text Foundry copied; `sample <folder> --art <community-use-artwork folder> --icons <Pathfinder-Icons.ttf>` writes each game's sample
   (`SampleSourcebook.all`: `pathfinder`, `starfinder`) into the folder as `<title>.pdf`. Each prints its bestiary's
   stat blocks (Monster Core's in `SampleStatBlocks`, Alien Core's in `SampleStatBlocks+AlienCore`) with that book's
-  ORC attribution, and each creature's Paizo blog picture; it fails if a picture is missing. `SourcebookList.samples` routes each
+  ORC attribution, and each creature's Paizo blog picture; it fails if a picture is missing. A stat line's further
+  lines hang in from its label and the action icons are Paizo's Pathfinder-Icons font, so Pluck reads the stat
+  blocks as it reads a Paizo book's: CoreGraphics embeds a subset of a font and has its glyphs read back as
+  private code points, so `ActionIconEmbedder` replaces that with the font file, byte for byte, and gives each
+  icon the text Paizo's PDFs give it ("[one-action]"). `SourcebookList.samples` routes each
   sample's lore only to entries whose IDs name its game (`Compendium.pf2e.…`, `Compendium.sf2e.…`).
 - Ancestry and class lore: the import keeps a Details page's rules and puts `DetailsPage.loreMarker` where its lore
   was (`DetailsPage.loreRange`: from a class's "Roleplaying" heading, or the page's start, to "Mechanics" or

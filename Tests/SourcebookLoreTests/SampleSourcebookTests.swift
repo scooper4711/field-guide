@@ -2,7 +2,7 @@ import ArtExtraction
 import Foundation
 import PDFKit
 import Testing
-import SourcebookLoreTestSupport
+@testable import SourcebookLoreTestSupport
 @testable import SourcebookLore
 
 @Suite struct SampleSourcebookTests {
@@ -82,7 +82,13 @@ import SourcebookLoreTestSupport
     func everySampleCarriesTheORCNoticeAndItsBestiarysCredit(sample: SampleSourcebook, credit: String) throws {
         let text = try #require(sample.document()?.string)
         #expect(text.contains("ORC Notice") && text.contains(credit))
-        #expect(text.contains("Paizo's Community Use Policy"))
+        // The Community Use Policy's notice, word for word (the page breaks its lines).
+        let words = text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+        #expect(words.contains("\(sample.title) uses trademarks and/or copyrights owned by Paizo Inc., used under "
+            + "Paizo's Community Use Policy (paizo.com/licenses/communityuse). We are expressly prohibited from "
+            + "charging you to use or access this content. \(sample.title) is not published, endorsed, or "
+            + "specifically approved by Paizo. For more information about Paizo Inc. and Paizo products, visit "
+            + "paizo.com."))
         #expect(!text.contains("placeholder senses"))
     }
 
@@ -102,5 +108,19 @@ import SourcebookLoreTestSupport
             let text = document.page(at: index)?.string ?? ""
             #expect(text.contains("\(creature.name.uppercased()) CREATURE"), "\(creature.name)")
         }
+    }
+
+    /// Pluck reads a line that hangs in from its label as more of the same entry, and one that doesn't as the
+    /// next entry, so a flush wrapped line splits a strike from its damage (Turnkeeper then can't read it).
+    @Test func wrappedStatLinesHangInFromTheirLabel() {
+        var writer = SampleSourcebook.PageWriter(top: 700)
+        let value = "◆ shortbow +7 (deadly d10, reload 0, range increment 60 feet), Damage 1d6 piercing"
+        writer.statLine("Ranged", value)
+        writer.statLine("HP", "6")
+        let starts = writer.pieces.map(\.origin.x)
+        #expect(starts == [SampleSourcebook.left, SampleSourcebook.left + SampleSourcebook.hangingIndent,
+                           SampleSourcebook.left])
+        let words = writer.pieces.prefix(2).flatMap { $0.runs.map(\.text) }.joined(separator: " ")
+        #expect(words.split(separator: " ").joined(separator: " ") == "Ranged " + value)
     }
 }

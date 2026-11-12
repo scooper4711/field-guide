@@ -45,11 +45,19 @@ ATTRIBUTE", "LOW-LIGHT VISION") are left out. Bullets stay bulleted and "Popular
 ## The sample sourcebooks
 
 `Resources/Review/` holds one sample per game, written by
-`FieldGuideLoreSurvey sample <folder> --art <community-use-artwork folder>`, with placeholder lore under real names,
-laid out as Paizo's books are. Every write-up opens with "This lore has been imported from the sample PDF.", which
+`FieldGuideLoreSurvey sample <folder> --art <community-use-artwork folder> --icons <Pathfinder-Icons.ttf>`, with
+placeholder lore under real names, laid out as Paizo's books are. Every write-up opens with "This lore has been imported from the sample PDF.", which
 is true whether it came through Scrollkeeper's demo library or was downloaded on its own. Each creature has its own
 page with its picture beside it, so Pluck shows one picture per creature page. The stat blocks are written from the
-pf2e and sf2e systems' bestiary data in Foundry's format.
+pf2e and sf2e systems' bestiary data in Foundry's format, and laid out so Pluck finds them and Turnkeeper can take
+them from it:
+
+- A stat line's further lines hang in from its label, which is how Pluck tells a wrapped entry from the next one.
+- The action icons are Paizo's Pathfinder-Icons font (`Artwork/pathfinder-icons/Pathfinder-Icons.ttf`, Paizo
+  Compatibility License, whose notice is on the last page). The font file is in the PDF whole and unaltered, not the
+  cut-down copy macOS would embed, and each icon reads back as it does from Paizo's own PDFs ("[one-action]",
+  "[reaction]"), which Pluck writes as `pf2:1`, `pf2:r` and so on. A sample made without the font (as the tests
+  make them) prints plain symbols (◆, ⤾) instead.
 
 - `Field Guide Sample Monster Core.pdf` (Pathfinder): creatures Goblin Warrior, Goblin Pyro, Hobgoblin Soldier and
   Kholo Hunter, each with Monster Core's stat block (ORC license; the notice and attribution are on the last page)
