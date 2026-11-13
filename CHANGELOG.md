@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-11-13
+
+### Added
+- Hide the sample sourcebooks once a book of your own is processed
+- Know the user's Scrollkeeper titles from its shared library list
+- Add a Starfinder sample sourcebook and mark the samples' lore
+- Filter sourcebooks to those owned in Scrollkeeper but not downloaded
+- Say processed for sourcebooks, and filter the list by it
+- Read Scrollkeeper's App Group folder on iOS
+- Move the Journals pages where they belong
+- Remove the Remaster Changes section
+- Illustrate the sample sourcebook's creatures
+- Build Field Guide for the Mac App Store
+
+### Fixed
+- Hang stat block wrapped lines and embed action icons
+- Drop the alpha channel from the iOS App Store icon
+- Refuse to build with an out-of-date Generated/
+- Show the entry count above the list on iOS
+- Open Device Hub after starting the iPad simulator
+- Show every column on the iPad while no entry is chosen
+- Keep the battle card's text its size on a phone
+
+### Changed
+- Update the Artwork submodule
+- Stop the weekly pf2e update
+- Save the icon matches for pf2e 8.7.0 and sf2e 1.7.0
+- Look for the skipped journal in the fake repository's folder
+- Allow Community Use art and ORC rules text in the demo files
+- Say what deleting the app leaves on a Mac
+- Rewrap the review notes line
+- Say where the review notes live
+
+[2.0.0]: https://github.com/scooper4711/field-guide/releases/tag/v2.0.0
+
 ## [1.2.0] - 2026-10-20
 
 ### Added
