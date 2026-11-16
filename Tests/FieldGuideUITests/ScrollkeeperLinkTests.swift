@@ -16,6 +16,7 @@ struct ScrollkeeperLinkTests {
 
         func isInstalled(_ bundleIdentifier: String) -> Bool { installed }
         func openInBackground(_ url: URL) { opened.append(url) }
+        func launch(_ bundleIdentifier: String) {}
     }
 
     @Test("Field Guide asks for the list and for a title as Scrollkeeper's contract says")

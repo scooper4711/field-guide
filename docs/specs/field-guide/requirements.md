@@ -178,7 +178,8 @@ device as art is. Lore the Paizo Blog published stays in the import.
   build the universal Mac app with the same data as a local build and attach its disk image to the release.
   The disk image is signed with the Developer ID and notarized, so macOS opens it without a warning.
 - R7.2 Everything works offline.
-- R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad) shows
+- R7.3 An About screen (the app menu's About Field Guide on the Mac, the sidebar's About button on the iPad, and on
+  the iPad also About Field Guide in the menu bar, in a window of its own) shows
   the notice Paizo's Community Use Policy requires, the Paizo Compatibility License's trademark line, credits for
   the compendium text, the religious symbols, the Rexard art and the action icon font, and a link for reaching the
   author. It also lists the full texts of the licenses the bundled content requires: the Open Game License and the

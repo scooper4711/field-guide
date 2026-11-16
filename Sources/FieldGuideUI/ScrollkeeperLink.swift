@@ -1,17 +1,6 @@
 import Foundation
 import Observation
 import TablesideShared
-#if os(macOS)
-import AppKit
-#endif
-
-/// What the link needs from the system to work with Scrollkeeper. The app uses `NSWorkspace`; tests use a fake.
-@MainActor
-public protocol ApplicationLauncher {
-    func isInstalled(_ bundleIdentifier: String) -> Bool
-    /// Opens the URL without bringing its app to the front.
-    func openInBackground(_ url: URL)
-}
 
 /// Scrollkeeper as Field Guide sees it, following its app-handoff contract: Field Guide asks for the list of titles
 /// the user owns, which Scrollkeeper hands over as a file, and asks it to open a title, whose PDFs Scrollkeeper
@@ -126,18 +115,3 @@ private struct ScrollkeeperIndex: Decodable {
     let formatVersion: Int
     let titles: [Title]
 }
-
-#if os(macOS)
-/// The Mac's apps, through `NSWorkspace`.
-struct WorkspaceLauncher: ApplicationLauncher {
-    func isInstalled(_ bundleIdentifier: String) -> Bool {
-        NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) != nil
-    }
-
-    func openInBackground(_ url: URL) {
-        let configuration = NSWorkspace.OpenConfiguration()
-        configuration.activates = false
-        NSWorkspace.shared.open(url, configuration: configuration)
-    }
-}
-#endif
