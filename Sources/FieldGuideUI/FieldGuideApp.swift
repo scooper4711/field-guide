@@ -37,10 +37,11 @@ public struct FieldGuideApp: App {
         .handlesExternalEvents(matching: ["*"])
         .commands {
             FieldGuideCommands(store: store)
-            #if os(macOS)
             AboutCommands(info: .fieldGuide)
-            #endif
         }
+        #if os(iOS)
+        AboutWindow(info: .fieldGuide)
+        #endif
     }
 }
 
