@@ -41,11 +41,13 @@ import SourcebookLoreTestSupport
         #expect(PageText.textRanges(in: NSRange(location: 8, length: 5), of: text).isEmpty)
     }
 
-    /// macOS 26's PDFKit (GitHub's runners) doesn't read a tagged picture as a picture character; macOS 27's does.
-    @Test(.enabled(if: pictureIsReadAsCharacter(), "PDFKit reads tagged pictures as picture characters"))
-    func aPictureIsReadWithoutItsAttachment() throws {
+    @Test func aPictureIsReadWithoutItsAttachment() throws {
         let page = try #require(Self.pageWithPicture())
         let pageText = try #require(page.string as NSString?)
+        // macOS 26's PDFKit (GitHub's runners) doesn't read a tagged picture as a picture character, so there is
+        // nothing to leave out; macOS 27's does. Checked here, not in a trait: building a PDF while Swift Testing
+        // plans the run crashed the test process on macOS 26.
+        guard pageText.contains(PageText.pictureCharacter) else { return }
         let lines = try #require(page.selection(for: page.bounds(for: .mediaBox))?.selectionsByLine())
         let pieces = lines.flatMap { PageText.textSelections(of: $0, on: page, pageText: pageText) }
         #expect(!pieces.contains { $0.string?.contains(PageText.pictureCharacter) == true })
@@ -62,10 +64,6 @@ import SourcebookLoreTestSupport
         let line = try #require(page.selection(for: page.bounds(for: .mediaBox))?.selectionsByLine().first)
         #expect(PageText.textSelections(of: line, on: page, pageText: page.string as NSString?) == [line])
         #expect(PageText.textSelections(of: line, on: page, pageText: nil) == [line])
-    }
-
-    static func pictureIsReadAsCharacter() -> Bool {
-        pageWithPicture()?.string?.contains(PageText.pictureCharacter) == true
     }
 
     /// A tagged page with a line of text beside a picture.
