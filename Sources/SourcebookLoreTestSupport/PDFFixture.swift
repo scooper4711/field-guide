@@ -38,6 +38,9 @@ public struct PDFFixture: Sendable {
     /// Paizo's Pathfinder-Icons font file: runs in `ActionIcon.fontName` are drawn with it, and it goes into the
     /// PDF whole and unaltered (`ActionIconEmbedder`).
     public var actionIcons: Data?
+    /// Whether the pictures and text are tagged as figures and paragraphs, as Paizo's books are. PDFKit then reads
+    /// each picture as an object replacement character.
+    public var isTagged = false
 
     public init(pages: [[Piece]], pictures: [Int: [Picture]] = [:]) {
         self.pages = pages
@@ -70,13 +73,23 @@ public struct PDFFixture: Sendable {
               let context = CGContext(consumer: consumer, mediaBox: &box, nil) else { return nil }
         for (index, page) in pages.enumerated() {
             context.beginPDFPage(nil)
-            pictures[index, default: []].forEach { context.draw($0.image, in: $0.rect) }
-            page.forEach { draw($0, in: context, icons: icons) }
+            for picture in pictures[index, default: []] {
+                tagging(.figure, in: context) { context.draw(picture.image, in: picture.rect) }
+            }
+            for piece in page {
+                tagging(.paragraph, in: context) { draw(piece, in: context, icons: icons) }
+            }
             context.endPDFPage()
         }
         context.closePDF()
         guard let actionIcons else { return data as Data }
         return ActionIconEmbedder(font: actionIcons).embedding(in: data as Data)
+    }
+
+    private func tagging(_ type: CGPDFTagType, in context: CGContext, _ drawing: () -> Void) {
+        if isTagged { CGPDFContextBeginTag(context, type, [:] as CFDictionary) }
+        drawing()
+        if isTagged { CGPDFContextEndTag(context) }
     }
 
     private func draw(_ piece: Piece, in context: CGContext, icons: CGFont?) {
