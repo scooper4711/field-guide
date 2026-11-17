@@ -59,15 +59,46 @@ public enum PageText {
     public static func lines(of page: PDFPage, in rect: CGRect? = nil) -> [TextLine] {
         let area = rect ?? page.bounds(for: .mediaBox)
         guard let selection = page.selection(for: area) else { return [] }
+        let pageText = (selection.string?.contains(pictureCharacter) == true ? page.string : nil) as NSString?
         return selection.selectionsByLine().compactMap { line in
-            guard let text = line.attributedString else { return nil }
-            let runs = runs(of: text).compactMap(withoutPictures)
+            let runs = textSelections(of: line, on: page, pageText: pageText)
+                .compactMap(\.attributedString).flatMap(runs(of:)).compactMap(withoutPictures)
             guard runs.contains(where: { !$0.text.trimmingCharacters(in: .whitespaces).isEmpty }) else { return nil }
             return TextLine(runs: runs, bounds: line.bounds(for: page))
         }
     }
 
     static let pictureCharacter = "\u{FFFC}"
+
+    /// The pieces of `line` between its pictures, so its attributed string is read without them: PDFKit makes a
+    /// text attachment of each picture, whose file type lookup in LaunchServices can trap on iPadOS 27.2. A line
+    /// without pictures is returned whole; `pageText`, the page's text, is only needed when the page has pictures.
+    /// PDFKit can widen a piece next to a picture to take the picture in, so such a piece is left out too.
+    static func textSelections(of line: PDFSelection, on page: PDFPage, pageText: NSString?) -> [PDFSelection] {
+        guard hasPicture(line) else { return [line] }
+        guard let pageText else { return [] }
+        return (0..<line.numberOfTextRanges(on: page)).flatMap { index in
+            textRanges(in: line.range(at: index, on: page), of: pageText)
+        }.compactMap { page.selection(for: $0) }.filter { !hasPicture($0) }
+    }
+
+    private static func hasPicture(_ selection: PDFSelection) -> Bool {
+        selection.string?.contains(pictureCharacter) == true
+    }
+
+    /// The stretches of `range` in `text` that hold no picture characters.
+    static func textRanges(in range: NSRange, of text: NSString) -> [NSRange] {
+        let picture = (pictureCharacter as NSString).character(at: 0)
+        let end = min(NSMaxRange(range), text.length)
+        var ranges: [NSRange] = []
+        var start = range.location
+        for index in range.location..<max(range.location, end) where text.character(at: index) == picture {
+            if index > start { ranges.append(NSRange(location: start, length: index - start)) }
+            start = index + 1
+        }
+        if end > start { ranges.append(NSRange(location: start, length: end - start)) }
+        return ranges
+    }
 
     /// The run without picture characters or control characters (some fonts' action icons read back as them); nil
     /// when nothing else is left.
