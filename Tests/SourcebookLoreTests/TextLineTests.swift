@@ -41,16 +41,12 @@ import SourcebookLoreTestSupport
         #expect(PageText.textRanges(in: NSRange(location: 8, length: 5), of: text).isEmpty)
     }
 
-    @Test func aPictureIsReadWithoutItsAttachment() throws {
-        let image = try #require(Self.image())
-        var fixture = PDFFixture(pages: [[PDFFixture.text("Beside the art", at: 72, 400)]],
-                                 pictures: [0: [PDFFixture.Picture(image: image, rect: CGRect(x: 250, y: 500,
-                                                                                              width: 60, height: 30))]])
-        fixture.isTagged = true
-        let page = try #require(fixture.document()?.page(at: 0))
+    /// macOS 26's PDFKit (GitHub's runners) doesn't read a tagged picture as a picture character; macOS 27's does.
+    @Test(.enabled(if: pictureIsReadAsCharacter(), "PDFKit reads tagged pictures as picture characters"))
+    func aPictureIsReadWithoutItsAttachment() throws {
+        let page = try #require(Self.pageWithPicture())
         let pageText = try #require(page.string as NSString?)
         let lines = try #require(page.selection(for: page.bounds(for: .mediaBox))?.selectionsByLine())
-        #expect(lines.contains { $0.string?.contains(PageText.pictureCharacter) == true })
         let pieces = lines.flatMap { PageText.textSelections(of: $0, on: page, pageText: pageText) }
         #expect(!pieces.contains { $0.string?.contains(PageText.pictureCharacter) == true })
         let picture = try #require(lines.first { $0.string?.contains(PageText.pictureCharacter) == true })
@@ -66,6 +62,20 @@ import SourcebookLoreTestSupport
         let line = try #require(page.selection(for: page.bounds(for: .mediaBox))?.selectionsByLine().first)
         #expect(PageText.textSelections(of: line, on: page, pageText: page.string as NSString?) == [line])
         #expect(PageText.textSelections(of: line, on: page, pageText: nil) == [line])
+    }
+
+    static func pictureIsReadAsCharacter() -> Bool {
+        pageWithPicture()?.string?.contains(PageText.pictureCharacter) == true
+    }
+
+    /// A tagged page with a line of text beside a picture.
+    static func pageWithPicture() -> PDFPage? {
+        guard let image = image() else { return nil }
+        var fixture = PDFFixture(pages: [[PDFFixture.text("Beside the art", at: 72, 400)]],
+                                 pictures: [0: [PDFFixture.Picture(image: image, rect: CGRect(x: 250, y: 500,
+                                                                                              width: 60, height: 30))]])
+        fixture.isTagged = true
+        return fixture.document()?.page(at: 0)
     }
 
     /// A small gray square.
