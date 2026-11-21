@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-11-21
+
+### Fixed
+- Read PDF lines without their pictures' text attachments
+- Use tabletop-kit's shared application launcher
+- Show the About screen from the iPad's menu bar
+
+### Changed
+- Require tabletop-kit 1.12.0
+- Update tabletop-kit to 1.11.4
+- Time out CI jobs instead of waiting 6 hours
+- Require tabletop-kit 1.11.3
+- Require tabletop-kit 1.11.2
+- Pin the GitHub actions to commit hashes
+- Run the tests on the self-hosted Mac mini
+- Require tabletop-kit 1.11.1
+- Require tabletop-kit 1.11.0
+- Require tabletop-kit 1.10.0
+- Require tabletop-kit 1.9.0
+- Require tabletop-kit 1.8.1
+- Require tabletop-kit 1.8.0
+- Require tabletop-kit 1.7.0
+- Run the tests on the macOS 26 runner again
+- Require tabletop-kit 1.6.0
+- Require tabletop-kit 1.5.0
+- Require tabletop-kit 1.4.1
+- Run the tests on GitHub's macOS 27 runner
+- Check for picture characters in the test body, not a trait
+- Run the picture test only where PDFKit reads pictures as characters
+- Require tabletop-kit 1.4.0
+- Drop the AI disclosure rule from CONTRIBUTING
+- Specify About in the iPad's menu bar
+
+[2.0.1]: https://github.com/scooper4711/field-guide/releases/tag/v2.0.1
+
 ## [2.0.0] - 2026-11-13
 
 ### Added
