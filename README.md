@@ -32,8 +32,7 @@ releases aren't, and macOS blocks them the first time:
 2. Open System Settings › Privacy & Security and scroll down to the message about Field Guide.
 3. Click Open Anyway and confirm.
 
-After that it opens normally. The iPad app is not in the App Store yet; build it yourself with
-`make ipad-install` (see Updating).
+After that it opens normally. To build the iPad and iPhone app yourself, use `make ipad-install` (see Updating).
 
 ## Use
 - Pick Pathfinder or Starfinder at the top of the sidebar, then a category: Actions, Bestiary, Campaign
@@ -118,6 +117,8 @@ Starfinder games in person. Like any good toolkit, each one grants a +1 item bon
 - [Turnkeeper](https://github.com/scooper4711/turnkeeper) builds encounters and runs initiative at the table, with
   the battle card of whoever's turn it is.
 - **Field Guide** carries the Pathfinder and Starfinder compendium, offline.
+- [Chronicle Keeper](https://github.com/scooper4711/chronicle-keeper) keeps a record of your Organized Play
+  characters: their sessions, XP, level, reputation and Fame.
 
 ## Supporting the project
 
