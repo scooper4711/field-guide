@@ -53,7 +53,8 @@ struct CreatureCardView: View {
         .environment(\.cardArt, pdfArt.cardArt)
         .environment(\.glossary, GlossaryContext(bestiary: pdfArt.bestiary))
         .environment(\.artPictureLoader, ArtPictureLoader { [pdfArt] key in
-            await pdfArt.picture(forCreature: key, maxPixels: Self.artPixels)
+            if let art = StoreScreenshotArt.picture { return art }
+            return await pdfArt.picture(forCreature: key, maxPixels: Self.artPixels)
         })
     }
 }
