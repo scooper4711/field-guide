@@ -75,7 +75,7 @@ changed, but without the Foundry app it can't match new icons. The steps on thei
   `import-report.md` (what could not be converted), `Creatures/` (the battle cards' creatures, by Tabletop
   Kit's `CreatureImport`) and `CardArt/` (the cards' UI art, copied from your Rexard packs in
   `REXARD_PACKS`, default `~/git/rexard-packs`). Deities show their religious symbols from Paizo's Community Use
-  Package in `COMMUNITY_USE` (default `~/git/community-use-artwork`). Action icons use Paizo's Pathfinder-Icons
+  Package in `COMMUNITY_USE` (default `~/git/tableside-toolkit/community-use-artwork`). Action icons use Paizo's Pathfinder-Icons
   font from the `Artwork` submodule (`ARTWORK`). No creature art is imported; the app reads it from your PDFs.
   Icons are your own Rexard pictures standing in for Foundry's (`.build/field-guide-import/icon-map.tsv` lists
   each pick and why); to correct one, add `"<Foundry path or entry id>": "<file in the packs>"` to

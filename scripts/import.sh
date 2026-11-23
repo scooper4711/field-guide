@@ -7,7 +7,7 @@
 # REXARD_PACKS   the folder holding the user's Rexard packs, for the entries' icons and the battle cards' art
 #                (default ~/git/rexard-packs)
 # COMMUNITY_USE  the folder holding Paizo's Community Use Package, for the deities' religious symbols
-#                (default ~/git/community-use-artwork)
+#                (default ~/git/tableside-toolkit/community-use-artwork)
 # ARTWORK        the toolkit-artwork checkout, for Paizo's Pathfinder-Icons font (default the Artwork submodule)
 #
 # Neither creature art nor the setting's lore (creatures' descriptions, deities' write-ups, the ancestries' and
@@ -24,7 +24,7 @@ else
 fi
 FOUNDRY_APP="${FOUNDRY_APP:-/Applications/Foundry Virtual Tabletop.app/Contents/Resources/app/public}"
 REXARD_PACKS="${REXARD_PACKS:-$HOME/git/rexard-packs}"
-COMMUNITY_USE="${COMMUNITY_USE:-$HOME/git/community-use-artwork}"
+COMMUNITY_USE="${COMMUNITY_USE:-$HOME/git/tableside-toolkit/community-use-artwork}"
 ARTWORK="${ARTWORK:-Artwork}"
 
 command -v cwebp >/dev/null || echo "cwebp is not installed (brew install webp); the icons will stay PNG."
