@@ -7,7 +7,8 @@ import Foundation
 ///
 /// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, the
 /// Community Use Package's Religious Symbols and Starfinder Religious Symbols in
-/// `~/git/community-use-artwork`, the `Artwork` submodule (for Paizo's Pathfinder-Icons font), `Generated` and
+/// `~/git/tableside-toolkit/community-use-artwork`, the `Artwork` submodule (for Paizo's Pathfinder-Icons font),
+/// `Generated` and
 /// `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each entry's icon and why)
 /// out of the app. Entries show the user's Rexard icons in place
 /// of Foundry's; `icon-overrides.json` corrects them, and `icon-matches.tsv` keeps the matches for machines
@@ -21,9 +22,9 @@ var settings = [
     "--foundry-app": "/Applications/Foundry Virtual Tabletop.app/Contents/Resources/app/public",
     "--rexard": home.appendingPathComponent("git/rexard-packs").path,
     "--symbols": home.appendingPathComponent(
-        "git/community-use-artwork/Community Use Package- Religious Symbols").path,
+        "git/tableside-toolkit/community-use-artwork/Community Use Package- Religious Symbols").path,
     "--starfinder-symbols": home.appendingPathComponent(
-        "git/community-use-artwork/Community Use Package- Starfinder Religious Symbols").path,
+        "git/tableside-toolkit/community-use-artwork/Community Use Package- Starfinder Religious Symbols").path,
     "--artwork": "Artwork",
     "--out": "Generated",
     "--work": ".build/field-guide-import"

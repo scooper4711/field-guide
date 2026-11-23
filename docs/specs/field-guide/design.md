@@ -93,7 +93,7 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   hazard's image is `creature/<system>.<pack link name>.<id>`, the bestiary key, drawn by the app; its
   `<img>` removes itself when the app has no art for it.
 - `ReligiousSymbols` lists the PNGs in the Community Use Package's Religious Symbols folders by name
-  (`--symbols`, `--starfinder-symbols`; default `~/git/community-use-artwork/Community Use Package- …`).
+  (`--symbols`, `--starfinder-symbols`; default `~/git/tableside-toolkit/community-use-artwork/Community Use Package- …`).
   A deity takes the picture named as it is, or whose name starts with its name and a space ("Thamir Gixx"
   for Thamir), ignoring a leading "The "; Starfinder deities look in the Starfinder folder first.
   `ImageCollector` writes it as WebP to `Images/symbols/<system>/<name>.webp`, the deity's image in place of
