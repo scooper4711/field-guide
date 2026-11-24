@@ -6,6 +6,12 @@
     <!-- The iCloud container lore syncs through; the app syncs only when this is present (LoreSyncStatus). -->
     <key>LoreSyncContainer</key>
     <string>iCloud.io.github.scooper4711.FieldGuide</string>
+    <!-- The suite's container the shared library and its art sync through, and its CloudKit environment; the app
+         syncs the library only when this names one (tabletop-kit library sync R6.1). Signing.xcconfig sets both. -->
+    <key>TablesideSyncContainer</key>
+    <string>$(TABLESIDE_SYNC_CONTAINER)</string>
+    <key>TablesideSyncEnvironment</key>
+    <string>$(TABLESIDE_SYNC_ENVIRONMENT)</string>
     <!-- CKSyncEngine's silent pushes, so lore from another device arrives while the app is in the background. -->
     <key>UIBackgroundModes</key>
     <array>

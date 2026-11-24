@@ -12,6 +12,16 @@
 DEVELOPMENT_TEAM = 9SWRBY8HN9
 PRODUCT_BUNDLE_IDENTIFIER = io.github.scooper4711.FieldGuide
 
+// The suite's iCloud container, which Info.plist names (TablesideSyncContainer) so that the shared library and its
+// art sync. It is in the entitlements of the publishing team: with another team, empty it in Local.xcconfig and
+// remove that container from the entitlements, and the library stays on the device.
+TABLESIDE_SYNC_CONTAINER = iCloud.io.github.scooper4711.tableside
+
+// The CloudKit environment, which Info.plist names (TablesideSyncEnvironment). Builds installed from Xcode use
+// Development and archives use Production. The shared library must know which, as its sync state fits only one.
+TABLESIDE_SYNC_ENVIRONMENT = Production
+TABLESIDE_SYNC_ENVIRONMENT[config=Debug] = Development
+
 // The version and build number come from git (scripts/version.sh): the FieldGuide-iPad scheme's build pre-action
 // writes them to Version.xcconfig before every build, Product > Archive included. These are the fallbacks for a
 // build that skips the scheme.

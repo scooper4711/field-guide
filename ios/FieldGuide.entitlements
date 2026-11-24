@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- The iPad and iPhone app's entitlements: the iCloud container that syncs sourcebook lore between the user's devices
-     (docs/specs/lore-sync), and push notifications, which CKSyncEngine uses to hear of changes. Xcode signs debug
+<!-- The iPad and iPhone app's entitlements: the iCloud containers that sync sourcebook lore (docs/specs/lore-sync,
+     Field Guide's own, listed first) and the shared library with its art (the suite's) between the user's devices,
+     and push notifications, which CKSyncEngine uses to hear of changes. Xcode signs debug
      builds for CloudKit's Development environment and App Store builds for Production. The Tableside Toolkit's App
      Group holds Scrollkeeper's downloads, which Import from Scrollkeeper reads (scrollkeeper#52). -->
 <plist version="1.0">
@@ -11,6 +12,7 @@
     <key>com.apple.developer.icloud-container-identifiers</key>
     <array>
         <string>iCloud.io.github.scooper4711.FieldGuide</string>
+        <string>iCloud.io.github.scooper4711.tableside</string>
     </array>
     <key>com.apple.developer.icloud-services</key>
     <array>
