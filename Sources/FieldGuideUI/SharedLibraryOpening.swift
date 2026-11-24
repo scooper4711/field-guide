@@ -11,6 +11,8 @@ struct SharedLibraryOpening {
     var creatures: SharedLibrary?
     /// Why the app carries on with its own art library, or without one, to tell the user (R6.5).
     var failure: String?
+    /// True when the art library is the shared one, which syncs between devices.
+    var isShared = false
 
     /// The app's own art library, used outside the App Group (R1.2) and until the move succeeds (R6.5).
     static func ownFolder() -> URL {
@@ -43,7 +45,7 @@ struct SharedLibraryOpening {
     private static func openingSharedArt(in folder: URL, creatures: SharedLibrary) -> SharedLibraryOpening {
         do {
             return SharedLibraryOpening(art: try CreatureArtStore(sharedLibraryIn: folder, app: .fieldGuide),
-                                        creatures: creatures)
+                                        creatures: creatures, isShared: true)
         } catch {
             return SharedLibraryOpening(creatures: creatures, failure: "Opening the shared art library failed, so "
                 + "Field Guide shows no art from PDFs until it next launches: \(error.localizedDescription)")

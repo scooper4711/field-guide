@@ -28,6 +28,7 @@ public struct FieldGuideApp: App {
                 .task {
                     store.addedEntries = pdfArt.customCreatures
                     pdfArt.startFollowingSharedLibrary()
+                    pdfArt.startCloudSync()
                     await pdfArt.refresh(addingNew: true)
                     await sourcebooks.refresh(addingNew: true, subjects: store.loreSubjects())
                     await sourcebooks.startSync()

@@ -58,7 +58,8 @@ After that it opens normally. The iPad app is not in the App Store yet; build it
   Import from Scrollkeeper uses the PDFs Scrollkeeper downloaded where they are, in the folder the Tableside
   Toolkit apps share, and new downloads there are picked up at launch; Add PDFs copies other files in. PDFs that
   were deleted from Scrollkeeper are listed as missing, and creatures that lose their art say which PDF it
-  needs.
+  needs. With iCloud on, the art syncs to your other devices as pictures, downloaded when first shown, so a PDF
+  read on the Mac shows its art on the iPad; Sourcebooks shows how much room the downloaded pictures take.
 - On the Mac, the Go menu has Search Everything (⌘F), Back (⌘[) and Pathfinder and Starfinder (⌘1, ⌘2), and
   File has Sourcebooks… (⇧⌘A).
 - Import from Scrollkeeper reads Scrollkeeper's downloads without asking where they are, on the Mac and, with

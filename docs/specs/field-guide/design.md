@@ -137,6 +137,19 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   catalog is read again once per burst of changes, and not during the app's own import. Going to the background
   closes the database (`closeSharedLibrary()`, R5.4 there) and ignores changes until the app is active again
   (`resumeSharedLibrary()`), which reads what changed meanwhile.
+- Library sync (R6.7 to R6.9), `ArtModel+CloudSync.swift`. `startCloudSync()` runs at launch only when the art
+  library is the shared one (`SharedLibraryOpening.isShared`) and the build names `TablesideSyncContainer`: the
+  Mac's `scripts/add-icloud-entitlements.sh` passes both containers (Field Guide's own first, for the iCloud Drive
+  icon) to the kit's script, which writes the key; the iPad's `Info.plist` takes it and `TablesideSyncEnvironment`
+  from `Signing.xcconfig` (Development for Debug). It starts `LibrarySync.start(app: .fieldGuide, ...)` once, with
+  no zones of Field Guide's own, and again on `.CKAccountChanged` until one has started. The background closes it
+  with the shared library, and the foreground opens it and sends what changed. When the art store draws no picture
+  for library art, `libraryPicture(id:maxPixels:)` asks `PictureFetching.fetchPictures(named:)` (the `LibrarySync`,
+  or a stand-in in tests) for `SharedLibrary.missingPictures(of:)`, at most once a minute per art until some arrive,
+  and draws again; the kit notes pictures as shown when it draws them, for the cache's order. Sourcebooks ends with
+  the kit's `SyncSettingsSection`. Measured 2026-11-24 on a full library: 10,650 pictures, 401 MB, 690 at the
+  kit's 1,024-pixel cap, mostly Battle Card art, which the card draws at up to 1,600 px; the kit's cap is 2,048
+  from 1.19.0, for at most about 207 MB more (field-guide#40).
   `ArtModel.customCreatures` (`EntrySummary`s, source "Custom", hazards "Complex", empty values left out) feeds `CatalogStore.addedEntries`, which merges
   them into the lists by name (`EntrySummary.merging`), into Search Everything (ahead of the catalog's text matches, as name matches), and into a
   list's text search by name; `CatalogStore.page` gives each an empty `EntryPage`, and `CreatureView.creatureKey(ofEntry:)` takes a
