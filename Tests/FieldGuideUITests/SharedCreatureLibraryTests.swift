@@ -202,7 +202,7 @@ struct SharedLibraryOpeningTests {
     @Test("Outside the App Group the app keeps its own art library and has no creature library")
     func outsideTheGroup() {
         let opening = SharedLibraryOpening.open(groupContainer: nil, ownFolder: root.appendingPathComponent("Own"))
-        #expect(opening.art != nil && opening.creatures == nil && opening.failure == nil)
+        #expect(opening.art != nil && opening.creatures == nil && opening.failure == nil && !opening.isShared)
     }
 
     @Test("In the App Group the app moves its own art library into the shared one, once")
@@ -210,7 +210,7 @@ struct SharedLibraryOpeningTests {
         let group = root.appendingPathComponent("Group")
         let opening = SharedLibraryOpening.open(groupContainer: group, ownFolder: root.appendingPathComponent("Own"))
         let library = try #require(opening.creatures)
-        #expect(opening.art != nil && opening.failure == nil)
+        #expect(opening.art != nil && opening.failure == nil && opening.isShared)
         #expect(try library.hasMovedIn(.fieldGuide))
         #expect(library.folder.lastPathComponent == SharedLibrary.groupFolderName)
         #expect(SharedLibraryOpening.open(groupContainer: group, ownFolder: root).failure == nil)

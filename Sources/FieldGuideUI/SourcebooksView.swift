@@ -3,6 +3,7 @@ import FieldGuideKit
 import SourcebookLore
 import SwiftUI
 import TablesideShared
+import TablesideSyncUI
 import UniformTypeIdentifiers
 
 /// Where art and deity lore come from: the user's own Paizo PDFs, used where Scrollkeeper keeps them or copied
@@ -40,6 +41,8 @@ struct SourcebooksView: View {
                 if !model.catalog.missingSources.isEmpty { missingSection }
                 if !model.catalog.watchedFolders.isEmpty { foldersSection }
                 pdfsSection
+                SyncSettingsSection(app: .fieldGuide, sync: model.librarySync,
+                                    picturesChanged: Bindable(model).picturesChanged)
             }
             .formStyle(.grouped)
             .navigationTitle("Sourcebooks")

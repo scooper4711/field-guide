@@ -8,6 +8,7 @@ import ImageIO
 import Observation
 import SharedLibraries
 import TablesideShared
+import TablesideSync
 import UniformTypeIdentifiers
 
 /// Creature and item art from the user's own Paizo PDFs, and the creatures the battle cards show: the art library
@@ -29,13 +30,24 @@ public final class ArtModel {
     public private(set) var customCreatures: [EntrySummary] = []
     /// What the shared creature library holds; empty outside the App Group.
     private(set) var creatureLibrary = CreatureLibraryContents()
-    @ObservationIgnored private let store: CreatureArtStore?
-    @ObservationIgnored private let sharedLibrary: SharedLibrary?
+    /// Syncing the shared library through iCloud, once it has started; nil while the library stays on the device.
+    public internal(set) var librarySync: LibrarySync?
+    /// Counts changes to the pictures downloaded from iCloud, such as removing them in the settings.
+    public var picturesChanged = 0
+    @ObservationIgnored let store: CreatureArtStore?
+    @ObservationIgnored let sharedLibrary: SharedLibrary?
+    /// True when the art library is the shared one, which is what syncs.
+    @ObservationIgnored var isInSharedLibrary = false
+    @ObservationIgnored var pictureFetcher: (any PictureFetching)?
+    /// When each piece of art whose pictures didn't arrive was last asked for.
+    @ObservationIgnored var cloudPictureAttempts: [UUID: Date] = [:]
+    @ObservationIgnored var cloudAccountObserver: NSObjectProtocol?
+    @ObservationIgnored var isConnectingCloudSync = false
     @ObservationIgnored private var matcher = LibraryArtMatcher()
     @ObservationIgnored private var changeObserver: LibraryChangeObserver?
     @ObservationIgnored private var changeCounter: Int64 = 0
     /// True while the app is in the background, when the shared database stays closed (R5.4).
-    @ObservationIgnored private var isInBackground = false
+    @ObservationIgnored private(set) var isInBackground = false
     @ObservationIgnored private var artRefresh: Task<Void, Never>?
     @ObservationIgnored private var artNeedsRefresh = false
 
@@ -54,6 +66,7 @@ public final class ArtModel {
     public static func standard(data: DataLocation) -> ArtModel {
         let opening = SharedLibraryOpening.open()
         let model = ArtModel(data: data, store: opening.art, sharedLibrary: opening.creatures)
+        model.isInSharedLibrary = opening.isShared
         if let failure = opening.failure { model.message = failure }
         return model
     }
@@ -118,7 +131,7 @@ public final class ArtModel {
     public func picture(forCreature key: String, maxPixels: Int) async -> CGImage? {
         if let chosen = await chosenPicture(forCreature: key, maxPixels: maxPixels) { return chosen }
         guard let id = matched(key).portrait else { return nil }
-        return await store?.picture(id: id, maxPixels: maxPixels)
+        return await libraryPicture(id: id, maxPixels: maxPixels)
     }
 
     /// Names the art the creature shows now, so a view showing it draws it again when another app chooses
@@ -133,7 +146,7 @@ public final class ArtModel {
             guard let file = creatureLibrary.customFiles[id] else { return nil }
             return await Self.picture(in: file, maxPixels: maxPixels)
         case .library(let id):
-            return await store?.picture(id: id, maxPixels: maxPixels)
+            return await libraryPicture(id: id, maxPixels: maxPixels)
         case nil:
             return nil
         }
@@ -149,20 +162,12 @@ public final class ArtModel {
     public func picture(forItem item: ItemArtPath, maxPixels: Int) async -> CGImage? {
         let game: Game = item.system == .starfinder ? .starfinder : .pathfinder
         guard let id = matcher.art(forItemNamed: item.name, game: game).portrait else { return nil }
-        return await store?.picture(id: id, maxPixels: maxPixels)
+        return await libraryPicture(id: id, maxPixels: maxPixels)
     }
 
     /// The item's art as PNG, for entry pages.
     public func png(forItem item: ItemArtPath, maxPixels: Int) async -> Data? {
         await picture(forItem: item, maxPixels: maxPixels).flatMap(Self.png(of:))
-    }
-
-    private static func png(of image: CGImage) -> Data? {
-        let data = NSMutableData()
-        guard let destination = CGImageDestinationCreateWithData(data, UTType.png.identifier as CFString, 1, nil)
-        else { return nil }
-        CGImageDestinationAddImage(destination, image, nil)
-        return CGImageDestinationFinalize(destination) ? data as Data : nil
     }
 
     /// The missing PDFs a creature's art needs: the chosen art's, else the art matched by name's; empty when it has
@@ -213,6 +218,7 @@ public final class ArtModel {
         isInBackground = true
         sharedLibrary?.close()
         await store?.close()
+        await closeCloudSync()
     }
 
     /// Back in the foreground: reads what other apps changed meanwhile.
@@ -220,6 +226,7 @@ public final class ArtModel {
         guard isInBackground else { return }
         isInBackground = false
         followSharedLibrary()
+        resumeCloudSync()
     }
 
     func followSharedLibrary() {
@@ -265,17 +272,6 @@ public final class ArtModel {
         } catch {
             message = "Reading the shared library failed: \(error.localizedDescription)"
         }
-    }
-
-    /// Custom art's image, at most `maxPixels` on its long side, read off the main thread.
-    private static func picture(in file: URL, maxPixels: Int) async -> CGImage? {
-        await Task.detached(priority: .userInitiated) {
-            guard let source = CGImageSourceCreateWithURL(file as CFURL, nil) else { return nil }
-            let options: [CFString: Any] = [kCGImageSourceCreateThumbnailFromImageAlways: true,
-                                            kCGImageSourceCreateThumbnailWithTransform: true,
-                                            kCGImageSourceThumbnailMaxPixelSize: maxPixels]
-            return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
-        }.value
     }
 }
 
