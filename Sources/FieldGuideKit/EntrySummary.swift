@@ -28,4 +28,20 @@ public struct EntrySummary: Identifiable, Hashable, Sendable {
     }
 
     public func values(of facet: Facet) -> [String] { facets[facet] ?? [] }
+
+    /// `entries` with `added` put among them by name, the order of `entries` kept: entries from outside the catalog,
+    /// such as custom creatures, in a list the catalog ordered. Each goes after the last entry whose name comes before
+    /// or with its own, so an entry the catalog put out of name order (a guide page) doesn't pull it along.
+    public static func merging(_ added: [EntrySummary], into entries: [EntrySummary]) -> [EntrySummary] {
+        var merged = entries
+        for entry in added.sorted(by: Self.byName) {
+            let index = merged.lastIndex { !byName(entry, $0) }.map { $0 + 1 } ?? merged.startIndex
+            merged.insert(entry, at: index)
+        }
+        return merged
+    }
+
+    private static func byName(_ first: EntrySummary, _ second: EntrySummary) -> Bool {
+        first.name.localizedStandardCompare(second.name) == .orderedAscending
+    }
 }

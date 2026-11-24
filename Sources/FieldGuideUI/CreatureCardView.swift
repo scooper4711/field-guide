@@ -17,8 +17,9 @@ enum CreatureView: String, CaseIterable, Identifiable {
     }
 
     /// The bestiary key of the creature on an entry page (`Compendium.<system>.<pack>.Actor.<id>` becomes
-    /// `<system>.<pack>.<id>`); nil for other pages.
+    /// `<system>.<pack>.<id>`), or a custom creature's own (`custom.<id>`); nil for other pages.
     static func creatureKey(ofEntry id: String) -> String? {
+        if CreatureLibraryContents.isCustomKey(id) { return id }
         let parts = id.split(separator: ".")
         guard parts.count == 5, parts[0] == "Compendium", parts[3] == "Actor" else { return nil }
         return "\(parts[1]).\(parts[2]).\(parts[4])"
@@ -44,7 +45,8 @@ struct CreatureCardView: View {
                         ArtPicture(path: key)
                     }
                 }
-                .id(key)
+                // A new choice of art in another app draws the card again with it (R6.6).
+                .id("\(key)#\(pdfArt.artChoiceTag(forCreature: key))")
             }
             MissingArtNote(sources: pdfArt.missingSources(forCreature: key))
         }

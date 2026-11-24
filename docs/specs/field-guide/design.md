@@ -116,10 +116,31 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   gives equipment) as the item's art when the user's decks have it, else the icon file; both answered
   asynchronously (a request the web view stopped is not answered). `entry:` and `trait:` links are intercepted
   and pushed onto the entry's navigation stack.
-- `ArtModel` (`@Observable`) wraps Tabletop Kit's `CreatureArtStore` in `Application Support/Field
-  Guide/Creature Art`, the `BestiaryStore` over `Generated/Creatures` and the `CardArtPieces` in
-  `Generated/CardArt`. It matches art to creatures, and to items (`art(forItemNamed:game:)`), by name with `LibraryArtMatcher`, adds new PDFs from the
-  watched folders at launch, and gives pages, thumbnails and cards their pictures and missing PDFs.
+- `ArtModel` (`@Observable`) wraps Tabletop Kit's `CreatureArtStore`, the `BestiaryStore` over
+  `Generated/Creatures` and the `CardArtPieces` in `Generated/CardArt`. It matches art to creatures, and to items
+  (`art(forItemNamed:game:)`), by name with `LibraryArtMatcher`, adds new PDFs from the watched folders at launch,
+  and gives pages, thumbnails and cards their pictures and missing PDFs.
+- Shared libraries (R6.5, R6.6, R8.4). `SharedLibraryOpening.open()` opens `SharedLibrary` in the App Group's
+  `Tableside` folder for `.fieldGuide`, moves the app's own art library (`Application Support/Field Guide/Creature
+  Art`) in with `moveIn(LibraryMove(app: .fieldGuide, artFolder:))`, and opens `CreatureArtStore(sharedLibraryIn:)`
+  over the same folder. Without the group (an ad hoc Mac build, the tests) it opens `CreatureArtStore(folder:)`
+  over the app's own library. When the move throws it does the same but keeps the `SharedLibrary`, so custom
+  creatures and chosen art still show, and `ArtModel.message` says why. `ArtModel` keeps the
+  `SharedLibrary` and reads it into `CreatureLibraryContents`: custom creatures with a stat block, decoded from the
+  `creature` of Turnkeeper's `CustomCreature` in `record`, keyed `custom.<id>` and with
+  `Creature.applying(name:size:)`; `creatureArt()` choices; and custom art's files. A creature's picture is its
+  choice (a `custom` image file scaled with ImageIO, or a `library` entry from the art store), else the art
+  matched by name, which also stands in when the chosen art is gone. `artChoiceTag(forCreature:)` is part of the
+  thumbnails' task id and the card's `.id`, so they draw again when another app chooses different art. The change
+  counter is read before the first read of the library; `startFollowingSharedLibrary()` observes
+  `SharedLibraryChange` and asks `changes(since:)` what changed: the creature tables read the contents again, the art tables refresh the art catalog. The art
+  catalog is read again once per burst of changes, and not during the app's own import. Going to the background
+  closes the database (`closeSharedLibrary()`, R5.4 there) and ignores changes until the app is active again
+  (`resumeSharedLibrary()`), which reads what changed meanwhile.
+  `ArtModel.customCreatures` (`EntrySummary`s, source "Custom", hazards "Complex", empty values left out) feeds `CatalogStore.addedEntries`, which merges
+  them into the lists by name (`EntrySummary.merging`), into Search Everything (ahead of the catalog's text matches, as name matches), and into a
+  list's text search by name; `CatalogStore.page` gives each an empty `EntryPage`, and `CreatureView.creatureKey(ofEntry:)` takes a
+  `custom.` id as it is, so the page shows the card.
 - Sourcebooks shows watched folders and each PDF's folder by name, not by path, with tabletop-kit's
   `FolderName` (`TablesideShared`): Scrollkeeper's downloads read "Scrollkeeper ▸ <title folder>" with "On this
   Mac" or "On My iPad", in the App Group, its old Mac folder or an iPad app's Documents folder.

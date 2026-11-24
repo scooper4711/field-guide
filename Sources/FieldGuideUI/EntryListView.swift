@@ -108,7 +108,7 @@ struct EntryRow: View {
 
 /// A stored image, a creature's or item's art from the user's PDFs, or a symbol when there is none.
 struct Thumbnail: View {
-    static let creaturePrefix = "creature/"
+    nonisolated static let creaturePrefix = "creature/"
     let path: String
     let images: URL
     let placeholder: String
@@ -180,7 +180,7 @@ struct CreatureThumbnail: View {
                 Image(systemName: placeholder).font(.title3).foregroundStyle(.secondary)
             }
         }
-        .task(id: "\(key)#\(pdfArt.catalog.art.count)") {
+        .task(id: "\(key)#\(pdfArt.catalog.art.count)#\(pdfArt.artChoiceTag(forCreature: key))") {
             image = await pdfArt.picture(forCreature: key, maxPixels: Int(40 * displayScale))
         }
     }
