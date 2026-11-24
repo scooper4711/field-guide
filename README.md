@@ -92,7 +92,8 @@ changed, but without the Foundry app it can't match new icons. The steps on thei
   your team in `ios/Local.xcconfig` (`DEVELOPMENT_TEAM = …`); a free team's signature lasts 7 days, so
   reinstall weekly.
 - `make run` opens the Mac app on `Generated/` without building the app bundle. `FIELD_GUIDE_SELECT=<entry id>`
-  opens an entry at launch. `make dmg` builds `build/Field Guide.app` and `build/Field-Guide-<version>.dmg`.
+  opens an entry at launch. `make install` builds the Mac app and moves it to /Applications (the build copy is
+  removed so Finder launches the installed one). `make dmg` builds `build/Field Guide.app` and `build/Field-Guide-<version>.dmg`.
   Pushing a `v*` tag builds the universal app on GitHub from the same pf2e release and the `Artwork`
   submodule, and attaches its disk image to the release.
 
