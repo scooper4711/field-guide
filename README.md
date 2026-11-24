@@ -45,6 +45,9 @@ After that it opens normally. The iPad app is not in the App Store yet; build it
 - Links in an entry open the linked entry, and traits open their description; Back returns.
 - A creature's page switches between its stat block and its battle card (Card at the top); Turn Over shows
   the card's back with the creature's art.
+- Custom creatures you made in [Turnkeeper](https://github.com/scooper4711/turnkeeper) are in the Bestiary too,
+  with their battle cards, and art you gave a creature in Turnkeeper or Pawn Shop shows on its card. The art
+  library is the one those apps share, so a PDF any of them read shows its art here.
 - A deity's **Lore** tab shows its edicts, anathema and other lines, its write-up and its divine intercession,
   read from your own Paizo sourcebooks: Divine Mysteries and other Lost Omens books, and Paizo's free Divine
   Mysteries and Gods & Magic Web Supplements.

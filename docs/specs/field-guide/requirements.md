@@ -108,6 +108,12 @@ Foundry VTT's compendium browser.
   asks for a folder only when that isn't there.
 - R6.4 PDFs deleted or moved since they were read are listed as missing in Sourcebooks, and a creature's
   card says which missing PDF its art needs.
+- R6.5 The art library is the one Pawn Shop, Turnkeeper and Field Guide share in the Tableside Toolkit's App Group
+  (tabletop-kit's shared libraries spec, R1 and R6), so a PDF one of them read shows its art here without being
+  read again. The first launch of this version moves the app's own art library in, once; if the move fails, the
+  app keeps its own, says so, and tries again at the next launch. A build outside the App Group keeps its own.
+- R6.6 Art the user chose or added for a creature in Turnkeeper or Pawn Shop shows on its card and page in place
+  of the art matched by its name (shared libraries R3.4, R4.2), for bestiary and custom creatures alike.
 
 ## R9 Sourcebook lore
 No build ships Paizo's Reserved Material (creatures' descriptions, deities' write-ups, the ancestries' and classes'
@@ -172,6 +178,13 @@ device as art is. Lore the Paizo Blog published stays in the import.
 - R8.3 Linked words and trait or condition tags on the card open their glossary entries in popovers, two
   deep, instead of showing the icons. Cards pop up, pages navigate: links in the lore and on other pages
   open their entries (R5.3).
+- R8.4 Custom creatures from the shared creature library (shared libraries R4.3) are listed with their game's
+  bestiary, complex hazards with its hazards, among the other entries by name, with their level, rarity, size,
+  traits and "Custom" as their source. They are found by name in the list (with Search Text on too) and in Search
+  Everything, and their page is their battle card. The name and size the library's row holds are shown over the
+  stat block's, so a rename or size set in Pawn Shop shows here. One without a stat block (a custom pawn made in
+  Pawn Shop) isn't listed until Turnkeeper gives it one. Changes made in the other apps show within a second.
+  Field Guide shows custom creatures but doesn't edit them: making and editing stat blocks stays in Turnkeeper.
 
 ## R7 The app
 - R7.1 iPadOS 18 or later, in every orientation, iOS 18 or later on the iPhone, and macOS 15 or later. Pushing a version tag makes GitHub
