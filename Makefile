@@ -1,4 +1,4 @@
-.PHONY: build test lint coverage import update app dmg appstore run ipad-install ipad-simulator ipad-archive icon clean
+.PHONY: build test lint coverage import update app dmg appstore run install ipad-install ipad-simulator ipad-archive icon clean
 
 build:
 	swift build
@@ -37,6 +37,15 @@ appstore:
 # Runs the Mac build against Generated/.
 run:
 	swift run FieldGuide
+
+# Moves the built app into /Applications, replacing an earlier copy. The build copy is unregistered and
+# removed so Finder and Spotlight launch the installed one.
+LSREGISTER = /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+install: app
+	rm -rf "/Applications/Field Guide.app"
+	ditto "build/Field Guide.app" "/Applications/Field Guide.app"
+	-$(LSREGISTER) -u "build/Field Guide.app" 2>/dev/null  # Fails when it was never registered, which is fine.
+	rm -rf "build/Field Guide.app"
 
 # Builds the iPad app and installs it on a connected iPad. IPAD names the iPad.
 ipad-install:
