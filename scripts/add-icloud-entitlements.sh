@@ -1,37 +1,21 @@
 #!/bin/sh
-# Lets a Developer ID build of the Mac app sync sourcebook lore through iCloud (docs/specs/lore-sync): adds the CloudKit
-# container and push entitlements to the entitlements to sign with, embeds the provisioning profile that allows them,
-# and names the container in the Info.plist, which turns syncing on.
+# Lets a Developer ID build of the Mac app sync sourcebook lore through iCloud (docs/specs/lore-sync).
+# tabletop-kit's script of the same name adds the CloudKit container and push entitlements to the entitlements to
+# sign with, embeds the provisioning profile that allows them, and checks that the profile allows the environment.
+# This adds what is Field Guide's own: the container's name in the Info.plist, which turns lore syncing on.
 #
 # Usage: scripts/add-icloud-entitlements.sh <app> <entitlements> <team ID> <provisioning profile>
-# ICLOUD_ENVIRONMENT  CloudKit environment, Production (default) or Development. An iPad build installed from Xcode
-#                     uses Development, so to sync with one, build the Mac app for Development too.
+# ICLOUD_ENVIRONMENT  CloudKit environment, Production or Development. Default: Production for the App Store
+#                     (CHANNEL=appstore), Development for every other build.
+# KIT_SCRIPT          another copy of tabletop-kit's script (default: the one beside the resolved package)
 set -eu
-
-APP="$1"
-ENTITLEMENTS="$2"
-TEAM_ID="$3"
-PROFILE="$4"
-ENVIRONMENT="${ICLOUD_ENVIRONMENT:-Production}"
 CONTAINER="iCloud.io.github.scooper4711.FieldGuide"
-BUNDLE_ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Contents/Info.plist")"
-
-case "$ENVIRONMENT" in
-    Production) PUSH=production ;;
-    Development) PUSH=development ;;
-    *) echo "Adding iCloud failed: ICLOUD_ENVIRONMENT must be Production or Development." >&2; exit 1 ;;
-esac
-
-cp "$PROFILE" "$APP/Contents/embedded.provisionprofile"
-/usr/libexec/PlistBuddy \
-    -c "Add :com.apple.application-identifier string $TEAM_ID.$BUNDLE_ID" \
-    -c "Add :com.apple.developer.team-identifier string $TEAM_ID" \
-    -c "Add :com.apple.developer.icloud-container-identifiers array" \
-    -c "Add :com.apple.developer.icloud-container-identifiers:0 string $CONTAINER" \
-    -c "Add :com.apple.developer.icloud-services array" \
-    -c "Add :com.apple.developer.icloud-services:0 string CloudKit" \
-    -c "Add :com.apple.developer.icloud-container-environment string $ENVIRONMENT" \
-    -c "Add :com.apple.developer.aps-environment string $PUSH" \
-    "$ENTITLEMENTS"
-plutil -insert LoreSyncContainer -string "$CONTAINER" "$APP/Contents/Info.plist"
-echo "Added iCloud ($ENVIRONMENT) for $CONTAINER"
+if [ $# -ne 4 ]; then
+    echo "Usage: $0 <app> <entitlements> <team ID> <provisioning profile>" >&2
+    exit 2
+fi
+APP="$1"
+# Found beside the package after "swift package resolve", so the script follows the dependency pin.
+ICLOUD_CONTAINERS="$CONTAINER" \
+    "${KIT_SCRIPT:-.build/checkouts/tabletop-kit/scripts/add-icloud-entitlements.sh}" "$@"
+plutil -replace LoreSyncContainer -string "$CONTAINER" "$APP/Contents/Info.plist"

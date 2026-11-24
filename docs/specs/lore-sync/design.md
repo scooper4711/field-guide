@@ -52,14 +52,15 @@ the entitlements:
   leaves `ios/Info.plist` out.
 - Mac: `scripts/build-app.sh` calls `scripts/add-icloud-entitlements.sh` when it signs for the team and has a
   Developer ID provisioning profile with iCloud (`PROVISIONING_PROFILE`; the release workflow decodes it from the
-  `DEVELOPER_ID_PROVISIONING_PROFILE` secret). That adds the iCloud and push entitlements,
-  `com.apple.application-identifier` and `com.apple.developer.team-identifier`, embeds the profile and writes
-  `LoreSyncContainer`.
+  `DEVELOPER_ID_PROVISIONING_PROFILE` secret). It runs tabletop-kit's script of the same name, which adds the iCloud
+  and push entitlements, `com.apple.application-identifier` and `com.apple.developer.team-identifier`, embeds the
+  profile and checks that it allows the environment; then it writes `LoreSyncContainer`.
 
 ### Environments
 CloudKit keeps a Development and a Production database per container, and they don't see each other. iPad builds
 installed from Xcode use Development; TestFlight and App Store builds use Production. The Mac build uses Production
-unless `ICLOUD_ENVIRONMENT=Development`, which is how to sync it with an iPad installed from Xcode. Before a release,
+only for the App Store (`CHANNEL=appstore`) or with `ICLOUD_ENVIRONMENT=Production`; any other Mac build uses
+Development, like an iPad installed from Xcode. Before a release,
 deploy the schema to Production in the CloudKit Console.
 
 ## Privacy
