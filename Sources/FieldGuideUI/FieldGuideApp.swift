@@ -9,6 +9,7 @@ public struct FieldGuideApp: App {
     @State private var pdfArt: ArtModel
     @State private var sourcebooks = SourcebookModel.standard()
     @State private var scrollkeeper = ScrollkeeperLink.standard()
+    @Environment(\.scenePhase) private var scenePhase
 
     public init() {
         let store = CatalogStore()
@@ -25,15 +26,22 @@ public struct FieldGuideApp: App {
                 .environment(sourcebooks)
                 .environment(scrollkeeper)
                 .task {
+                    store.addedEntries = pdfArt.customCreatures
+                    pdfArt.startFollowingSharedLibrary()
                     await pdfArt.refresh(addingNew: true)
                     await sourcebooks.refresh(addingNew: true, subjects: store.loreSubjects())
                     await sourcebooks.startSync()
                 }
+                .onChange(of: pdfArt.customCreatures) { _, custom in store.addedEntries = custom }
                 .onOpenURL(perform: open)
                 // What Scrollkeeper hands over goes to the open window rather than opening another.
                 .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         }
         .defaultSize(width: 1280, height: 820)
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background { Task { await pdfArt.closeSharedLibrary() } }
+            if phase == .active { pdfArt.resumeSharedLibrary() }
+        }
         .handlesExternalEvents(matching: ["*"])
         .commands {
             FieldGuideCommands(store: store)

@@ -32,6 +32,7 @@ let package = Package(
             "FieldGuideKit", "SourcebookLore", "LoreSync", .product(name: "BattleCards", package: "tabletop-kit"),
             .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit"),
             .product(name: "AppNotices", package: "tabletop-kit"),
+            .product(name: "SharedLibraries", package: "tabletop-kit"),
             .product(name: "TablesideShared", package: "tabletop-kit")
         ], resources: [.process("Resources")]),
         .executableTarget(name: "FieldGuide", dependencies: ["FieldGuideUI"]),
@@ -44,6 +45,8 @@ let package = Package(
         .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),
         .testTarget(name: "FieldGuideUITests", dependencies: [
             "FieldGuideUI", "FieldGuideKit", "SourcebookLore", "SourcebookLoreTestSupport",
+            .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit"),
+            .product(name: "SharedLibraries", package: "tabletop-kit"),
             .product(name: "TablesideShared", package: "tabletop-kit")
         ])
     ]
