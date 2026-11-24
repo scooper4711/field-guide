@@ -45,6 +45,17 @@ public final class CatalogStore {
         didSet { if query != oldValue { applyQuery() } }
     }
 
+    /// Entries from outside the catalog, listed and searched by name with its own: the custom creatures in the
+    /// library the Tableside apps share (shared libraries R4.3).
+    public var addedEntries: [EntrySummary] = [] {
+        didSet {
+            guard addedEntries != oldValue else { return }
+            globalSearch = nil
+            loadCategories()
+            searchEverything()
+        }
+    }
+
     /// The search across every category: its text, and whether it searches the entries' text too.
     public var globalQuery = EntryQuery() {
         didSet { if globalQuery != oldValue { searchEverything() } }
@@ -73,7 +84,8 @@ public final class CatalogStore {
     }
 
     private func loadCategories() {
-        categories = (try? catalog?.categories(in: system)) ?? []
+        let found = Set((try? catalog?.categories(in: system)) ?? []).union(added(in: system).map(\.category))
+        categories = EntryCategory.allCases.filter(found.contains)
         if let category, categories.contains(category) {
             loadEntries()
         } else {
@@ -87,7 +99,8 @@ public final class CatalogStore {
             applyQuery()
             return
         }
-        entries = (try? catalog.summaries(of: category, in: system)) ?? []
+        entries = EntrySummary.merging(added(in: system, category: category),
+                                       into: (try? catalog.summaries(of: category, in: system)) ?? [])
         options = FacetOptions(entries: entries, facets: [.rarity, .traits, .source] + category.facets)
         levelRange = category.hasLevels ? FacetOptions.levelRange(of: entries) : nil
         applyQuery()
@@ -96,7 +109,8 @@ public final class CatalogStore {
     private func applyQuery() {
         var matches: Set<String>?
         if query.searchesText, !query.text.isEmpty, let catalog, let category {
-            matches = (try? catalog.search(query.text, in: category, of: system)) ?? []
+            let catalogMatches = (try? catalog.search(query.text, in: category, of: system)) ?? []
+            matches = catalogMatches.union(namesMatching(query.text, in: added(in: system, category: category)))
         }
         results = query.apply(to: entries, textMatches: matches)
     }
@@ -114,8 +128,10 @@ public final class CatalogStore {
             return
         }
         let system = system
+        let addedMatches = namesMatching(text, in: added(in: system))
         textSearch = Task { [textSearcher] in
-            let ids = await textSearcher.rankedSearch(text, in: system)
+            // Added entries match by name, the best kind of match, so they come first rather than past the limit.
+            let ids = addedMatches + (await textSearcher.rankedSearch(text, in: system))
             guard !Task.isCancelled else { return }
             globalResults = search.byIDs(ids)
         }
@@ -124,7 +140,7 @@ public final class CatalogStore {
     /// Every entry of the system, read when first searched.
     private func loadedGlobalSearch() -> GlobalSearch? {
         if globalSearch == nil, let entries = try? catalog?.summaries(in: system) {
-            globalSearch = GlobalSearch(entries: entries)
+            globalSearch = GlobalSearch(entries: EntrySummary.merging(added(in: system), into: entries))
         }
         return globalSearch
     }
@@ -148,8 +164,21 @@ public final class CatalogStore {
         }
     }
 
+    /// An entry's page; an added entry's is empty, since its page is its battle card.
     public func page(_ id: String) -> EntryPage? {
-        try? catalog?.page(of: id)
+        if let added = addedEntries.first(where: { $0.id == id }) {
+            return EntryPage(id: id, name: added.name, system: added.system, html: "")
+        }
+        return try? catalog?.page(of: id)
+    }
+
+    private func added(in system: GameSystem, category: EntryCategory? = nil) -> [EntrySummary] {
+        addedEntries.filter { $0.system == system && (category == nil || $0.category == category) }
+    }
+
+    /// The IDs of `entries` whose name has every word of `text`.
+    private func namesMatching(_ text: String, in entries: [EntrySummary]) -> [String] {
+        EntryQuery(text: text).apply(to: entries).map(\.id)
     }
 
     public func trait(_ slug: String, in system: GameSystem) -> EntryPage? {
