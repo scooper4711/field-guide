@@ -4,7 +4,8 @@ Effective November 10, 2026. This policy covers Field Guide for iPhone, iPad and
 
 **Field Guide collects no data.** It has no account, no analytics, no advertising, no tracking and no
 third-party code that reports anything. Nothing you do in the app is sent to the developer or anyone else.
-The only thing that leaves your device is the sourcebook lore it syncs to your own iCloud (see below).
+The only things that leave your device are the sourcebook lore and the art library it syncs to your own iCloud
+(see below).
 
 ## What stays on your device
 
@@ -18,18 +19,22 @@ The only thing that leaves your device is the sourcebook lore it syncs to your o
 Deleting the app from an iPhone or iPad deletes all of this. On a Mac, macOS keeps an app's saved data in the
 Containers folder of your Library folder until you delete the folder named Field Guide there.
 
-## Sourcebook lore in your iCloud
+## Sourcebook lore and art in your iCloud
 
 When iCloud is on, the lore Field Guide reads from your sourcebooks (deities' and creatures' write-ups, and
 ancestries' and classes' details), with which book and edition it came from, is kept in your private iCloud
 database, so your other devices signed into the same Apple Account show it too. Only you can read it: the
-developer can't see it, and Apple stores it under its own privacy policy. The PDFs themselves, your settings and
-your art are never synced. To stop syncing, turn iCloud off for Field Guide in your device's settings; to remove
-the lore from iCloud, delete Field Guide's data in iCloud's storage settings.
+developer can't see it, and Apple stores it under its own privacy policy.
+
+The art library Field Guide shares with Pawn Shop and Turnkeeper is kept in your private iCloud database the same
+way: which PDFs were read and the art found in them, as pictures, your custom creatures and art, and which art you
+chose for a creature. Another device downloads a picture when it first shows it. The PDFs themselves and your
+settings are never synced. To stop syncing, turn iCloud off for Field Guide in your device's settings; to remove
+the data from iCloud, delete Field Guide's and the Tableside Toolkit's data in iCloud's storage settings.
 
 ## Network
 
-Apart from syncing lore with your iCloud, Field Guide makes no network requests of its own. When you tap a link
+Apart from syncing lore and art with your iCloud, Field Guide makes no network requests of its own. When you tap a link
 to a web page (for example, Get for a free web supplement), it opens in your browser, under the browser's and that
 website's own privacy policies.
 

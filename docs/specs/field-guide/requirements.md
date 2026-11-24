@@ -114,6 +114,14 @@ Foundry VTT's compendium browser.
   app keeps its own, says so, and tries again at the next launch. A build outside the App Group keeps its own.
 - R6.6 Art the user chose or added for a creature in Turnkeeper or Pawn Shop shows on its card and page in place
   of the art matched by its name (shared libraries R3.4, R4.2), for bestiary and custom creatures alike.
+- R6.7 The shared library, with the art read from PDFs and the custom creatures, syncs between the user's devices
+  through the Tableside Toolkit's iCloud container (tabletop-kit's library sync), in builds that have it and with
+  iCloud on; otherwise it stays on the device. A device can show art whose PDF is only on another device.
+- R6.8 Art whose picture isn't on the device is downloaded from iCloud when first shown, then drawn. A picture no
+  device has uploaded yet is asked for again at most once a minute.
+- R6.9 Sourcebooks shows whether the library syncs (with Turn Syncing Back On after its iCloud data was deleted),
+  how many downloaded pictures the device keeps (those shown, up to a size, or every picture), and their size,
+  with Remove Downloaded Pictures (library sync R2.6).
 
 ## R9 Sourcebook lore
 No build ships Paizo's Reserved Material (creatures' descriptions, deities' write-ups, the ancestries' and classes'
