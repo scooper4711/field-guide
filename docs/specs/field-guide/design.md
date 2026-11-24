@@ -148,7 +148,8 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   or a stand-in in tests) for `SharedLibrary.missingPictures(of:)`, at most once a minute per art until some arrive,
   and draws again; the kit notes pictures as shown when it draws them, for the cache's order. Sourcebooks ends with
   the kit's `SyncSettingsSection`. Measured 2026-11-24 on a full library: 10,650 pictures, 401 MB, 690 at the
-  kit's 1,024-pixel cap, so the cap stays (field-guide#40).
+  kit's 1,024-pixel cap, mostly Battle Card art, which the card draws at up to 1,600 px; the kit's cap is 2,048
+  from 1.19.0, for at most about 207 MB more (field-guide#40).
   `ArtModel.customCreatures` (`EntrySummary`s, source "Custom", hazards "Complex", empty values left out) feeds `CatalogStore.addedEntries`, which merges
   them into the lists by name (`EntrySummary.merging`), into Search Everything (ahead of the catalog's text matches, as name matches), and into a
   list's text search by name; `CatalogStore.page` gives each an empty `EntryPage`, and `CreatureView.creatureKey(ofEntry:)` takes a
