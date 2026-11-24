@@ -12,7 +12,7 @@ let package = Package(
         .executable(name: "FieldGuideLoreSurvey", targets: ["FieldGuideLoreSurvey"])
     ],
     dependencies: [
-        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "1.18.0")
+        .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "1.19.0")
     ],
     targets: [
         .target(name: "FieldGuideKit"),
