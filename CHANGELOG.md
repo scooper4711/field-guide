@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Custom creatures from the shared libraries appear in the Bestiary and Hazards with their stat blocks
+- Art chosen in Turnkeeper or Pawn Shop shows on cards and thumbnails
+- Art pictures whose PDF is on another device download from iCloud when shown, and Sourcebooks has the shared sync
+  settings
+- Entries from outside the catalog are listed with its own, and found by Search Everything
+
 ## [2.0.1] - 2026-11-21
 
 ### Fixed

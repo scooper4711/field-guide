@@ -9,8 +9,9 @@ Field Guide 2.0 is listed on the Mac App Store beside its notarized disk image a
   out.
 - R1.2 `PROVISIONING_PROFILE` is the Mac App Store profile, which carries iCloud. The app is signed with the
   CloudKit container in the Production environment, so lore sync works as in the disk image build.
-- R1.3 The build number (`BUILD_NUMBER`, the commit count) is apart from the version, and the bundle declares
-  `ITSAppUsesNonExemptEncryption` as false, a copyright line and the reference category.
+- R1.3 The build number (`BUILD_NUMBER`, the commit count) is apart from the version, which is the one in the
+  `VERSION` file, and the bundle declares `ITSAppUsesNonExemptEncryption` as false, a copyright line and the
+  reference category.
 
 ## R2 Privacy
 - R2.1 The privacy manifest (`ios/App/PrivacyInfo.xcprivacy`) ships in the bundle: no tracking, no data collected.
