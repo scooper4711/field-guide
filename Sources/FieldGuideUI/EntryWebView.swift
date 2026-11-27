@@ -3,7 +3,8 @@ import SwiftUI
 import WebKit
 
 /// Shows an entry page's HTML with the app's stylesheet. Images, fonts and the stylesheet come through the
-/// `fieldguide:` scheme; every link the user taps is handed to `onLink` instead of loading.
+/// `fieldguide:` scheme; every link the user taps is handed to `onLink` instead of loading, except a link to a
+/// heading on the page, which scrolls to it.
 @MainActor
 struct EntryWebView {
     let html: String
@@ -46,7 +47,8 @@ struct EntryWebView {
 
         func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void) {
-            guard let url = navigationAction.request.url, navigationAction.navigationType == .linkActivated else {
+            guard let url = navigationAction.request.url, navigationAction.navigationType == .linkActivated,
+                  !PageTemplate.isAnchor(url) else {
                 decisionHandler(.allow)
                 return
             }
@@ -70,6 +72,11 @@ extension EntryWebView: NSViewRepresentable {
 
 /// Wraps a page body in a document that loads the stylesheet.
 enum PageTemplate {
+    /// Whether a link goes to a heading of the page itself (`#id`), which the web view scrolls to.
+    static func isAnchor(_ url: URL) -> Bool {
+        url.scheme == "fieldguide" && url.fragment != nil && (url.path.isEmpty || url.path == "/")
+    }
+
     static func document(body: String) -> String {
         """
         <!doctype html><html><head><meta charset="utf-8">

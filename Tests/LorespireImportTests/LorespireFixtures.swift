@@ -59,6 +59,7 @@ enum LorespireFixtures {
         <p>Basic text.</p>
         \(pageHeading(2, "Heroes", page: "demo._.Making-Heroes", "Making&nbsp;Heroes"))
         <p>See <a href="tiki-index.php?page=demo._.Intro#Basics">the basics</a> and <a href="#Tail">the tail</a>.</p>
+        <p><a href="#Deep">deep</a></p>
         \(pageHeading(3, "Empty", page: "demo._.Empty", "Empty"))
         <p>
         </p>
@@ -67,7 +68,7 @@ enum LorespireFixtures {
         class="plugin-mouseover" style="width: 400px;"><a href="https://example.com/crb">Core</a><br />\
         <em>p. 4</em><br />(click to close)</span></p>
         \(heading(4, "Deep", "Deep"))
-        <p>Deep text.</p>
+        <p>Deep text. <a href="#Deep">here</a> <a href="tiki-index.php?page=demo._.Full#Deep">again</a></p>
         \(heading(2, "Tail", "Tail"))
         <p>Tail text.</p>
         \(pageHeading(1, "Two", page: "demo._.Two", "Part Two"))

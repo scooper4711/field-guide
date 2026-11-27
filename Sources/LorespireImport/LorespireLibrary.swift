@@ -42,7 +42,8 @@ public struct LorespireLibrary: Sendable {
             let html = LorespireMarkup.simplify(Self.shiftingHeadings(section.html, below: section.level))
             return LorespireEntry(id: prefix + section.key, page: section.key, name: section.name,
                                   part: section.part, order: order,
-                                  html: rewriter.rewrite(html, in: guide.id),
+                                  html: rewriter.rewrite(html, at: .init(document: guide.id,
+                                                                          entry: prefix + section.key)),
                                   source: Self.source(of: section, in: guide))
         }
     }

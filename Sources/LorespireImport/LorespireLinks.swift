@@ -27,10 +27,16 @@ struct LorespireLinkRewriter {
 
     private static let entryCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "._-~"))
 
-    func rewrite(_ html: String, in document: String) -> String {
+    /// Where a link is: the document and the entry it is in.
+    struct Place {
+        let document: String
+        let entry: String
+    }
+
+    func rewrite(_ html: String, at place: Place) -> String {
         html.replacing(/(href|src)="([^"]*)"/) { match in
             let value = String(match.2).replacingOccurrences(of: "&amp;", with: "&")
-            let target = match.1 == "src" ? source(for: value) : target(for: value, in: document)
+            let target = match.1 == "src" ? source(for: value) : target(for: value, at: place)
             return "\(match.1)=\"\(target.replacingOccurrences(of: "&", with: "&amp;"))\""
         }
     }
@@ -41,22 +47,30 @@ struct LorespireLinkRewriter {
         return Lorespire.host + path
     }
 
-    private func target(for value: String, in document: String) -> String {
+    private func target(for value: String, at place: Place) -> String {
         if value.hasPrefix("#") {
-            return headings[document]?[String(value.dropFirst())].map(Self.entryLink) ?? value
+            let fragment = String(value.dropFirst())
+            return headings[place.document]?[fragment].map { link(to: $0, fragment: fragment, from: place) } ?? value
         }
         guard let path = sitePath(value) else { return value }
         if path.hasPrefix("tiki-index.php?"), let page = parameter("page", in: path) {
-            return pageTarget(page, fragment: fragment(of: path))
+            return pageTarget(page, fragment: fragment(of: path), from: place)
         }
         return Lorespire.host + path
     }
 
-    private func pageTarget(_ page: String, fragment: String?) -> String {
+    private func pageTarget(_ page: String, fragment: String?, from place: Place) -> String {
         let document = documents.first { $0.opens(page) }?.id ?? pages[page].flatMap(document(holding:))
-        if let fragment, let document, let entry = headings[document]?[fragment] { return Self.entryLink(entry) }
+        if let fragment, let document, let entry = headings[document]?[fragment] {
+            return link(to: entry, fragment: fragment, from: place)
+        }
         if let entry = pages[page] ?? document.flatMap({ firstEntries[$0] }) { return Self.entryLink(entry) }
         return Lorespire.pageURL(page).absoluteString + (fragment.map { "#" + $0 } ?? "")
+    }
+
+    /// A link to a heading: within the page when the heading is in the entry the link is in, else to its entry.
+    private func link(to entry: String, fragment: String, from place: Place) -> String {
+        entry == place.entry ? "#" + fragment : Self.entryLink(entry)
     }
 
     private func document(holding entry: String) -> String? {

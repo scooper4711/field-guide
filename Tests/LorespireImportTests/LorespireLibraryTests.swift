@@ -36,6 +36,10 @@ struct LorespireLibraryTests {
         let heroes = try entry("lorespire.pf2e.demo._.Making-Heroes", in: entries).html
         #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Intro\">the basics"))
         #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Intro\">the tail"))
+        #expect(heroes.contains("<a href=\"entry:lorespire.pf2e.demo._.Rules\">deep</a>"))
+        // A heading in the same entry stays an anchor on the page, however the link names it.
+        let rules = try entry("lorespire.pf2e.demo._.Rules", in: entries).html
+        #expect(rules.contains("<a href=\"#Deep\">here</a> <a href=\"#Deep\">again</a>"))
         #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Rules\">Empty"))
         let start = try entry("lorespire.pf2e.demo._.Book-Start", in: entries).html
         #expect(start.contains("href=\"entry:lorespire.pf2e.demo._.Rules\">the rules"))
