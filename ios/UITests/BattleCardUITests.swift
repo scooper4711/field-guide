@@ -45,11 +45,14 @@ final class BattleCardUITests: XCTestCase {
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         XCTAssertTrue(app.buttons["Exit Full Screen"].waitForExistence(timeout: 5), app.debugDescription)
         app.buttons["Exit Full Screen"].tap()
-        XCTAssertTrue(app.segmentedControls.buttons["Lore"].waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertTrue(app.buttons["Full Screen"].waitForExistence(timeout: 5), app.debugDescription)
     }
 
-    func testLoreTabShowsTheLoreWithoutTheStatBlock() {
+    /// Lore comes from the user's own sourcebooks, so a Simulator without them (a clean one, as in CI) skips this.
+    func testLoreTabShowsTheLoreWithoutTheStatBlock() throws {
         launch(Self.granitescale, view: "lore")
+        try XCTSkipUnless(app.segmentedControls.buttons["Battle Card"].waitForExistence(timeout: 15),
+                          "The granitescale has no lore here: add a sourcebook with it to run this.")
         let lore = app.webViews.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "shed scales"))
         XCTAssertTrue(lore.firstMatch.waitForExistence(timeout: 15), app.debugDescription)
         XCTAssertFalse(app.webViews.staticTexts["Perception"].exists)
