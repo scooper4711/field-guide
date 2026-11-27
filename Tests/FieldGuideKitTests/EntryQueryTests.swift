@@ -99,6 +99,10 @@ func summary(_ name: String, level: Int? = 1, facets: [Facet: [String]] = [:]) -
         #expect(EntryCategory.deities.facets.isEmpty && EntryCategory.gmScreen.facets == [.section])
         #expect(EntryCategory.gmScreen.title == "GM Screen" && EntryCategory.gmScreen.singularTitle == "GM Screen")
         #expect(!EntryCategory.gmScreen.hasLevels)
+        #expect(EntryCategory.organizedPlay.title == "Organized Play")
+        #expect(EntryCategory.organizedPlay.symbol == "person.3")
+        #expect(EntryCategory.organizedPlay.singularTitle == "Organized Play" && !EntryCategory.organizedPlay.hasLevels)
+        #expect(EntryCategory.organizedPlay.facets == [.section])
         #expect(Facet.allCases.allSatisfy { !$0.title.isEmpty } && Facet.traits.matchesAll && !Facet.rarity.matchesAll)
         #expect(GameSystem.pathfinder.title == "Pathfinder" && GameSystem.starfinder.title == "Starfinder")
     }

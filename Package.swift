@@ -22,7 +22,7 @@ let package = Package(
         .executableTarget(name: "FieldGuideLoreSurvey",
                           dependencies: ["SourcebookLore", "SourcebookLoreTestSupport", "FieldGuideKit"]),
         .target(name: "CompendiumImport", dependencies: [
-            "FieldGuideKit", .product(name: "Bestiary", package: "tabletop-kit"),
+            "FieldGuideKit", "LorespireImport", .product(name: "Bestiary", package: "tabletop-kit"),
             .product(name: "CreatureImport", package: "tabletop-kit")
         ]),
         .executableTarget(name: "FieldGuideImport", dependencies: [
@@ -47,7 +47,7 @@ let package = Package(
         ]),
         .testTarget(name: "SourcebookLoreTests", dependencies: ["SourcebookLore", "SourcebookLoreTestSupport"]),
         .testTarget(name: "LoreSyncTests", dependencies: ["LoreSync", "SourcebookLore"]),
-        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),
+        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport", "LorespireImport"]),
         .testTarget(name: "LorespireImportTests", dependencies: ["LorespireImport"]),
         .testTarget(name: "FieldGuideUITests", dependencies: [
             "FieldGuideUI", "FieldGuideKit", "SourcebookLore", "SourcebookLoreTestSupport",
