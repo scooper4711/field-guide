@@ -1,5 +1,6 @@
 #!/bin/sh
-# Imports both systems from the pf2e repository into Generated/.
+# Imports both systems from the pf2e repository into Generated/, and downloads the Organized Play guides from
+# Lorespire into Generated/Lorespire (scripts/fetch-lorespire.sh).
 #
 # PF2E_REPO      a pf2e system repository to read instead of the release in pf2e.release, which is fetched
 #                into build/pf2e (scripts/fetch-pf2e.sh); release builds always use that release
@@ -37,6 +38,8 @@ swift build -c release --product FieldGuideImport
     --artwork "$ARTWORK" --out Generated
 echo "Copying the battle cards' art from $REXARD_PACKS..."
 swift run -c release CardArtImport "$REXARD_PACKS" Generated/CardArt
+echo "Downloading the Organized Play guides from Lorespire..."
+scripts/fetch-lorespire.sh Generated/Lorespire
 echo "Copying the licenses the bundled content requires..."
 # The About screen lists every file here (Tabletop Kit's LicenseText.all(in:)), titled by its name.
 rm -rf Generated/Licenses

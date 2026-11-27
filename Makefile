@@ -1,4 +1,4 @@
-.PHONY: build test lint coverage import update app dmg appstore run install ipad-install ipad-simulator ipad-archive icon ipad-uitests clean
+.PHONY: build test lint coverage import lorespire update app dmg appstore run install ipad-install ipad-simulator ipad-archive icon ipad-uitests clean
 
 build:
 	swift build
@@ -9,7 +9,7 @@ test:
 lint:
 	swiftlint --strict --quiet
 
-# Runs the tests and fails when FieldGuideKit's and CompendiumImport's coverage is below 80%.
+# Runs the tests and fails when the coverage of FieldGuideKit, CompendiumImport and LorespireImport is below 80%.
 coverage:
 	scripts/coverage.sh
 
@@ -17,6 +17,10 @@ coverage:
 # sources).
 import:
 	scripts/import.sh
+
+# Downloads the Organized Play guides from Lorespire into Generated/Lorespire; `make import` does it too.
+lorespire:
+	scripts/fetch-lorespire.sh
 
 # Switches to pf2e's newest release, imports and installs on the iPad.
 update:
