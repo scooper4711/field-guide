@@ -1,4 +1,4 @@
-.PHONY: build test lint coverage import update app dmg appstore run install ipad-install ipad-simulator ipad-archive icon clean
+.PHONY: build test lint coverage import update app dmg appstore run install ipad-install ipad-simulator ipad-archive icon ipad-uitests clean
 
 build:
 	swift build
@@ -53,6 +53,10 @@ ipad-install:
 
 ipad-simulator:
 	scripts/run-ipad-simulator.sh
+
+# Runs the iPad UI tests in a simulator, against Generated/. ONLY="GlobalSearchUITests ..." runs just those.
+ipad-uitests:
+	scripts/run-ipad-uitests.sh
 
 # Redraws the app icon from scripts/make-icon.swift.
 icon:

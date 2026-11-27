@@ -23,3 +23,17 @@ struct ColumnChoice: Equatable {
         }
     }
 }
+
+extension View {
+    /// Sets the split view's visibility again once it is on screen: SwiftUI ignores the starting one on an iPad in
+    /// portrait, which on a new install hid the categories while nothing was chosen (#42). The detour through another
+    /// value makes SwiftUI see a change.
+    func reapplyingStartingVisibility(_ columns: Binding<ColumnChoice>) -> some View {
+        task {
+            let wanted = columns.wrappedValue.visibility
+            columns.wrappedValue.visibility = wanted == .all ? .automatic : .all
+            await Task.yield()
+            columns.wrappedValue.visibility = wanted
+        }
+    }
+}

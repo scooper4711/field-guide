@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   settings
 - Entries from outside the catalog are listed with its own, and found by Search Everything
 
+### Fixed
+- On a new install, an iPad in portrait shows the categories instead of hiding them
+
 ## [2.0.1] - 2026-11-21
 
 ### Fixed

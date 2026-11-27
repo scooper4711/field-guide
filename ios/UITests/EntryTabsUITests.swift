@@ -27,8 +27,8 @@ final class EntryTabsUITests: XCTestCase {
         let dwarf = app.webViews.links["Dwarf"].firstMatch
         XCTAssertTrue(dwarf.waitForExistence(timeout: 15), app.debugDescription)
         dwarf.tap()
-        XCTAssertTrue(webText(containing: "well-earned reputation").waitForExistence(timeout: 10),
-                      app.debugDescription)
+        // The Details' rules come with the app; their lore, from the user's sourcebooks, may be missing.
+        XCTAssertTrue(webText(containing: "Dwarf Mechanics").waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertTrue(app.segmentedControls.buttons["Details"].isSelected)
     }
 
