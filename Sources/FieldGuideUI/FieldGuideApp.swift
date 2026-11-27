@@ -130,6 +130,7 @@ struct RootView: View {
                 }
             }
         }
+        .reapplyingStartingVisibility($columns)
         // An entry opened from the search across every category stays open as its category shows.
         .onChange(of: store.category) {
             if !store.results.contains(where: { $0.id == selection }) { selection = nil }
