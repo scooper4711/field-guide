@@ -27,7 +27,6 @@ public struct LorespireManifest: Codable, Sendable, Equatable {
         public let system: LorespireDocument.System
         public let file: String
         public let source: String
-        public let outline: [LorespireHeading]
     }
 
     public let source: String
@@ -36,8 +35,9 @@ public struct LorespireManifest: Codable, Sendable, Equatable {
     public let files: [String]
 }
 
-/// Downloads the guides into a folder: `<id>.html` for each document (its article, without the site around it),
-/// `files/` for the images and attachments they use, and `manifest.json`.
+/// Downloads the guides into a folder: `<id>.html` for each document (its article, without the site around it,
+/// its links as on the site), `files/` for the images and attachments they use, and `manifest.json`.
+/// ``LorespireLibrary`` reads it.
 ///
 /// Everything is fetched before anything is written, so a failed download leaves the folder as it was.
 public struct LorespireDownloader: Sendable {
@@ -58,14 +58,8 @@ public struct LorespireDownloader: Sendable {
             pages.append(try LorespirePage(html: html, page: document.page))
         }
         let files = try await fetchFiles(LorespireLinkRewriter.fileIDs(in: pages.map(\.content).joined()))
-        let rewriter = LorespireLinkRewriter(
-            documents: documents,
-            anchors: LorespireHeadings.anchors(in: zip(documents, pages).map { ($0.id, $1.content) }),
-            files: files.mapValues(\.path))
         let manifest = manifest(for: pages, files: files.values.map(\.path).sorted())
-        let documents = zip(documents, pages).map { document, page in
-            (document.fileName, rewriter.rewrite(page.content, in: document.id))
-        }
+        let documents = zip(documents, pages).map { ($0.fileName, $1.content) }
         try write(Download(documents: documents, files: Array(files.values), manifest: manifest), to: folder)
         return manifest
     }
@@ -82,8 +76,7 @@ public struct LorespireDownloader: Sendable {
     private func manifest(for pages: [LorespirePage], files: [String]) -> LorespireManifest {
         LorespireManifest(source: Lorespire.host, documents: zip(documents, pages).map { document, page in
             LorespireManifest.Document(id: document.id, title: page.title, system: document.system,
-                                       file: document.fileName, source: document.url.absoluteString,
-                                       outline: LorespireHeadings.outline(of: page.content))
+                                       file: document.fileName, source: document.url.absoluteString)
         }, files: files)
     }
 

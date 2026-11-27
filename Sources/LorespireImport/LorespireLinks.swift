@@ -1,100 +1,71 @@
 import Foundation
 
-/// A heading of a downloaded document, for its table of contents.
-public struct LorespireHeading: Codable, Sendable, Equatable {
-    public let level: Int
-    /// The heading's `id`, so `<document>.html#<id>` opens it.
-    public let id: String
-    public let title: String
-}
-
-/// Where a link to a wiki page lands in the download.
-struct LorespireAnchor: Equatable {
-    let document: String
-    let id: String
-}
-
-enum LorespireHeadings {
-    /// The `h1`–`h3` headings that have an `id`, in order.
-    static func outline(of html: String) -> [LorespireHeading] {
-        headings(in: html).filter { $0.level <= 3 }
-            .map { LorespireHeading(level: $0.level, id: $0.id, title: LorespireText.plain($0.inner)) }
-    }
-
-    /// Where each wiki page starts in the compilations: a compilation's heading for a section links to that
-    /// section's own page. The first heading that links to a page wins.
-    static func anchors(in documents: [(id: String, content: String)]) -> [String: LorespireAnchor] {
-        var anchors: [String: LorespireAnchor] = [:]
-        for document in documents {
-            for heading in headings(in: document.content) {
-                for match in heading.inner.matches(of: /page=([^"#&]+)/) where anchors[String(match.1)] == nil {
-                    anchors[String(match.1)] = LorespireAnchor(document: document.id, id: heading.id)
-                }
-            }
-        }
-        return anchors
-    }
-
-    /// A heading as written: its level, its `id` and the HTML inside it.
-    private struct RawHeading {
-        let level: Int
-        let id: String
-        let inner: String
-    }
-
-    private static func headings(in html: String) -> [RawHeading] {
-        html.matches(of: /<h([1-6])\b[^>]*\bid="([^"]+)"[^>]*>(.*?)<\/h\1>/.dotMatchesNewlines()).map {
-            RawHeading(level: Int($0.1) ?? 1, id: String($0.2), inner: String($0.3))
-        }
-    }
-}
-
-/// Points a document's links and images at the download: other downloaded documents, the saved files, and
-/// Lorespire itself for the pages that weren't downloaded.
+/// Points a guide entry's links and images at the app: other guide entries of the same system as `entry:` links,
+/// the downloaded images as `fieldguide:///images/lorespire/…`, and everything else at Lorespire on the web.
 struct LorespireLinkRewriter {
     let documents: [LorespireDocument]
-    let anchors: [String: LorespireAnchor]
-    /// The saved files' paths, relative to the documents, by Lorespire file ID.
+    /// The entries' ids by their wiki page.
+    let pages: [String: String]
+    /// The entries' ids by document id, then by the ids of the headings they hold.
+    let headings: [String: [String: String]]
+    /// The first entry of each document, by document id.
+    let firstEntries: [String: String]
+    /// The downloaded files' names, by Lorespire file ID.
     let files: [Int: String]
+
+    static let imagesPath = "fieldguide:///images/lorespire/"
 
     /// The Lorespire file IDs that some HTML links to or shows.
     static func fileIDs(in html: String) -> Set<Int> {
         Set(html.matches(of: /tiki-download_file\.php\?fileId=(\d+)/).compactMap { Int($0.1) })
     }
 
+    /// An `entry:` link to an entry, its id percent-encoded.
+    static func entryLink(_ id: String) -> String {
+        "entry:" + (id.addingPercentEncoding(withAllowedCharacters: entryCharacters) ?? id)
+    }
+
+    private static let entryCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "._-~"))
+
     func rewrite(_ html: String, in document: String) -> String {
         html.replacing(/(href|src)="([^"]*)"/) { match in
-            let target = target(for: String(match.2).replacingOccurrences(of: "&amp;", with: "&"), in: document)
+            let value = String(match.2).replacingOccurrences(of: "&amp;", with: "&")
+            let target = match.1 == "src" ? source(for: value) : target(for: value, in: document)
             return "\(match.1)=\"\(target.replacingOccurrences(of: "&", with: "&amp;"))\""
         }
     }
 
+    private func source(for value: String) -> String {
+        guard let path = sitePath(value) else { return value }
+        if let file = fileID(in: path).flatMap({ files[$0] }) { return Self.imagesPath + file }
+        return Lorespire.host + path
+    }
+
     private func target(for value: String, in document: String) -> String {
-        if value.hasPrefix("#") { return value }
+        if value.hasPrefix("#") {
+            return headings[document]?[String(value.dropFirst())].map(Self.entryLink) ?? value
+        }
         guard let path = sitePath(value) else { return value }
         if path.hasPrefix("tiki-index.php?"), let page = parameter("page", in: path) {
-            return pageTarget(page, fragment: fragment(of: path), from: document)
-        }
-        if path.hasPrefix("tiki-download_file.php?"), let fileID = parameter("fileId", in: path).flatMap(Int.init),
-           let file = files[fileID] {
-            return file
+            return pageTarget(page, fragment: fragment(of: path))
         }
         return Lorespire.host + path
     }
 
-    private func pageTarget(_ page: String, fragment: String?, from current: String) -> String {
-        if let document = documents.first(where: { $0.opens(page) }) {
-            return reference(to: document.id, fragment: fragment, from: current)
-        }
-        if let anchor = anchors[page] {
-            return reference(to: anchor.document, fragment: fragment ?? anchor.id, from: current)
-        }
+    private func pageTarget(_ page: String, fragment: String?) -> String {
+        let document = documents.first { $0.opens(page) }?.id ?? pages[page].flatMap(document(holding:))
+        if let fragment, let document, let entry = headings[document]?[fragment] { return Self.entryLink(entry) }
+        if let entry = pages[page] ?? document.flatMap({ firstEntries[$0] }) { return Self.entryLink(entry) }
         return Lorespire.pageURL(page).absoluteString + (fragment.map { "#" + $0 } ?? "")
     }
 
-    private func reference(to document: String, fragment: String?, from current: String) -> String {
-        if document == current, let fragment { return "#" + fragment }
-        return document + ".html" + (fragment.map { "#" + $0 } ?? "")
+    private func document(holding entry: String) -> String? {
+        headings.first { $0.value.values.contains(entry) }?.key
+    }
+
+    private func fileID(in path: String) -> Int? {
+        guard path.hasPrefix("tiki-download_file.php?") else { return nil }
+        return parameter("fileId", in: path).flatMap(Int.init)
     }
 
     /// The path of a link into Lorespire, relative to the site's root, or nil for a link elsewhere.

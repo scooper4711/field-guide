@@ -34,9 +34,19 @@ public enum LorespireCleaner {
 /// Text from HTML: tags removed, entities decoded, spaces collapsed.
 enum LorespireText {
     static func plain(_ html: String) -> String {
-        var text = html.replacing(/<[^>]+>/, with: "")
+        decode(html.replacing(/<[^>]+>/, with: "")).split(whereSeparator: \.isWhitespace).joined(separator: " ")
+    }
+
+    /// Text with its HTML entities decoded.
+    static func decode(_ text: String) -> String {
+        var text = text
         for (entity, character) in entities { text = text.replacingOccurrences(of: entity, with: character) }
-        return text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+        return text
+    }
+
+    static func escape(_ text: String) -> String {
+        text.replacingOccurrences(of: "&", with: "&amp;").replacingOccurrences(of: "<", with: "&lt;")
+            .replacingOccurrences(of: ">", with: "&gt;").replacingOccurrences(of: "\"", with: "&quot;")
     }
 
     private static let entities = [
@@ -48,11 +58,13 @@ enum LorespireText {
 public enum LorespireError: Error, CustomStringConvertible, Equatable {
     case missingContent(page: String)
     case httpStatus(url: URL, status: Int)
+    case missingDownload(path: String)
 
     public var description: String {
         switch self {
         case let .missingContent(page): "Downloading Lorespire failed: \(page) has no page content"
         case let .httpStatus(url, status): "Downloading Lorespire failed: \(url.absoluteString) answered \(status)"
+        case let .missingDownload(path): "Reading Lorespire failed: \(path) is missing; run make lorespire"
         }
     }
 }

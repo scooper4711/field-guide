@@ -29,68 +29,6 @@ struct LorespirePageTests {
         }
         #expect(LorespireError.missingContent(page: "nope").description.contains("nope has no page content"))
     }
-
-    @Test("The outline lists the h1 to h3 headings with ids, as text")
-    func outline() {
-        let html = LorespireFixtures.heading(1, "A", "<a href=\"x\">Core&nbsp;Guide</a>")
-            + LorespireFixtures.heading(3, "B", "Small") + LorespireFixtures.heading(4, "C", "Tiny") + "<h2>None</h2>"
-        #expect(LorespireHeadings.outline(of: html) == [
-            LorespireHeading(level: 1, id: "A", title: "Core Guide"),
-            LorespireHeading(level: 3, id: "B", title: "Small")
-        ])
-    }
-}
-
-@Suite("Lorespire links")
-struct LorespireLinkTests {
-    let rewriter = LorespireLinkRewriter(
-        documents: LorespireFixtures.documents,
-        anchors: ["demo._.Making-Heroes": LorespireAnchor(document: "demo-guide", id: "Making_Heroes")],
-        files: [7: "files/7.png"])
-
-    func link(_ href: String, in document: String = "demo-guide") -> String {
-        rewriter.rewrite("<a href=\"\(href)\">", in: document)
-    }
-
-    @Test("Headings that link to a page mark where that page starts; the first one wins")
-    func anchors() {
-        let first = LorespireFixtures.heading(2, "One", "<a href=\"tiki-index.php?page=p#x\">One</a>")
-        let second = LorespireFixtures.heading(2, "Two", "<a href=\"tiki-index.php?page=p\">Two</a>")
-        #expect(LorespireHeadings.anchors(in: [("a", first), ("b", second)])
-            == ["p": LorespireAnchor(document: "a", id: "One")])
-    }
-
-    @Test("Links to downloaded pages open the local copy", arguments: [
-        ("tiki-index.php?page=demo._.Making-Heroes", "demo-guide", "#Making_Heroes"),
-        ("tiki-index.php?page=demo._.Making-Heroes#Rules", "demo-guide", "#Rules"),
-        ("tiki-index.php?page=demo._.Making-Heroes", "demo-handbook", "demo-guide.html#Making_Heroes"),
-        ("/tiki-index.php?page=demo._.Full", "demo-handbook", "demo-guide.html"),
-        ("https://lorespire.paizo.com/tiki-index.php?page=demo._.Handbook#Top", "demo-guide", "demo-handbook.html#Top"),
-        ("tiki-index.php?page=demo._.All", "demo-guide", "demo-guide.html"),
-        ("#Here", "demo-guide", "#Here")
-    ])
-    func local(href: String, document: String, expected: String) {
-        #expect(link(href, in: document) == "<a href=\"\(expected)\">")
-    }
-
-    @Test("Other links point at Lorespire, or stay as they are", arguments: [
-        ("tiki-index.php?page=demo._.Elsewhere", "https://lorespire.paizo.com/tiki-index.php?page=demo._.Elsewhere"),
-        ("http://lorespire.paizo.com/tiki-index.php?page=x#y", "https://lorespire.paizo.com/tiki-index.php?page=x#y"),
-        ("tiki-download_file.php?fileId=8", "https://lorespire.paizo.com/tiki-download_file.php?fileId=8"),
-        ("img/a.png", "https://lorespire.paizo.com/img/a.png"),
-        ("https://example.com/a?b=1&amp;c=2", "https://example.com/a?b=1&amp;c=2"),
-        ("mailto:gm@example.com", "mailto:gm@example.com")
-    ])
-    func remote(href: String, expected: String) {
-        #expect(link(href) == "<a href=\"\(expected)\">")
-    }
-
-    @Test("Images and attachments use the saved files")
-    func files() {
-        #expect(rewriter.rewrite("<img src=\"tiki-download_file.php?fileId=7&amp;display&amp;x=1\" />", in: "x")
-            == "<img src=\"files/7.png\" />")
-        #expect(LorespireLinkRewriter.fileIDs(in: LorespireFixtures.guide) == [7, 9])
-    }
 }
 
 @Suite("Lorespire download")
@@ -111,12 +49,11 @@ struct LorespireDownloadTests {
 
         #expect(manifest.files == ["files/7.png", "files/9-welcome-letter.pdf"])
         #expect(manifest.documents.map(\.title) == ["Complete Compilation", "Handbook & More"])
-        #expect(manifest.documents[0].outline.map(\.id) == ["Core_Guide", "Making_Heroes"])
         #expect(manifest.documents[1].source == "https://lorespire.paizo.com/tiki-index.php?page=demo._.Handbook")
         let saved = try FileManager.default.contentsOfDirectory(atPath: folder.path).sorted()
         #expect(saved == ["demo-guide.html", "demo-handbook.html", "files", "manifest.json"])
         let handbook = try String(contentsOf: folder.appendingPathComponent("demo-handbook.html"), encoding: .utf8)
-        #expect(handbook.contains("href=\"demo-guide.html#Making_Heroes\""))
+        #expect(handbook.contains("href=\"tiki-index.php?page=demo._.Making-Heroes\""))
         let decoded = try JSONDecoder().decode(LorespireManifest.self,
                                                from: Data(contentsOf: folder.appendingPathComponent("manifest.json")))
         #expect(decoded == manifest)
