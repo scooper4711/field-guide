@@ -127,6 +127,13 @@ td, th { border: 1px solid var(--rule); padding: 4px 8px; text-align: left; }
 
 .diagram { width: 100%; height: auto; border-radius: 6px; }
 .journal table { width: 100%; }
+/* The Organized Play guides (Lorespire): pictures within the page, boxed notes, tab titles and inline footnotes. */
+.journal img { max-width: 100%; height: auto; }
+.journal aside { background: var(--panel); padding: 8px 12px; border-radius: 6px; margin: 8px 0; }
+.journal h5, .journal h6 { font-family: "Roboto Condensed", "Helvetica Neue", sans-serif; font-size: 15px; }
+.journal h6.tab, .card-title { color: var(--muted); text-transform: uppercase; margin: 14px 0 4px; }
+.card-title { font-family: "Roboto Condensed", sans-serif; font-weight: bold; }
+.journal small { color: var(--muted); }
 
 .source { margin-top: 18px; color: var(--muted); font-style: italic; font-size: 14px; }
 

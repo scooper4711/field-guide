@@ -107,3 +107,21 @@ func summary(_ name: String, level: Int? = 1, facets: [Facet: [String]] = [:]) -
         #expect(GameSystem.pathfinder.title == "Pathfinder" && GameSystem.starfinder.title == "Starfinder")
     }
 }
+
+@Suite struct EntryGroupTests {
+    func entry(_ name: String, section: String?) -> EntrySummary {
+        EntrySummary(id: name, system: .pathfinder, category: .organizedPlay, name: name, level: nil, subtitle: "",
+                     image: "", facets: section.map { [.section: [$0]] } ?? [:])
+    }
+
+    @Test("Entries group by section, in the order the sections first come, keeping the entries' order")
+    func bySection() {
+        let entries = [entry("b", section: "Core"), entry("a", section: "Intro"), entry("c", section: "Core"),
+                       entry("d", section: nil)]
+        let groups = EntryGroup.bySection(entries)
+        #expect(groups.map(\.title) == ["Core", "Intro", ""])
+        #expect(groups.map { $0.entries.map(\.name) } == [["b", "c"], ["a"], ["d"]])
+        #expect(groups.first?.id == "Core" && EntryGroup.bySection([]).isEmpty)
+        #expect(EntryCategory.organizedPlay.groupsBySection && !EntryCategory.gmScreen.groupsBySection)
+    }
+}

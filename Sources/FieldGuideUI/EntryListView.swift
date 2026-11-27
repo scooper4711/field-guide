@@ -10,8 +10,14 @@ struct EntryListView: View {
 
     var body: some View {
         @Bindable var store = store
-        List(store.results, selection: $selection) { entry in
-            EntryRow(entry: entry, images: store.data.images).tag(entry.id)
+        List(selection: $selection) {
+            if store.category?.groupsBySection == true {
+                ForEach(EntryGroup.bySection(store.results)) { group in
+                    Section(group.title) { rows(group.entries) }
+                }
+            } else {
+                rows(store.results)
+            }
         }
         .listStyle(.plain)
         .searchable(text: $store.query.text, prompt: store.query.searchesText ? "Search text" : "Search names")
@@ -26,6 +32,12 @@ struct EntryListView: View {
             if store.results.isEmpty, !store.entries.isEmpty {
                 ContentUnavailableView.search
             }
+        }
+    }
+
+    private func rows(_ entries: [EntrySummary]) -> some View {
+        ForEach(entries) { entry in
+            EntryRow(entry: entry, images: store.data.images).tag(entry.id)
         }
     }
 

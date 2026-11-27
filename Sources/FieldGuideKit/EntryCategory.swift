@@ -64,6 +64,10 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         }
     }
 
+    /// Whether the list shows its entries under their section, in the catalog's order: the Organized Play guides,
+    /// whose parts read in order.
+    public var groupsBySection: Bool { self == .organizedPlay }
+
     /// The category's own filters, after level, rarity, traits and source.
     public var facets: [Facet] {
         switch self {
