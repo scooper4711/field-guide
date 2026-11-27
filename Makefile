@@ -18,7 +18,7 @@ coverage:
 import:
 	scripts/import.sh
 
-# Downloads the Organized Play guides from Lorespire into Generated/Lorespire; `make import` does it too.
+# Downloads the Organized Play guides from Lorespire into build/lorespire; `make import` does it too.
 lorespire:
 	scripts/fetch-lorespire.sh
 
