@@ -1,5 +1,6 @@
 import FieldGuideKit
 import Foundation
+import LorespireImport
 
 /// Where the importer reads from and writes to.
 public struct ImportOptions: Sendable {
@@ -15,6 +16,10 @@ public struct ImportOptions: Sendable {
     public var religiousSymbols = ReligiousSymbols()
     /// Paizo's Pathfinder-Icons font for the action icons, copied unaltered; nil (or a missing file) for none.
     public var actionIconsFont: URL?
+    /// A download of the Organized Play guides (`FieldGuideLorespire`); nil to leave them out.
+    public var lorespire: URL?
+    /// The Rexard pictures for the guides' entries; none unless set.
+    public var lorespireIcons = LorespireIcons()
     public var output: URL
     /// Where the import keeps what the app doesn't need: the Rexard hash cache and `icon-map.tsv`. The output
     /// goes into the app whole.
@@ -56,15 +61,25 @@ public struct CompendiumImporter {
         let diagrams = AreaDiagrams().rows()
         let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
         let journalRows = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
-        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
-        let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
+        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
+            + (try organizedPlayRows(images: images))
+        let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
         try copyFonts()
         try writeIconTables(images.icons, documents: documents)
         let report = ImportReport(rows: rows, enricher: enricher, images: images, unplacedJournals: unplacedJournals)
         try report.write(to: options.output.appendingPathComponent("import-report.md"))
         return report
+    }
+
+    /// The Organized Play guides' entries, with their images and licenses written; none without a download.
+    private func organizedPlayRows(images: ImageCollector) throws -> [EntryRow] {
+        guard let folder = options.lorespire else { return [] }
+        var guides = OrganizedPlay(library: LorespireLibrary(folder: folder))
+        let icons = options.lorespireIcons
+        guides.icon = { entry in icons.file(forPage: entry.page, part: entry.part).map(images.rexardIcon) ?? "" }
+        return try guides.importing(into: options.output)
     }
 
     /// Each entry's icon and why, in the work folder, and the matches to keep for machines without the Foundry

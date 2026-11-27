@@ -1,9 +1,9 @@
 import Foundation
 
-/// The kinds of entry the app browses: the GM Screen, Foundry's compendium browser tabs, character options, then
-/// the rules journals that are categories of their own and the rest of the journals.
+/// The kinds of entry the app browses: the GM Screen and the Organized Play guides, Foundry's compendium browser
+/// tabs, character options, then the rules journals that are categories of their own and the rest of the journals.
 public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable {
-    case gmScreen
+    case gmScreen, organizedPlay
     case actions, bestiary, campaignFeatures, equipment, feats, hazards, spells
     case conditions, ancestries, heritages, backgrounds, classes, archetypes, deities, domains
 
@@ -13,6 +13,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         switch self {
         case .campaignFeatures: "Campaign Features"
         case .gmScreen: "GM Screen"
+        case .organizedPlay: "Organized Play"
         default: rawValue.prefix(1).uppercased() + rawValue.dropFirst()
         }
     }
@@ -25,6 +26,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         case .deities: "Deity"
         case .bestiary: "Creature"
         case .gmScreen: "GM Screen"
+        case .organizedPlay: "Organized Play"
         default: String(title.dropLast())
         }
     }
@@ -33,6 +35,7 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     public var symbol: String {
         switch self {
         case .gmScreen: "tablecells"
+        case .organizedPlay: "person.3"
         case .actions: "figure.run"
         case .bestiary: "pawprint"
         case .campaignFeatures: "flag"
@@ -54,17 +57,21 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
     /// Whether entries have levels worth filtering and sorting by.
     public var hasLevels: Bool {
         switch self {
-        case .gmScreen, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes, .deities,
-             .archetypes, .domains:
+        case .gmScreen, .organizedPlay, .actions, .conditions, .ancestries, .heritages, .backgrounds, .classes,
+             .deities, .archetypes, .domains:
             false
         default: true
         }
     }
 
+    /// Whether the list shows its entries under their section, in the catalog's order: the Organized Play guides,
+    /// whose parts read in order.
+    public var groupsBySection: Bool { self == .organizedPlay }
+
     /// The category's own filters, after level, rarity, traits and source.
     public var facets: [Facet] {
         switch self {
-        case .gmScreen: [.section]
+        case .gmScreen, .organizedPlay: [.section]
         case .actions: [.actionType]
         case .bestiary: [.size]
         case .campaignFeatures, .feats: [.featCategory]

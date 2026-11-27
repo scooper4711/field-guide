@@ -52,7 +52,12 @@ public final class ImageCollector {
 
     /// The stored path of an entry's icon, or "" for none.
     func icon(of document: SourceDocument) -> String {
-        guard let packs, let file = icons.choice(for: document)?.file else { return "" }
+        icons.choice(for: document).map { rexardIcon($0.file) } ?? ""
+    }
+
+    /// The stored path of a Rexard picture, by its path in the packs, or "" without the packs.
+    func rexardIcon(_ file: String) -> String {
+        guard let packs else { return "" }
         let stem = "\(Self.folder)/\((file as NSString).deletingPathExtension)"
         return copyOnce(packs.appendingPathComponent(file), to: stem, maximumSize: Self.iconSize)
     }

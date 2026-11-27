@@ -1,7 +1,7 @@
 #!/bin/sh
 # Runs the tests with coverage, writes coverage/sonar-coverage.xml for SonarCloud, and fails when
 # line or region coverage of
-# FieldGuideKit and CompendiumImport are below the threshold. Swift's coverage tooling does not
+# FieldGuideKit, CompendiumImport and LorespireImport are below the threshold. Swift's coverage tooling does not
 # report branch coverage; region coverage is the closest measure.
 set -eu
 
@@ -47,7 +47,8 @@ import sys
 report_path, threshold, mode = sys.argv[1], float(sys.argv[2]), sys.argv[3]
 files = [
     entry for entry in json.load(open(report_path))["data"][0]["files"]
-    if "/Sources/FieldGuideKit/" in entry["filename"] or "/Sources/CompendiumImport/" in entry["filename"]
+    if any(f"/Sources/{target}/" in entry["filename"]
+           for target in ("FieldGuideKit", "CompendiumImport", "LorespireImport"))
 ]
 
 

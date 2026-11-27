@@ -3,15 +3,16 @@ import CreatureImport
 import Foundation
 
 /// `FieldGuideImport [--pf2e DIR] [--foundry-app DIR] [--rexard DIR] [--symbols DIR]
-/// [--starfinder-symbols DIR] [--artwork DIR] [--out DIR] [--work DIR]`
+/// [--starfinder-symbols DIR] [--artwork DIR] [--lorespire DIR] [--out DIR] [--work DIR]`
 ///
 /// Defaults: `~/git/pf2e`, the Foundry app in /Applications, `~/git/rexard-packs`, the
 /// Community Use Package's Religious Symbols and Starfinder Religious Symbols in
 /// `~/git/tableside-toolkit/community-use-artwork`, the `Artwork` submodule (for Paizo's Pathfinder-Icons font),
+/// `build/lorespire` (the Organized Play guides, downloaded by `FieldGuideLorespire`; left out when missing),
 /// `Generated` and
 /// `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each entry's icon and why)
-/// out of the app. Entries show the user's Rexard icons in place
-/// of Foundry's; `icon-overrides.json` corrects them, and `icon-matches.tsv` keeps the matches for machines
+/// out of the app. Entries show the user's Rexard icons in place of Foundry's; `icon-overrides.json` corrects them,
+/// `lorespire-icons.json` picks the Organized Play guides', and `icon-matches.tsv` keeps the matches for machines
 /// without the Foundry app. Also writes the creatures for the battle cards to
 /// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
 /// user's own PDFs on the device. The setting's lore (creatures' descriptions, deities' write-ups, the ancestries'
@@ -26,6 +27,7 @@ var settings = [
     "--starfinder-symbols": home.appendingPathComponent(
         "git/tableside-toolkit/community-use-artwork/Community Use Package- Starfinder Religious Symbols").path,
     "--artwork": "Artwork",
+    "--lorespire": "build/lorespire",
     "--out": "Generated",
     "--work": ".build/field-guide-import"
 ]
@@ -53,6 +55,7 @@ var options = ImportOptions(
 options.rexardPacks = existingFolder(settings["--rexard"])
 options.actionIconsFont = existingFolder(settings["--artwork"])?
     .appendingPathComponent("pathfinder-icons/Pathfinder-Icons.ttf")
+options.lorespire = existingFolder(settings["--lorespire"])
 options.religiousSymbols = ReligiousSymbols(pathfinder: existingFolder(settings["--symbols"]),
                                             starfinder: existingFolder(settings["--starfinder-symbols"]))
 let creatures = ImportConfiguration(repository: options.paths.repository,
@@ -61,6 +64,7 @@ let creatures = ImportConfiguration(repository: options.paths.repository,
 do {
     options.iconOverrides = try IconSources.overrides(in: URL(fileURLWithPath: "icon-overrides.json"))
     options.iconMatchesFile = URL(fileURLWithPath: "icon-matches.tsv")
+    options.lorespireIcons = try LorespireIcons.load(from: URL(fileURLWithPath: "lorespire-icons.json"))
     let report = try CompendiumImporter(options: options).run()
     print(report.summary)
     try FileManager.default.createDirectory(at: creatures.outputDirectory, withIntermediateDirectories: true)

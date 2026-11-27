@@ -53,3 +53,13 @@ struct FittedCardTests {
         #expect(FittedCard<EmptyView>.layoutWidth(toFit: width) == layoutWidth)
     }
 }
+
+struct PageAnchorTests {
+    @Test("A link to a heading of the page scrolls in the web view; other links go to the app", arguments: [
+        ("fieldguide:///#Hireling", true), ("fieldguide:#Top", true), ("fieldguide:///images/a.png#x", false),
+        ("fieldguide:///", false), ("entry:lorespire.pf2e.popguide._.Boons", false), ("https://paizo.com/#a", false)
+    ])
+    func anchor(link: String, isAnchor: Bool) throws {
+        #expect(PageTemplate.isAnchor(try #require(URL(string: link))) == isAnchor)
+    }
+}

@@ -9,7 +9,8 @@ let package = Package(
         .library(name: "FieldGuideUI", targets: ["FieldGuideUI"]),
         .executable(name: "FieldGuide", targets: ["FieldGuide"]),
         .executable(name: "FieldGuideImport", targets: ["FieldGuideImport"]),
-        .executable(name: "FieldGuideLoreSurvey", targets: ["FieldGuideLoreSurvey"])
+        .executable(name: "FieldGuideLoreSurvey", targets: ["FieldGuideLoreSurvey"]),
+        .executable(name: "FieldGuideLorespire", targets: ["FieldGuideLorespire"])
     ],
     dependencies: [
         .package(url: "https://github.com/scooper4711/tabletop-kit.git", from: "1.25.0")
@@ -21,13 +22,15 @@ let package = Package(
         .executableTarget(name: "FieldGuideLoreSurvey",
                           dependencies: ["SourcebookLore", "SourcebookLoreTestSupport", "FieldGuideKit"]),
         .target(name: "CompendiumImport", dependencies: [
-            "FieldGuideKit", .product(name: "Bestiary", package: "tabletop-kit"),
+            "FieldGuideKit", "LorespireImport", .product(name: "Bestiary", package: "tabletop-kit"),
             .product(name: "CreatureImport", package: "tabletop-kit")
         ]),
         .executableTarget(name: "FieldGuideImport", dependencies: [
             "CompendiumImport", .product(name: "CreatureImport", package: "tabletop-kit")
         ]),
         .target(name: "LoreSync", dependencies: ["SourcebookLore"]),
+        .target(name: "LorespireImport"),
+        .executableTarget(name: "FieldGuideLorespire", dependencies: ["LorespireImport"]),
         .target(name: "FieldGuideUI", dependencies: [
             "FieldGuideKit", "SourcebookLore", "LoreSync", .product(name: "BattleCards", package: "tabletop-kit"),
             .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit"),
@@ -44,7 +47,8 @@ let package = Package(
         ]),
         .testTarget(name: "SourcebookLoreTests", dependencies: ["SourcebookLore", "SourcebookLoreTestSupport"]),
         .testTarget(name: "LoreSyncTests", dependencies: ["LoreSync", "SourcebookLore"]),
-        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport"]),
+        .testTarget(name: "CompendiumImportTests", dependencies: ["CompendiumImport", "LorespireImport"]),
+        .testTarget(name: "LorespireImportTests", dependencies: ["LorespireImport"]),
         .testTarget(name: "FieldGuideUITests", dependencies: [
             "FieldGuideUI", "FieldGuideKit", "SourcebookLore", "SourcebookLoreTestSupport",
             .product(name: "Bestiary", package: "tabletop-kit"), .product(name: "CreatureArt", package: "tabletop-kit"),

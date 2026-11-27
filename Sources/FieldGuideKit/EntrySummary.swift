@@ -45,3 +45,24 @@ public struct EntrySummary: Identifiable, Hashable, Sendable {
         first.name.localizedStandardCompare(second.name) == .orderedAscending
     }
 }
+
+/// Entries under one section heading of a list.
+public struct EntryGroup: Identifiable, Equatable, Sendable {
+    public let title: String
+    public let entries: [EntrySummary]
+
+    public var id: String { title }
+
+    /// `entries` grouped by their first section, the groups in the order their first entries come, the entries in
+    /// theirs.
+    public static func bySection(_ entries: [EntrySummary]) -> [EntryGroup] {
+        var titles: [String] = []
+        var groups: [String: [EntrySummary]] = [:]
+        for entry in entries {
+            let title = entry.values(of: .section).first ?? ""
+            if groups[title] == nil { titles.append(title) }
+            groups[title, default: []].append(entry)
+        }
+        return titles.map { EntryGroup(title: $0, entries: groups[$0] ?? []) }
+    }
+}

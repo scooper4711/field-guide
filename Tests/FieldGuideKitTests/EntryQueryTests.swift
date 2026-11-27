@@ -99,7 +99,29 @@ func summary(_ name: String, level: Int? = 1, facets: [Facet: [String]] = [:]) -
         #expect(EntryCategory.deities.facets.isEmpty && EntryCategory.gmScreen.facets == [.section])
         #expect(EntryCategory.gmScreen.title == "GM Screen" && EntryCategory.gmScreen.singularTitle == "GM Screen")
         #expect(!EntryCategory.gmScreen.hasLevels)
+        #expect(EntryCategory.organizedPlay.title == "Organized Play")
+        #expect(EntryCategory.organizedPlay.symbol == "person.3")
+        #expect(EntryCategory.organizedPlay.singularTitle == "Organized Play" && !EntryCategory.organizedPlay.hasLevels)
+        #expect(EntryCategory.organizedPlay.facets == [.section])
         #expect(Facet.allCases.allSatisfy { !$0.title.isEmpty } && Facet.traits.matchesAll && !Facet.rarity.matchesAll)
         #expect(GameSystem.pathfinder.title == "Pathfinder" && GameSystem.starfinder.title == "Starfinder")
+    }
+}
+
+@Suite struct EntryGroupTests {
+    func entry(_ name: String, section: String?) -> EntrySummary {
+        EntrySummary(id: name, system: .pathfinder, category: .organizedPlay, name: name, level: nil, subtitle: "",
+                     image: "", facets: section.map { [.section: [$0]] } ?? [:])
+    }
+
+    @Test("Entries group by section, in the order the sections first come, keeping the entries' order")
+    func bySection() {
+        let entries = [entry("b", section: "Core"), entry("a", section: "Intro"), entry("c", section: "Core"),
+                       entry("d", section: nil)]
+        let groups = EntryGroup.bySection(entries)
+        #expect(groups.map(\.title) == ["Core", "Intro", ""])
+        #expect(groups.map { $0.entries.map(\.name) } == [["b", "c"], ["a"], ["d"]])
+        #expect(groups.first?.id == "Core" && EntryGroup.bySection([]).isEmpty)
+        #expect(EntryCategory.organizedPlay.groupsBySection && !EntryCategory.gmScreen.groupsBySection)
     }
 }

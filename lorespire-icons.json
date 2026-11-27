@@ -1,0 +1,29 @@
+{
+  "parts": {
+    "Introduction": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_21_t.png",
+    "Core Guide": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_32_t.PNG",
+    "Player Options and Tools": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_30_t.png",
+    "GM Options and Tools": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_55_t.PNG",
+    "All Supplemental Materials": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_23_t.PNG",
+    "Venture-Officer Handbook": "fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/feather_t_06.png"
+  },
+  "pages": {
+    "Achievement-Points": "fairytaleiconsmegapack/TrophyIcons/TrophyIcons_transparent/TrophyIcons_21_t.png",
+    "Achievement-Points-Boon-List": "fairytaleiconsmegapack/TrophyIcons/TrophyIcons_transparent/TrophyIcons_32_t.png",
+    "Boons": "fairytaleiconsmegapack/TrophyIcons/TrophyIcons_transparent/TrophyIcons_14_t.png",
+    "Changelog": "fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/bell_t_01.png",
+    "Character-Creation": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_58_t.PNG",
+    "Character-Creation-Guidelines": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_58_t.PNG",
+    "Community-Code-of-Conduct": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_66_t.PNG",
+    "Factions-and-Reputation": "fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/cloth_t_05.png",
+    "Filling-Out-a-Chronicle": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_34_t.PNG",
+    "GM-Chronicles": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_34_t.PNG",
+    "GM-Rewards": "fairytaleiconsmegapack/TrophyIcons/TrophyIcons_transparent/TrophyIcons_12_t.png",
+    "Issuing-Official-Chronicles": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_34_t.PNG",
+    "Playtest-Rules": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_16_t.png",
+    "Retail-Incentive-Program": "fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/coins_t_01.png",
+    "Spellcasting-Service-Costs": "fairytaleiconsmegapack/ScrollsAndBooks/ScrollsAndBooks_t/ScrollsAndBooks_53_t.PNG",
+    "Treasure-Access": "fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/coins_t_03.png",
+    "Treasure-Bundles": "fantasyiconsmegapack/LootIcons/LootIcons_png/transparent/chest_t_02.png"
+  }
+}

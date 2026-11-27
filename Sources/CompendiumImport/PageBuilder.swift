@@ -62,17 +62,12 @@ struct PageBuilder {
             + "<p class=\"subtitle\">\(HTML.escape(subtitle))</p></div>"
         // A religious symbol sits in the top-right corner, other art on the left.
         if image.hasPrefix(ImageCollector.symbolFolder + "/") {
-            return "<header class=\"entry-header\">\(title)\(picture(image, className: "symbol"))</header>"
+            return "<header class=\"entry-header\">\(title)\(HTML.picture(image, className: "symbol"))</header>"
         }
-        return "<header class=\"entry-header\">\(picture(image, className: "art"))\(title)</header>"
+        return "<header class=\"entry-header\">\(HTML.picture(image, className: "art"))\(title)</header>"
     }
 
     /// The image's `<img>`, or "" for none. A creature's art may be missing; its image then takes no room.
-    private func picture(_ image: String, className: String) -> String {
-        image.isEmpty ? "" : "<img class=\"\(className)\" src=\"\(HTML.imageURL(image))\" alt=\"\" "
-            + "onerror=\"this.remove()\">"
-    }
-
     private func body(_ document: SourceDocument) -> String {
         let system = document.systemData
         switch document.category {

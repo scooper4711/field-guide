@@ -9,6 +9,12 @@ enum HTML {
             .replacingOccurrences(of: "\"", with: "&quot;")
     }
 
+    /// A stored image in a page's header, gone if it fails to load; nothing for an empty path.
+    static func picture(_ image: String, className: String) -> String {
+        image.isEmpty ? "" : "<img class=\"\(className)\" src=\"\(imageURL(image))\" alt=\"\" "
+            + "onerror=\"this.remove()\">"
+    }
+
     /// The app's URL for a stored image, percent-encoded.
     static func imageURL(_ path: String) -> String {
         "fieldguide:///images/" + (path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? path)
