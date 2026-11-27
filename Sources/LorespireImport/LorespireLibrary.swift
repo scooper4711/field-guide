@@ -4,6 +4,8 @@ import Foundation
 public struct LorespireEntry: Sendable, Equatable {
     /// `lorespire.<system>.<wiki page>`, such as `lorespire.pf2e.popguide._.Boons`.
     public let id: String
+    /// The wiki page, or `<document page>.<heading id>` for a section without a page of its own.
+    public let page: String
     public let name: String
     /// The part of the guide: Introduction, Core Guide, …, or Venture-Officer Handbook.
     public let part: String
@@ -38,7 +40,8 @@ public struct LorespireLibrary: Sendable {
         return pages.enumerated().map { order, page in
             let (guide, section) = page
             let html = LorespireMarkup.simplify(Self.shiftingHeadings(section.html, below: section.level))
-            return LorespireEntry(id: prefix + section.key, name: section.name, part: section.part, order: order,
+            return LorespireEntry(id: prefix + section.key, page: section.key, name: section.name,
+                                  part: section.part, order: order,
                                   html: rewriter.rewrite(html, in: guide.id),
                                   source: Self.source(of: section, in: guide))
         }

@@ -32,6 +32,8 @@ enum LorespireDownload {
     func imported() throws -> Imported {
         try Imported { options in
             options.lorespire = try? LorespireDownload.write(in: options.workFolder.deletingLastPathComponent())
+            options.lorespireIcons = LorespireIcons(parts: ["Intro": "Weapons/sword.png"],
+                                                    pages: ["Boons": "Weapons/missing.png"])
         }
     }
 
@@ -44,6 +46,8 @@ enum LorespireDownload {
         #expect(pathfinder.map(\.name) == ["Intro", "Boons", "Officers"])
         #expect(pathfinder.map { $0.values(of: .section) } == [["Intro"], ["Intro"], ["Venture-Officer Handbook"]])
         #expect(pathfinder.map(\.subtitle) == ["Intro", "Intro", "Venture-Officer Handbook"])
+        // Intro's part has the sword; Boons names a picture the packs lack; the handbook has none.
+        #expect(pathfinder.map(\.image) == ["rexard/Weapons/sword.webp", "", ""])
         let starfinder = try imported.catalog.summaries(of: .organizedPlay, in: .starfinder)
         #expect(starfinder.map(\.id) == ["lorespire.sf2e.sfs2guide._.Intro", "lorespire.sf2e.vohandbook._.Officers"])
     }
@@ -54,6 +58,8 @@ enum LorespireDownload {
         defer { imported.repository.remove() }
         let html = try imported.page("lorespire.pf2e.popguide._.Boons")
         #expect(html.hasPrefix("<header class=\"entry-header\"><div><h1>Boons</h1><p class=\"subtitle\">Intro</p>"))
+        #expect(try imported.page("lorespire.pf2e.pfs2guide._.Intro").contains(
+            "<img class=\"art\" src=\"fieldguide:///images/rexard/Weapons/sword.webp\""))
         #expect(html.contains("<img src=\"fieldguide:///images/lorespire/7.png\" />"))
         #expect(html.hasSuffix("<footer class=\"source\"><a href=\""
             + "https://lorespire.paizo.com/tiki-index.php?page=popguide._.Boons\">Lorespire</a></footer>"))
@@ -71,5 +77,26 @@ enum LorespireDownload {
         let imported = try Imported()
         defer { imported.repository.remove() }
         #expect(try imported.catalog.summaries(of: .organizedPlay, in: .pathfinder).isEmpty)
+    }
+}
+
+@Suite struct LorespireIconTests {
+    let icons = LorespireIcons(parts: ["Core Guide": "scroll.png"], pages: ["Boons": "medal.png"])
+
+    @Test("A page's own picture, by its name without its book, comes before its part's")
+    func choice() {
+        #expect(icons.file(forPage: "popguide._.Boons", part: "Core Guide") == "medal.png")
+        #expect(icons.file(forPage: "pfs2guide._.Boons", part: "Other") == "medal.png")
+        #expect(icons.file(forPage: "pfs2guide._.Key-Terms", part: "Core Guide") == "scroll.png")
+        #expect(icons.file(forPage: "pfs2guide", part: "Other") == nil)
+    }
+
+    @Test("The file is read when it is there, and means no pictures when it isn't")
+    func load() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("icons-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: url) }
+        #expect(try LorespireIcons.load(from: url) == LorespireIcons())
+        try JSONEncoder().encode(icons).write(to: url)
+        #expect(try LorespireIcons.load(from: url) == icons)
     }
 }

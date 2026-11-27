@@ -35,3 +35,14 @@ the part, subtitle the part, sort key the zero-padded order, a footer linking th
 `files/` to `Generated/Images/lorespire/` and writes the licenses page as Markdown to
 `Generated/Licenses/Lorespire Licenses and Trademarks.md` for the About screen. Without a download there are no
 such rows. `scripts/fingerprint.sh` leaves `organizedPlay` rows out.
+
+## Icons (`lorespire-icons.json`)
+Lorespire's pages have no Foundry icon to match against the Rexard packs, so `lorespire-icons.json` picks by hand:
+`pages` by the wiki page's name after its book (`popguide._.Boons` and `pfs2guide._.Boons` share `Boons`), else
+`parts` by part. `FieldGuideImport` loads it (`LorespireIcons`); the importer copies the picture through
+`ImageCollector.rexardIcon`, so without the packs the entries have none. The icon shows in the list row and the
+page header, as for other entries.
+
+## List (`EntryGroup`, `EntryListView`)
+A category with `groupsBySection` (Organized Play only) lists its entries under a header per section, in the order
+the sections first come in the catalog's order (the sort key), so the parts read as in the guide.

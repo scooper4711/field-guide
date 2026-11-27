@@ -10,11 +10,15 @@ struct OrganizedPlay {
     static let imagesFolder = "lorespire"
 
     let library: LorespireLibrary
+    /// The entries' icons, by the Rexard picture `LorespireIcons` picks; "" for none.
+    var icon: (LorespireEntry) -> String = { _ in "" }
 
     /// Writes the images and the licenses into `output`, and returns the entries.
     func importing(into output: URL) throws -> [EntryRow] {
         let rows = try GameSystem.allCases.flatMap { system in
-            try library.entries(for: Self.lorespireSystem(system)).map { Self.row($0, system: system) }
+            try library.entries(for: Self.lorespireSystem(system)).map {
+                Self.row($0, system: system, icon: icon($0))
+            }
         }
         try copyFiles(to: output.appendingPathComponent("Images").appendingPathComponent(Self.imagesFolder))
         let licenses = output.appendingPathComponent("Licenses")
@@ -24,14 +28,15 @@ struct OrganizedPlay {
         return rows
     }
 
-    static func row(_ entry: LorespireEntry, system: GameSystem) -> EntryRow {
-        let header = "<header class=\"entry-header\"><div><h1>\(HTML.escape(entry.name))</h1>"
+    static func row(_ entry: LorespireEntry, system: GameSystem, icon: String = "") -> EntryRow {
+        let header = "<header class=\"entry-header\">\(HTML.picture(icon, className: "art"))"
+            + "<div><h1>\(HTML.escape(entry.name))</h1>"
             + "<p class=\"subtitle\">\(HTML.escape(entry.part))</p></div></header>"
         let body = "<section class=\"description journal\">\(entry.html)</section>"
         let source = "<footer class=\"source\">\(HTML.link("Lorespire", to: entry.source.absoluteString))</footer>"
         return EntryRow(
             id: entry.id, system: system, category: .organizedPlay, name: entry.name, level: nil,
-            subtitle: entry.part, image: "", facets: [.section: [entry.part]], html: header + body + source,
+            subtitle: entry.part, image: icon, facets: [.section: [entry.part]], html: header + body + source,
             text: HTML.plainText(header + body), traitSlugs: [], sortKey: String(format: "%04d", entry.order)
         )
     }
