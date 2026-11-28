@@ -74,3 +74,13 @@ struct PageAnchorTests {
         #expect(PageTemplate.scrolling(to: "\"); alert(1); (\"").contains("%22%29%3B%20alert%281%29"))
     }
 }
+
+struct LinkPeekTests {
+    @Test("The click script's message reads as the link and its place; anything else is ignored")
+    func message() throws {
+        let peek = try #require(LinkPeek(message: ["href": "entry:a.b", "x": 1.0, "y": 2.0, "w": 3.0, "h": 4.0]))
+        #expect(peek.url.absoluteString == "entry:a.b" && peek.rect == CGRect(x: 1, y: 2, width: 3, height: 4))
+        #expect(LinkPeek(message: ["href": "entry:a.b"]) == nil)
+        #expect(LinkPeek(message: "entry:a.b") == nil)
+    }
+}

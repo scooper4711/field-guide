@@ -92,6 +92,10 @@ struct PageView: View {
     /// A stored value from before the Lore tab ("statBlock") reads as the default, the card.
     @AppStorage("creatureView") private var creatureView = CreatureView.card
     @State private var entryTab: EntryTab
+    /// Spike: the in-app link shown in a popover, and where it was tapped.
+    @State private var peek: Peek?
+    /// Spike: whether this page's links pop up (a popover's own links follow, as before).
+    var peeksLinks = true
 
     init(link: PageLink, follow: @escaping (PageLink) -> Void) {
         self.link = link
@@ -163,11 +167,25 @@ struct PageView: View {
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {
-        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor) { url in
+        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor,
+                     onPeek: peeksLinks ? { url, rect in
+                         if case let .page(next) = Self.destination(for: url, system: system) {
+                             peek = Peek(link: next, rect: rect)
+                         }
+                     } : nil) { url in
             switch Self.destination(for: url, system: system) {
             case let .page(next): follow(next)
             case let .browser(web): openURL(web)
             case .ignored: break
+            }
+        }
+        .popover(isPresented: Binding(get: { peek != nil }, set: { if !$0 { peek = nil } }),
+                 attachmentAnchor: .rect(.rect(peek?.rect ?? .zero)), arrowEdge: .bottom) {
+            if let peek {
+                PeekView(link: peek.link) { next in
+                    self.peek = nil
+                    follow(next)
+                }
             }
         }
     }
@@ -204,6 +222,57 @@ struct PageView: View {
             return .page(.entry(entry.id, entry.isDetails ? .details : .overview, anchor: entry.anchor))
         case "trait": return .page(.trait(decoded, system))
         default: return LinkDestination.browserSchemes.contains(scheme) ? .browser(url) : .ignored
+        }
+    }
+}
+
+/// Spike: an in-app link tapped on a page, and where.
+struct Peek: Equatable {
+    let link: PageLink
+    let rect: CGRect
+}
+
+/// Spike: a linked page in a popover, sized to its content up to a limit, with Open to replace the page with it.
+/// Its own links replace the page too.
+struct PeekView: View {
+    static let width: CGFloat = 460
+    static let maximumHeight: CGFloat = 560
+    @Environment(CatalogStore.self) private var store
+    @Environment(ArtModel.self) private var pdfArt
+    let link: PageLink
+    let open: (PageLink) -> Void
+    @State private var height: CGFloat = 160
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text(page?.name ?? "Not in the Field Guide").font(.headline)
+                Spacer()
+                Button("Open") { open(link) }
+                    .keyboardShortcut(.defaultAction)
+            }
+            .padding(10)
+            Divider()
+            if let page {
+                EntryWebView(html: page.html, data: store.data, pdfArt: pdfArt, anchor: anchor,
+                             onHeight: { height = $0 }) { url in
+                    if case let .page(next) = PageView.destination(for: url, system: page.system) { open(next) }
+                }
+                .frame(width: Self.width, height: min(max(height, 60), Self.maximumHeight))
+            }
+        }
+        .frame(width: Self.width)
+    }
+
+    private var anchor: String {
+        if case let .entry(_, _, anchor) = link { return anchor }
+        return ""
+    }
+
+    private var page: EntryPage? {
+        switch link {
+        case let .entry(id, _, _): store.page(id)
+        case let .trait(slug, system): store.trait(slug, in: system)
         }
     }
 }
