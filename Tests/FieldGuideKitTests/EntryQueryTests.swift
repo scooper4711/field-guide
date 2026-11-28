@@ -122,6 +122,16 @@ func summary(_ name: String, level: Int? = 1, facets: [Facet: [String]] = [:]) -
         #expect(groups.map(\.title) == ["Core", "Intro", ""])
         #expect(groups.map { $0.entries.map(\.name) } == [["b", "c"], ["a"], ["d"]])
         #expect(groups.first?.id == "Core" && EntryGroup.bySection([]).isEmpty)
-        #expect(EntryCategory.organizedPlay.groupsBySection && !EntryCategory.gmScreen.groupsBySection)
+        #expect(EntryCategory.organizedPlay.sectionOrder == .catalog && EntryCategory.spells.sectionOrder == nil)
+    }
+
+    @Test("The GM Screen's sections come by title, the entries without one last")
+    func bySectionTitle() {
+        let entries = [entry("d", section: nil), entry("b", section: "Running"), entry("a", section: "Playing"),
+                       entry("c", section: "Running")]
+        let groups = EntryGroup.bySection(entries, order: .title)
+        #expect(groups.map(\.title) == ["Playing", "Running", ""])
+        #expect(groups.map { $0.entries.map(\.name) } == [["a"], ["b", "c"], ["d"]])
+        #expect(EntryCategory.gmScreen.sectionOrder == .title)
     }
 }

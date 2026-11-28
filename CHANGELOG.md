@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Organized Play: the Pathfinder Society and Starfinder Society guides and the Venture-Officer Handbook from
   Lorespire, readable offline, one page per entry in guide order, with links between them
 
+### Changed
+- The GM Screen list is grouped under its sections: Playing the Game, Running the Game and the others
+
 ### Fixed
 - On a new install, an iPad in portrait shows the categories instead of hiding them
 

@@ -44,5 +44,7 @@ Lorespire's pages have no Foundry icon to match against the Rexard packs, so `lo
 page header, as for other entries.
 
 ## List (`EntryGroup`, `EntryListView`)
-A category with `groupsBySection` (Organized Play only) lists its entries under a header per section, in the order
-the sections first come in the catalog's order (the sort key), so the parts read as in the guide.
+A category with a `sectionOrder` lists its entries under a header per section. Organized Play's (`.catalog`) come in
+the order the sections first come in the catalog's order (the sort key), so the parts read as in the guide. The GM
+Screen's (`.title`) come by title, which is also the order of the Foundry journal's sections; its entries stay
+alphabetical.

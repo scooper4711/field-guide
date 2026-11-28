@@ -11,8 +11,8 @@ struct EntryListView: View {
     var body: some View {
         @Bindable var store = store
         List(selection: $selection) {
-            if store.category?.groupsBySection == true {
-                ForEach(EntryGroup.bySection(store.results)) { group in
+            if let order = store.category?.sectionOrder {
+                ForEach(EntryGroup.bySection(store.results, order: order)) { group in
                     Section(group.title) { rows(group.entries) }
                 }
             } else {
