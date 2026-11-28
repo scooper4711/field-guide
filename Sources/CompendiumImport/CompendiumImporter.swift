@@ -76,7 +76,7 @@ public struct CompendiumImporter {
         var guides = OrganizedPlay(library: LorespireLibrary(folder: folder))
         let icons = options.lorespireIcons
         guides.icon = { entry in icons.file(forPage: entry.page, part: entry.part).map(images.rexardIcon) ?? "" }
-        return try guides.importing(into: options.output)
+        return Self.showingCategoryIcons(try guides.importing(into: options.output), images: images)
     }
 
     /// Each entry's icon and why, in the work folder, and the matches to keep for machines without the Foundry
