@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The GM Screen list is grouped under its sections: Playing the Game, Running the Game and the others
 - Links that open a web page or mail end in an arrow (↗); links to other pages of the Field Guide don't
+- A link to another entry opens it in a popover beside the link. Open shows the entry in its category's list, and
+  Back returns to where you were, as in a browser
 
 ### Fixed
 - On a new install, an iPad in portrait shows the categories instead of hiding them
