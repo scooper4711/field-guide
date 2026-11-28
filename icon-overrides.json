@@ -1,1 +1,16 @@
-{}
+{
+  "category:actions": "spellbookmegapack/StrategyGameIcons/SGI_161.png",
+  "category:ancestries": "spellbookmegapack/StrategyGameIcons/SGI_48.PNG",
+  "category:archetypes": "spellbookmegapack/StrategyGameIcons/SGI_127.png",
+  "category:backgrounds": "spellbookmegapack/StrategyGameIcons/SGI_159.PNG",
+  "category:classes": "spellbookmegapack/StrategyGameIcons/SGI_63.PNG",
+  "category:conditions": "spellbookmegapack/Skill_Icon_Pack/blue/blue_17.png",
+  "category:deities": "spellbookmegapack/StrategyGameIcons/SGI_106.png",
+  "category:domains": "spellbookmegapack/Skill_Icon_Pack/yellow/yellow_15.PNG",
+  "category:gmScreen": "spellbookmegapack/StrategyGameIcons/SGI_97.png",
+  "category:heritages": "spellbookmegapack/StrategyGameIcons/SGI_01.png",
+  "pf2e.equipment.consumable:elixir": "fantasyiconsmegapack/PotionIcons/2.PNG",
+  "pf2e.equipment.consumable:potion": "fantasyiconsmegapack/PotionIcons/37.PNG",
+  "sf2e.equipment.consumable:elixir": "fantasyiconsmegapack/PotionIcons/2.PNG",
+  "sf2e.equipment.consumable:potion": "fantasyiconsmegapack/PotionIcons/37.PNG"
+}
