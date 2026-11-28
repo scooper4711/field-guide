@@ -4,12 +4,13 @@ import WebKit
 
 /// Shows an entry page's HTML with the app's stylesheet. Images, fonts and the stylesheet come through the
 /// `fieldguide:` scheme; every link the user taps is handed to `onLink` instead of loading, except a link to a
-/// heading on the page, which scrolls to it.
+/// heading on the page, which scrolls to it. The page opens scrolled to the heading `anchor` names, if any.
 @MainActor
 struct EntryWebView {
     let html: String
     let data: DataLocation
     let pdfArt: ArtModel
+    var anchor = ""
     let onLink: (URL) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(onLink: onLink) }
@@ -33,7 +34,8 @@ struct EntryWebView {
         context.coordinator.onLink = onLink
         guard context.coordinator.loadedHTML != html else { return }
         context.coordinator.loadedHTML = html
-        webView.loadHTMLString(PageTemplate.document(body: html), baseURL: URL(string: "fieldguide:///"))
+        webView.loadHTMLString(PageTemplate.document(body: html, anchor: anchor),
+                               baseURL: URL(string: "fieldguide:///"))
     }
 
     @MainActor
@@ -77,13 +79,23 @@ enum PageTemplate {
         url.scheme == "fieldguide" && url.fragment != nil && (url.path.isEmpty || url.path == "/")
     }
 
-    static func document(body: String) -> String {
+    /// `body` as a page, which scrolls to the element with the id `anchor` once loaded; "" stays at the top.
+    static func document(body: String, anchor: String = "") -> String {
         """
         <!doctype html><html><head><meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="fieldguide:///style/entry.css"></head>
+        <link rel="stylesheet" href="fieldguide:///style/entry.css">\(scrolling(to: anchor))</head>
         <body>\(body)</body></html>
         """
+    }
+
+    /// A script that scrolls to `anchor` once the page and its images are laid out. The id goes in percent-encoded,
+    /// so no id can break out of the script's string.
+    static func scrolling(to anchor: String) -> String {
+        guard !anchor.isEmpty,
+              let encoded = anchor.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else { return "" }
+        return "<script>addEventListener(\"load\", () => document.getElementById(decodeURIComponent(\"\(encoded)\"))"
+            + "?.scrollIntoView())</script>"
     }
 }
 

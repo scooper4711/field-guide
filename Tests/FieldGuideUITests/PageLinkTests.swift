@@ -10,6 +10,9 @@ struct PageLinkTests {
     @Test("Entry links open the entry, Details links its Details, trait links the trait", arguments: [
         ("entry:Compendium.pf2e.classes.Item.fi1", PageLink.entry("Compendium.pf2e.classes.Item.fi1")),
         ("entry:Compendium.pf2e.classes.Item.fi1#details", .entry("Compendium.pf2e.classes.Item.fi1", .details)),
+        ("entry:lorespire.pf2e.popguide._.Boons#Achievement-Points",
+         .entry("lorespire.pf2e.popguide._.Boons", anchor: "Achievement-Points")),
+        ("entry:lorespire.pf2e.a%27b#x%20y", .entry("lorespire.pf2e.a'b", anchor: "x y")),
         ("trait:fire", .trait("fire", .pathfinder))
     ])
     func pageLinks(url: String, link: PageLink) throws {
@@ -61,5 +64,13 @@ struct PageAnchorTests {
     ])
     func anchor(link: String, isAnchor: Bool) throws {
         #expect(PageTemplate.isAnchor(try #require(URL(string: link))) == isAnchor)
+    }
+
+    @Test("A page opened at a heading scrolls to it once loaded, its id kept out of the script's syntax")
+    func scrolling() {
+        #expect(!PageTemplate.document(body: "<p>x</p>").contains("<script>"))
+        let page = PageTemplate.document(body: "<h2 id=\"A-b\">A</h2>", anchor: "A-b")
+        #expect(page.contains("getElementById(decodeURIComponent(\"A%2Db\"))?.scrollIntoView()"))
+        #expect(PageTemplate.scrolling(to: "\"); alert(1); (\"").contains("%22%29%3B%20alert%281%29"))
     }
 }

@@ -29,8 +29,16 @@ import Testing
     @Test func detailsLinksReadBackAsTheirEntry() {
         let target = EntryLink.details(of: "Compendium.pf2e.classes.Item.fi1")
         #expect(target == "Compendium.pf2e.classes.Item.fi1#details")
-        #expect(EntryLink.entry(of: target) == ("Compendium.pf2e.classes.Item.fi1", true))
-        #expect(EntryLink.entry(of: "Compendium.pf2e.classes.Item.fi1") == ("Compendium.pf2e.classes.Item.fi1", false))
+        #expect(EntryLink.entry(of: target)
+            == .init(id: "Compendium.pf2e.classes.Item.fi1", isDetails: true, anchor: ""))
+        #expect(EntryLink.entry(of: "Compendium.pf2e.classes.Item.fi1")
+            == .init(id: "Compendium.pf2e.classes.Item.fi1", isDetails: false, anchor: ""))
+    }
+
+    @Test func headingLinksReadBackAsTheirEntryAndHeading() {
+        #expect(EntryLink.entry(of: "lorespire.pf2e.popguide._.Boons#Achievement-Points")
+            == .init(id: "lorespire.pf2e.popguide._.Boons", isDetails: false, anchor: "Achievement-Points"))
+        #expect(EntryLink.entry(of: "lorespire.pf2e.x#") == .init(id: "lorespire.pf2e.x", isDetails: false, anchor: ""))
     }
 
     @Test func newCategoriesHaveTheirOwnTitles() {

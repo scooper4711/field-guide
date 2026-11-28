@@ -135,7 +135,8 @@ public struct EntryPage: Equatable, Sendable {
     }
 }
 
-/// How links lead to an entry's Details (`EntryPage.details`): `entry:<id>#details`.
+/// How links lead to an entry's Details (`EntryPage.details`), `entry:<id>#details`, or to a heading on its page,
+/// `entry:<id>#<heading id>`. Entry ids never hold a `#`.
 public enum EntryLink {
     public static let detailsSuffix = "#details"
 
@@ -144,9 +145,19 @@ public enum EntryLink {
         entryID + detailsSuffix
     }
 
-    /// The entry a link target leads to, and whether to its Details.
-    public static func entry(of target: String) -> (id: String, isDetails: Bool) {
-        target.hasSuffix(detailsSuffix) ? (String(target.dropLast(detailsSuffix.count)), true) : (target, false)
+    /// Where a link target leads: an entry, its Details or not, and the heading to scroll to ("" for the top).
+    public struct Target: Equatable, Sendable {
+        public let id: String
+        public let isDetails: Bool
+        public let anchor: String
+    }
+
+    public static func entry(of target: String) -> Target {
+        let parts = target.split(separator: "#", maxSplits: 1, omittingEmptySubsequences: false)
+        let id = String(parts[0])
+        let fragment = parts.count > 1 ? String(parts[1]) : ""
+        let isDetails = "#" + fragment == detailsSuffix
+        return Target(id: id, isDetails: isDetails, anchor: isDetails ? "" : fragment)
     }
 }
 
