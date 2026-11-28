@@ -64,9 +64,15 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         }
     }
 
-    /// Whether the list shows its entries under their section, in the catalog's order: the Organized Play guides,
-    /// whose parts read in order.
-    public var groupsBySection: Bool { self == .organizedPlay }
+    /// How the list orders the sections it shows its entries under, or nil for a flat list: the Organized Play
+    /// guides' parts read in guide order, the GM Screen's journal sections by title.
+    public var sectionOrder: SectionOrder? {
+        switch self {
+        case .organizedPlay: .catalog
+        case .gmScreen: .title
+        default: nil
+        }
+    }
 
     /// The category's own filters, after level, rarity, traits and source.
     public var facets: [Facet] {
@@ -81,4 +87,12 @@ public enum EntryCategory: String, CaseIterable, Codable, Sendable, Identifiable
         default: []
         }
     }
+}
+
+/// How a list grouped by section orders its sections.
+public enum SectionOrder: Sendable {
+    /// In the order their first entries come in the catalog.
+    case catalog
+    /// By title; the entries without a section come last.
+    case title
 }

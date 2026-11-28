@@ -25,9 +25,11 @@ its own guide's pages, then the pages of the guides for both, numbered in that o
 Per entry: headings move up so its first sub-headings are `h2`; `LorespireMarkup` turns tab sets into an
 `h6.tab` per tab, mouseover footnotes into an inline `<small>(…)</small>`, cards into `<aside>`, drops every other
 `div` and `span`, and keeps only `href`, `src`, `alt`, `id`, `rowspan`, `colspan`, `width` and `height`.
-`LorespireLinkRewriter` then points `tiki-index.php?page=X#frag` at the entry holding heading `frag` (or page `X`),
-as `entry:<id>`; pages outside the system's guides and attachments go to Lorespire; images to
-`fieldguide:///images/lorespire/<file>`.
+`LorespireLinkRewriter` then points `tiki-index.php?page=X#frag` at the entry holding heading `frag` (or page `X`):
+`#frag` within that entry, else `entry:<id>#frag`, or plain `entry:<id>` when `frag` is the entry's own heading or a
+folded empty page's, which its page leaves out, or `details`, which the app reads as the Details tab. The app opens
+an `entry:<id>#frag` page scrolled to `frag` (`PageLink.entry(_:_:anchor:)`, `PageTemplate.scrolling(to:)`). Pages
+outside the system's guides and attachments go to Lorespire; images to `fieldguide:///images/lorespire/<file>`.
 
 ## Catalog (`CompendiumImport.OrganizedPlay`)
 `FieldGuideImport --lorespire build/lorespire` adds a row per entry: category `organizedPlay`, facet `.section` =
@@ -44,5 +46,7 @@ Lorespire's pages have no Foundry icon to match against the Rexard packs, so `lo
 page header, as for other entries.
 
 ## List (`EntryGroup`, `EntryListView`)
-A category with `groupsBySection` (Organized Play only) lists its entries under a header per section, in the order
-the sections first come in the catalog's order (the sort key), so the parts read as in the guide.
+A category with a `sectionOrder` lists its entries under a header per section. Organized Play's (`.catalog`) come in
+the order the sections first come in the catalog's order (the sort key), so the parts read as in the guide. The GM
+Screen's (`.title`) come by title, which is also the order of the Foundry journal's sections; its entries stay
+alphabetical.

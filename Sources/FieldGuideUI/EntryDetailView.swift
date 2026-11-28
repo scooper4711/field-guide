@@ -3,9 +3,10 @@ import FieldGuideKit
 import SourcebookLore
 import SwiftUI
 
-/// What an entry page can lead to: another entry, on its overview or its Details, or a trait's description.
+/// What an entry page can lead to: another entry, on its overview or its Details and scrolled to a heading's id
+/// ("" for the top), or a trait's description.
 enum PageLink: Hashable {
-    case entry(String, EntryTab = .overview)
+    case entry(String, EntryTab = .overview, anchor: String = "")
     case trait(String, GameSystem)
 }
 
@@ -95,7 +96,7 @@ struct PageView: View {
     init(link: PageLink, follow: @escaping (PageLink) -> Void) {
         self.link = link
         self.follow = follow
-        if case let .entry(_, tab) = link {
+        if case let .entry(_, tab, _) = link {
             _entryTab = State(initialValue: tab)
         } else {
             _entryTab = State(initialValue: .overview)
@@ -162,7 +163,7 @@ struct PageView: View {
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {
-        EntryWebView(html: html, data: store.data, pdfArt: pdfArt) { url in
+        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor) { url in
             switch Self.destination(for: url, system: system) {
             case let .page(next): follow(next)
             case let .browser(web): openURL(web)
@@ -178,15 +179,21 @@ struct PageView: View {
         return (key, creature)
     }
 
+    /// The heading the page opens at, for a link to one.
+    private var anchor: String {
+        if case let .entry(_, _, anchor) = link { return anchor }
+        return ""
+    }
+
     private var page: EntryPage? {
         switch link {
-        case let .entry(id, _): store.page(id)
+        case let .entry(id, _, _): store.page(id)
         case let .trait(slug, system): store.trait(slug, in: system)
         }
     }
 
-    /// `entry:<id>`, `entry:<id>#details` and `trait:<slug>` links follow to a page; web and mail links open in
-    /// the browser; anything else is ignored.
+    /// `entry:<id>`, `entry:<id>#details`, `entry:<id>#<heading>` and `trait:<slug>` links follow to a page; web and
+    /// mail links open in the browser; anything else is ignored.
     static func destination(for url: URL, system: GameSystem) -> LinkDestination {
         let target = String(url.absoluteString.drop { $0 != ":" }.dropFirst())
         let decoded = target.removingPercentEncoding ?? target
@@ -194,7 +201,7 @@ struct PageView: View {
         switch scheme {
         case "entry":
             let entry = EntryLink.entry(of: decoded)
-            return .page(.entry(entry.id, entry.isDetails ? .details : .overview))
+            return .page(.entry(entry.id, entry.isDetails ? .details : .overview, anchor: entry.anchor))
         case "trait": return .page(.trait(decoded, system))
         default: return LinkDestination.browserSchemes.contains(scheme) ? .browser(url) : .ignored
         }

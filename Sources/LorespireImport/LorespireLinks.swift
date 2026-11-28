@@ -10,19 +10,29 @@ struct LorespireLinkRewriter {
     let headings: [String: [String: String]]
     /// The first entry of each document, by document id.
     let firstEntries: [String: String]
+    /// `<entry id>#<heading id>` for each entry's own heading and those of the empty pages folded into it, which
+    /// a link opens at the top: the entry's page leaves them out.
+    let starts: Set<String>
     /// The downloaded files' names, by Lorespire file ID.
     let files: [Int: String]
 
     static let imagesPath = "fieldguide:///images/lorespire/"
+    /// The fragment the app reads as an entry's Details tab (FieldGuideKit's `EntryLink`), never a heading.
+    static let detailsFragment = "details"
 
     /// The Lorespire file IDs that some HTML links to or shows.
     static func fileIDs(in html: String) -> Set<Int> {
         Set(html.matches(of: /tiki-download_file\.php\?fileId=(\d+)/).compactMap { Int($0.1) })
     }
 
-    /// An `entry:` link to an entry, its id percent-encoded.
-    static func entryLink(_ id: String) -> String {
-        "entry:" + (id.addingPercentEncoding(withAllowedCharacters: entryCharacters) ?? id)
+    /// An `entry:` link to an entry, or to a heading on its page, percent-encoded.
+    static func entryLink(_ id: String, heading: String = "") -> String {
+        let link = "entry:" + encoded(id)
+        return heading.isEmpty || heading == detailsFragment ? link : link + "#" + encoded(heading)
+    }
+
+    private static func encoded(_ text: String) -> String {
+        text.addingPercentEncoding(withAllowedCharacters: entryCharacters) ?? text
     }
 
     private static let entryCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "._-~"))
@@ -68,9 +78,11 @@ struct LorespireLinkRewriter {
         return Lorespire.pageURL(page).absoluteString + (fragment.map { "#" + $0 } ?? "")
     }
 
-    /// A link to a heading: within the page when the heading is in the entry the link is in, else to its entry.
+    /// A link to a heading: within the page when the heading is in the entry the link is in, else to the heading on
+    /// its entry's page, or to the page's top for the entry's own heading.
     private func link(to entry: String, fragment: String, from place: Place) -> String {
-        entry == place.entry ? "#" + fragment : Self.entryLink(entry)
+        if entry == place.entry { return "#" + fragment }
+        return Self.entryLink(entry, heading: starts.contains(entry + "#" + fragment) ? "" : fragment)
     }
 
     private func document(holding entry: String) -> String? {

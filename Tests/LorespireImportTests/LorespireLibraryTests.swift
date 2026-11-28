@@ -28,15 +28,15 @@ struct LorespireLibraryTests {
         ])
     }
 
-    @Test("Links open the system's entries: by page, by heading, and empty pages open the next one")
+    @Test("Links open the system's entries: by page, at a heading, and empty pages open the next one")
     func entryLinks() throws {
         let entries = try entries(.pathfinder)
         let intro = try entry("lorespire.pf2e.demo._.Intro", in: entries).html
         #expect(intro.contains("<a href=\"entry:lorespire.pf2e.demo._.Making-Heroes\">Making Heroes</a>"))
         let heroes = try entry("lorespire.pf2e.demo._.Making-Heroes", in: entries).html
-        #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Intro\">the basics"))
-        #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Intro\">the tail"))
-        #expect(heroes.contains("<a href=\"entry:lorespire.pf2e.demo._.Rules\">deep</a>"))
+        #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Intro#Basics\">the basics"))
+        #expect(heroes.contains("href=\"entry:lorespire.pf2e.demo._.Intro#Tail\">the tail"))
+        #expect(heroes.contains("<a href=\"entry:lorespire.pf2e.demo._.Rules#Deep\">deep</a>"))
         // A heading in the same entry stays an anchor on the page, however the link names it.
         let rules = try entry("lorespire.pf2e.demo._.Rules", in: entries).html
         #expect(rules.contains("<a href=\"#Deep\">here</a> <a href=\"#Deep\">again</a>"))
@@ -92,5 +92,15 @@ struct LorespireLibraryTests {
             try library.entries(for: .pathfinder)
         }
         #expect(LorespireError.missingDownload(path: "/x").description.contains("run make lorespire"))
+    }
+}
+
+@Suite("Lorespire entry links")
+struct LorespireEntryLinkTests {
+    @Test("A link to a heading names it after the entry, encoded; never as the app's Details fragment")
+    func headings() {
+        #expect(LorespireLinkRewriter.entryLink("lorespire.pf2e.a'b") == "entry:lorespire.pf2e.a%27b")
+        #expect(LorespireLinkRewriter.entryLink("lorespire.pf2e.x", heading: "A b") == "entry:lorespire.pf2e.x#A%20b")
+        #expect(LorespireLinkRewriter.entryLink("lorespire.pf2e.x", heading: "details") == "entry:lorespire.pf2e.x")
     }
 }

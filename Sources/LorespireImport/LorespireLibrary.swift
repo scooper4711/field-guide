@@ -74,15 +74,18 @@ public struct LorespireLibrary: Sendable {
         var pages: [String: String] = [:]
         var headings: [String: [String: String]] = [:]
         var firstEntries: [String: String] = [:]
+        var starts: Set<String> = []
         for (guide, sections) in zip(guides, sections) {
             for section in sections {
+                let entry = prefix + section.key
+                for id in [section.headingID] + section.foldedHeadingIDs { starts.insert(entry + "#" + id) }
                 for key in [section.key] + section.aliases { pages[key] = pages[key] ?? prefix + section.key }
                 for id in section.headingIDs { headings[guide.id, default: [:]][id] = prefix + section.key }
             }
             firstEntries[guide.id] = sections.first.map { prefix + $0.key }
         }
         return LorespireLinkRewriter(documents: documents, pages: pages, headings: headings,
-                                     firstEntries: firstEntries, files: try savedFiles())
+                                     firstEntries: firstEntries, starts: starts, files: try savedFiles())
     }
 
     /// The saved files by Lorespire file ID: each is named `<file ID>-<name>` or `<file ID>.<extension>`.

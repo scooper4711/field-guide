@@ -53,9 +53,18 @@ public struct EntryGroup: Identifiable, Equatable, Sendable {
 
     public var id: String { title }
 
-    /// `entries` grouped by their first section, the groups in the order their first entries come, the entries in
-    /// theirs.
-    public static func bySection(_ entries: [EntrySummary]) -> [EntryGroup] {
+    /// `entries` grouped by their first section, the entries in their order and the groups in `order`.
+    public static func bySection(_ entries: [EntrySummary], order: SectionOrder = .catalog) -> [EntryGroup] {
+        let groups = inCatalogOrder(entries)
+        guard order == .title else { return groups }
+        return groups.sorted { first, second in
+            if first.title.isEmpty || second.title.isEmpty { return second.title.isEmpty && !first.title.isEmpty }
+            return first.title.localizedStandardCompare(second.title) == .orderedAscending
+        }
+    }
+
+    /// The groups in the order their first entries come.
+    private static func inCatalogOrder(_ entries: [EntrySummary]) -> [EntryGroup] {
         var titles: [String] = []
         var groups: [String: [EntrySummary]] = [:]
         for entry in entries {

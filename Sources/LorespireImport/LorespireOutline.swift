@@ -37,6 +37,8 @@ struct LorespireSection {
     var headingIDs: [String]
     /// The keys of the empty pages just before it, which open it instead.
     var aliases: [String] = []
+    /// The ids of those empty pages' headings, which open it at its top: its page doesn't show them.
+    var foldedHeadingIDs: [String] = []
 
     var hasText: Bool { !LorespireText.plain(html).isEmpty }
 }
@@ -73,7 +75,8 @@ struct LorespireOutline {
                 continue
             }
             section.aliases = empty.flatMap { [$0.key] + $0.aliases }
-            section.headingIDs += empty.flatMap(\.headingIDs)
+            section.foldedHeadingIDs = empty.flatMap(\.headingIDs)
+            section.headingIDs += section.foldedHeadingIDs
             empty = []
             sections.append(section)
         }

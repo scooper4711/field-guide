@@ -16,8 +16,8 @@ so a GM can read them at a table without a connection (issue #110).
 - R2.1 One entry per page of the original wiki, split from the compilations, named after its heading, in the part
   of the guide it belongs to (Introduction, Core Guide, Player Options and Tools, GM Options and Tools, Supplemental
   Materials, Venture-Officer Handbook), in guide order.
-- R2.2 Links between guide pages open like other Field Guide links; links to pages that weren't downloaded open
-  Lorespire on the web.
+- R2.2 Links between guide pages open like other Field Guide links, scrolled to the heading they point at; links
+  to pages that weren't downloaded open Lorespire on the web.
 - R2.3 The entries look like the rest of the app: none of the wiki's own styling, tabs shown one after another,
   footnotes inline.
 - R2.4 Full-text search covers them.
