@@ -29,6 +29,9 @@ final class EntryTabsUITests: XCTestCase {
         dwarf.tap()
         // The Details' rules come with the app; their lore, from the user's sourcebooks, may be missing.
         XCTAssertTrue(webText(containing: "Dwarf Mechanics").waitForExistence(timeout: 10), app.debugDescription)
+        // The popover shows them; Open shows them as the page, on the Details tab.
+        app.buttons["Open"].firstMatch.tap()
+        XCTAssertTrue(app.segmentedControls.buttons["Details"].waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertTrue(app.segmentedControls.buttons["Details"].isSelected)
     }
 

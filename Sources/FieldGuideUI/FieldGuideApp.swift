@@ -78,7 +78,7 @@ struct RootView: View {
     /// `FIELD_GUIDE_SELECT` opens an entry at launch, for trying pages out from a script.
     private static let launchSelection = ProcessInfo.processInfo.environment["FIELD_GUIDE_SELECT"]
     @Environment(CatalogStore.self) private var store
-    @State private var selection = launchSelection
+    @State private var navigator = EntryNavigator(selection: launchSelection)
     @State private var columns = ColumnChoice(selection: launchSelection)
     /// The one column an iPhone shows: the categories at launch, so a new user sees them all, or the entry that
     /// `FIELD_GUIDE_SELECT` opens.
@@ -86,8 +86,6 @@ struct RootView: View {
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
-    /// The links followed from the chosen entry.
-    @State private var path: [PageLink] = []
     @State private var isSearchingEverything = false
     /// Whether Search Everything brought the sidebar out, so opening a match puts it away again.
     @State private var searchShowedSidebar = false
@@ -95,12 +93,13 @@ struct RootView: View {
     @State private var isShowingSearchSheet = false
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columns.visibility, preferredCompactColumn: $compactColumn) {
-            SidebarView(selection: $selection, isSearching: $isSearchingEverything, opened: openedMatch,
+        @Bindable var navigator = navigator
+        return NavigationSplitView(columnVisibility: $columns.visibility, preferredCompactColumn: $compactColumn) {
+            SidebarView(selection: $navigator.selection, isSearching: $isSearchingEverything, opened: openedMatch,
                         showList: { compactColumn = .content })
                 .navigationSplitViewColumnWidth(min: 220, ideal: 250)
         } content: {
-            EntryListView(selection: $selection)
+            EntryListView(selection: $navigator.selection)
                 .navigationSplitViewColumnWidth(min: 280, ideal: 340)
                 // The entry column with its button isn't on screen with the list on an iPhone.
                 .toolbar {
@@ -112,9 +111,10 @@ struct RootView: View {
                 }
         } detail: {
             Group {
-                if let selection {
-                    EntryDetailView(rootID: selection, path: $path)
-                        .id(selection)
+                if let selection = navigator.selection {
+                    EntryDetailView(rootID: selection, root: navigator.root, path: $navigator.path,
+                                    back: navigator.history.isEmpty ? nil : { navigator.goBack(in: store) })
+                        .id("\(selection) \(navigator.root.map { "\($0)" } ?? "")")
                 } else {
                     ContentUnavailableView("Choose an Entry", systemImage: "book",
                                            description: Text(store.errorMessage ?? "Pick something from the list."))
@@ -133,21 +133,22 @@ struct RootView: View {
         .reapplyingStartingVisibility($columns)
         // An entry opened from the search across every category stays open as its category shows.
         .onChange(of: store.category) {
-            if !store.results.contains(where: { $0.id == selection }) { selection = nil }
+            if !store.results.contains(where: { $0.id == navigator.selection }) { navigator.selection = nil }
         }
-        .onChange(of: store.system) { selection = nil }
-        .onChange(of: selection) {
-            path = []
-            columns.selectionChanged(to: selection)
+        .onChange(of: store.system) {
+            navigator.selection = nil
+            navigator.forget()
         }
+        .onChange(of: navigator.selection) { columns.selectionChanged(to: navigator.selection) }
+        .environment(\.openEntry, OpenEntryAction(open: open))
         // Only while there is a page to go back to, so the menu sees Back become available.
-        .focusedSceneValue(\.entryPath, path.isEmpty ? nil : $path)
+        .focusedSceneValue(\.goBack, navigator.canGoBack ? BackAction { navigator.goBack(in: store) } : nil)
         .focusedSceneValue(\.isSearchingEverything, Binding(get: { isSearchingEverything }, set: { isOn in
             if isOn { searchEverything() } else { isSearchingEverything = false }
         }))
         #if os(iOS)
         .sheet(isPresented: $isShowingSearchSheet) {
-            SearchEverythingSheet(selection: $selection) { compactColumn = $0 }
+            SearchEverythingSheet(selection: $navigator.selection) { compactColumn = $0 }
                 .environment(store)
         }
         #endif
@@ -186,6 +187,14 @@ struct RootView: View {
         }
     }
 
+    /// Shows a linked entry as if chosen in the sidebar, at the tab or heading the link names.
+    /// Shows a linked entry as if chosen in the sidebar (`EntryNavigator.open`).
+    private func open(_ link: PageLink) -> Bool {
+        guard navigator.open(link, in: store) else { return false }
+        compactColumn = .detail
+        return true
+    }
+
     private func openedMatch() {
         compactColumn = .detail
         guard searchShowedSidebar else { return }
@@ -194,107 +203,8 @@ struct RootView: View {
     }
 }
 
-/// The categories under the system switch, or, while searching everything, the matches.
-struct SidebarView: View {
-    @Environment(CatalogStore.self) private var store
-    @Binding var selection: String?
-    @Binding var isSearching: Bool
-    /// Called when a match of the search is opened.
-    let opened: () -> Void
-    /// Called when a category's list is to be shown: on an iPhone, the next screen.
-    let showList: () -> Void
-    @Environment(\.showsOneColumn) private var showsOneColumn
-    @State private var isShowingSourcebooks = false
-    @State private var isShowingAbout = false
-
-    var body: some View {
-        @Bindable var store = store
-        Group {
-            if store.globalQuery.text.isEmpty {
-                categories
-            } else {
-                GlobalSearchResults(selection: $selection, opened: opened, showedAll: showList)
-            }
-        }
-        .searchable(text: $store.globalQuery.text, isPresented: $isSearching, placement: .sidebar,
-                    prompt: "Search Everything")
-        .navigationTitle("Field Guide")
-        .toolbar {
-            Button("Sourcebooks", systemImage: "books.vertical") { isShowingSourcebooks = true }
-            // The Mac has About in the app menu.
-            #if os(iOS)
-            Button("About", systemImage: "info.circle") { isShowingAbout = true }
-            #endif
-        }
-        .focusedSceneValue(\.isShowingSourcebooks, $isShowingSourcebooks)
-        .sheet(isPresented: $isShowingSourcebooks) { SourcebooksView() }
-        .sheet(isPresented: $isShowingAbout) { AboutSheet(info: .fieldGuide) }
-    }
-
-    private var categories: some View {
-        @Bindable var store = store
-        #if os(macOS)
-        // Not a section header: on the Mac a sidebar's header makes room for its Hide button while the pointer is
-        // over it, which resized the picker's segments.
-        return List(selection: $store.category) { categoryRows }
-            .safeAreaInset(edge: .top) {
-                systemPicker
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-            }
-        #else
-        // On an iPhone a selected row would open its list by itself, also when switching systems chooses a
-        // category, so the rows are buttons there.
-        return List(selection: showsOneColumn ? nil : $store.category) {
-            Section { categoryRows } header: { systemPicker.padding(.bottom, 8) }
-        }
-        #endif
-    }
-
-    private var categoryRows: some View {
-        ForEach(store.categories) { category in
-            if showsOneColumn {
-                Button { open(category) } label: { CategoryButtonLabel(category: category) }
-                    .tint(.primary)
-            } else {
-                Label(category.title, systemImage: category.symbol).tag(category)
-            }
-        }
-    }
-
-    private func open(_ category: EntryCategory) {
-        store.category = category
-        showList()
-    }
-
-    private var systemPicker: some View {
-        @Bindable var store = store
-        return Picker("System", selection: $store.system) {
-            ForEach(GameSystem.allCases) { Text($0.title).tag($0) }
-        }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-    }
-}
-
 extension EnvironmentValues {
     /// Whether the window shows one column at a time, as on an iPhone. A column's own size class can't tell: it is
     /// compact on the iPad too.
     @Entry var showsOneColumn = false
-}
-
-/// A category on an iPhone's categories screen, with the chevron of a row that opens the next screen.
-private struct CategoryButtonLabel: View {
-    let category: EntryCategory
-
-    var body: some View {
-        HStack {
-            Label(category.title, systemImage: category.symbol)
-            Spacer()
-            Image(systemName: "chevron.forward")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.tertiary)
-        }
-        .contentShape(Rectangle())
-    }
 }

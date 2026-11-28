@@ -55,6 +55,19 @@ struct CatalogStoreTests {
         #expect(store.page("Ogre")?.html == "<p>Big.</p>")
     }
 
+    @Test("Revealing an entry shows its category, its search cleared when that hides it; unknown ids stay put")
+    func reveal() throws {
+        let store = try Self.store()
+        store.addedEntries = [Self.custom("Spike Pit", .hazards)]
+        store.category = .hazards
+        #expect(store.reveal("Ogre") && store.category == .bestiary)
+        store.query = EntryQuery(text: "ogre")
+        #expect(store.reveal("Ogre") && store.query.text == "ogre")
+        #expect(store.reveal("Goblin") && store.query.text.isEmpty && store.results.count == 2)
+        #expect(store.reveal("custom.Spike Pit") && store.category == .hazards)
+        #expect(!store.reveal("Nobody") && store.category == .hazards)
+    }
+
     static func custom(_ name: String, _ category: EntryCategory, system: GameSystem = .pathfinder) -> EntrySummary {
         EntrySummary(id: "custom.\(name)", system: system, category: category, name: name, level: 1,
                      subtitle: "Creature 1", image: "", facets: [:])

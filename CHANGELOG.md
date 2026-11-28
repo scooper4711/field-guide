@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Entries without an icon of their own show a fitting one instead of their category's symbol: an item takes the
   icon of items like it, by its traits too, so a potion shows a bottle, and each category has an icon for the rest
 - The GM Screen list is grouped under its sections: Playing the Game, Running the Game and the others
+- Links that open a web page or mail end in an arrow (↗); links to other pages of the Field Guide don't
+- A link to another entry opens it in a popover beside the link. Open shows the entry in its category's list, and
+  Back returns to where you were, as in a browser
 
 ### Fixed
 - On a new install, an iPad in portrait shows the categories instead of hiding them

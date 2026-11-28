@@ -11,12 +11,18 @@ struct EntryWebView {
     let data: DataLocation
     let pdfArt: ArtModel
     var anchor = ""
+    /// When set, in-app links report where they were tapped, for a popover, instead of following.
+    var onPeek: ((URL, CGRect) -> Void)?
+    /// The page's content height once laid out, for sizing a popover.
+    var onHeight: ((CGFloat) -> Void)?
     let onLink: (URL) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(onLink: onLink) }
 
     func makeWebView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
+        LinkPeek.install(in: configuration.userContentController, coordinator: context.coordinator,
+                         peeks: onPeek != nil, measures: onHeight != nil)
         configuration.setURLSchemeHandler(ResourceSchemeHandler(data: data, pdfArt: pdfArt),
                                           forURLScheme: "fieldguide")
         let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -32,6 +38,8 @@ struct EntryWebView {
 
     func update(_ webView: WKWebView, context: Context) {
         context.coordinator.onLink = onLink
+        context.coordinator.onPeek = onPeek
+        context.coordinator.onHeight = onHeight
         guard context.coordinator.loadedHTML != html else { return }
         context.coordinator.loadedHTML = html
         webView.loadHTMLString(PageTemplate.document(body: html, anchor: anchor),
@@ -39,9 +47,19 @@ struct EntryWebView {
     }
 
     @MainActor
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         var onLink: (URL) -> Void
+        var onPeek: ((URL, CGRect) -> Void)?
+        var onHeight: ((CGFloat) -> Void)?
         var loadedHTML: String?
+
+        func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == LinkPeek.peekHandler, let peek = LinkPeek(message: message.body) {
+                onPeek?(peek.url, peek.rect)
+            } else if message.name == LinkPeek.heightHandler, let height = message.body as? Double {
+                onHeight?(CGFloat(height))
+            }
+        }
 
         init(onLink: @escaping (URL) -> Void) {
             self.onLink = onLink

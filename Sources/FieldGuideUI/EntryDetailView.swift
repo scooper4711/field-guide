@@ -8,6 +8,12 @@ import SwiftUI
 enum PageLink: Hashable {
     case entry(String, EntryTab = .overview, anchor: String = "")
     case trait(String, GameSystem)
+
+    /// The entry the link opens; nil for a trait.
+    var entryID: String? {
+        if case let .entry(id, _, _) = self { return id }
+        return nil
+    }
 }
 
 /// Where a link tapped on an entry page goes: another page in the app, a web page in the browser, or nowhere.
@@ -66,17 +72,47 @@ struct PageTabs {
     }
 }
 
-/// The chosen entry, with links followed on a navigation stack so Back returns.
+/// Opens an entry as if chosen in the sidebar: its category, its row and its page. False when it can't, as for a
+/// trait, so the caller follows the link on its own stack instead.
+struct OpenEntryAction {
+    let open: @MainActor (PageLink) -> Bool
+
+    @MainActor func callAsFunction(_ link: PageLink) -> Bool { open(link) }
+}
+
+extension EnvironmentValues {
+    @Entry var openEntry = OpenEntryAction { _ in false }
+}
+
+/// The chosen entry, with links followed on a navigation stack so Back returns. `root` opens it at a tab or a
+/// heading; nil opens its overview at the top.
 struct EntryDetailView: View {
     let rootID: String
+    var root: PageLink?
     @Binding var path: [PageLink]
+    /// Back to the entry left last, for the entry's own page; nil when none was.
+    var back: (() -> Void)?
 
     var body: some View {
         NavigationStack(path: $path) {
-            PageView(link: .entry(rootID)) { path.append($0) }
+            PageView(link: root ?? .entry(rootID)) { path.append($0) }
+                .toolbar { backButton }
                 .navigationDestination(for: PageLink.self) { link in
                     PageView(link: link) { path.append($0) }
                 }
+        }
+    }
+}
+
+extension EntryDetailView {
+    /// The system shows Back on the pages followed from the entry, in place of Search Everything; the entry's own
+    /// page gets this one, back to the entry left.
+    @ToolbarContentBuilder
+    var backButton: some ToolbarContent {
+        if let back {
+            ToolbarItem(placement: .navigation) {
+                Button("Back", systemImage: "chevron.backward", action: back)
+            }
         }
     }
 }
@@ -87,11 +123,14 @@ struct PageView: View {
     @Environment(ArtModel.self) private var pdfArt
     @Environment(SourcebookModel.self) private var sourcebooks
     @Environment(\.openURL) private var openURL
+    @Environment(\.openEntry) private var openEntry
     let link: PageLink
     let follow: (PageLink) -> Void
     /// A stored value from before the Lore tab ("statBlock") reads as the default, the card.
     @AppStorage("creatureView") private var creatureView = CreatureView.card
     @State private var entryTab: EntryTab
+    /// The in-app link shown in a popover, and where it was tapped.
+    @State private var peek: Peek?
 
     init(link: PageLink, follow: @escaping (PageLink) -> Void) {
         self.link = link
@@ -163,11 +202,23 @@ struct PageView: View {
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {
-        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor) { url in
+        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor, onPeek: { url, rect in
+            guard case let .page(next) = Self.destination(for: url, system: system) else { return }
+            peek = Peek(link: next, rect: rect)
+        }, onLink: { url in
             switch Self.destination(for: url, system: system) {
             case let .page(next): follow(next)
             case let .browser(web): openURL(web)
             case .ignored: break
+            }
+        })
+        .popover(isPresented: Binding(get: { peek != nil }, set: { if !$0 { peek = nil } }),
+                 attachmentAnchor: .rect(.rect(peek?.rect ?? .zero)), arrowEdge: .bottom) {
+            if let peek {
+                PeekView(link: peek.link) { next in
+                    self.peek = nil
+                    if !openEntry(next) { follow(next) }
+                }
             }
         }
     }

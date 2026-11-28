@@ -10,16 +10,14 @@ struct EntryListView: View {
 
     var body: some View {
         @Bindable var store = store
-        List(selection: $selection) {
-            if let order = store.category?.sectionOrder {
-                ForEach(EntryGroup.bySection(store.results, order: order)) { group in
-                    Section(group.title) { rows(group.entries) }
+        ScrollViewReader { reader in
+            list(store: store)
+                // An entry opened from a link shows in the list, which may have been elsewhere.
+                .onChange(of: selection) {
+                    guard let selection else { return }
+                    withAnimation { reader.scrollTo(selection, anchor: .center) }
                 }
-            } else {
-                rows(store.results)
-            }
         }
-        .listStyle(.plain)
         .searchable(text: $store.query.text, prompt: store.query.searchesText ? "Search text" : "Search names")
         .navigationTitle(store.category?.title ?? "")
         .toolbar { toolbar }
@@ -33,6 +31,19 @@ struct EntryListView: View {
                 ContentUnavailableView.search
             }
         }
+    }
+
+    private func list(store: CatalogStore) -> some View {
+        List(selection: $selection) {
+            if let order = store.category?.sectionOrder {
+                ForEach(EntryGroup.bySection(store.results, order: order)) { group in
+                    Section(group.title) { rows(group.entries) }
+                }
+            } else {
+                rows(store.results)
+            }
+        }
+        .listStyle(.plain)
     }
 
     private func rows(_ entries: [EntrySummary]) -> some View {

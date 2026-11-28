@@ -164,6 +164,16 @@ public final class CatalogStore {
         }
     }
 
+    /// Shows the category an entry is listed in, its search and filters cleared if they hide it, so the entry can
+    /// be chosen in the list; false when the entry is in no category.
+    public func reveal(_ id: String) -> Bool {
+        let added = addedEntries.first { $0.id == id }?.category
+        guard let category = added ?? (try? catalog?.category(of: id)) ?? nil else { return false }
+        self.category = category
+        if !results.contains(where: { $0.id == id }) { query = EntryQuery() }
+        return true
+    }
+
     /// An entry's page; an added entry's is empty, since its page is its battle card.
     public func page(_ id: String) -> EntryPage? {
         if let added = addedEntries.first(where: { $0.id == id }) {

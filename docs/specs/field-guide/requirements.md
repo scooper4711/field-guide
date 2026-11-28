@@ -75,8 +75,12 @@ Foundry VTT's compendium browser.
   character are described as the books do ("1d6 per level", "1d6, increasing by 1d6 at 3rd level and every 2
   levels after", "your Strength modifier"), counting from the entry's own level (Tabletop Kit's
   `FormulaWording`).
-- R5.3 Links to other compendium entries open them in the app; Back returns. Links to entries the app
-  doesn't hold read as plain text.
+- R5.3 Links to other compendium entries and traits open their page in a popover beside the link, sized to the
+  page up to 460 by 560 points. Its Open shows a listed entry as if chosen in the sidebar (its category, the row
+  selected and scrolled to), at the tab or heading the link names; a trait's page is pushed onto the entry's.
+  Back works like a browser's: it steps back through the pages followed, then to each entry left, however it
+  was left (Open, the list, Search Everything), as it was. Links to entries the app doesn't hold read as plain
+  text.
 - R5.4 Creatures show their battle card and lore (R8). Hazards, and creatures without a battle card, show a
   full stat block: traits, Perception and senses, languages, skills, attribute modifiers, items, AC, saves, HP,
   immunities, resistances and weaknesses, speeds, Strikes, actions and reactions in stat-block order, and
@@ -212,7 +216,7 @@ device as art is. Lore the Paizo Blog published stays in the import.
   ORC License (the compendium text), the Apache License for Roboto Condensed and the SIL Open Font License for
   Gelasio. The README carries the same notices.
 - R7.4 The Mac app is a full Mac app, not only a developer build. Its window opens at 1280 by 820 points. A Go
-  menu has Search Everything (⌘F), Back (⌘[, returning from a followed link) and Pathfinder (⌘1) and
+  menu has Search Everything (⌘F), Back (⌘[, as R5.3 says) and Pathfinder (⌘1) and
   Starfinder (⌘2); File has Sourcebooks… (⇧⌘A). The README says how to install the disk image from a
   release, and how to open an older release, which isn't notarized.
 - R7.5 The Mac app runs in the App Sandbox, without a paid Apple developer account. Its first sandboxed launch

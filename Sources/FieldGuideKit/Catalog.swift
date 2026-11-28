@@ -54,6 +54,15 @@ public final class Catalog {
         return page
     }
 
+    /// The category an entry is listed in, or nil when there is no such entry.
+    public func category(of id: String) throws -> EntryCategory? {
+        var category: EntryCategory?
+        try database.query("SELECT category FROM entries WHERE id = ?", [.text(id)]) { row in
+            category = EntryCategory(rawValue: row.text(0))
+        }
+        return category
+    }
+
     /// The IDs of a category's entries whose name or text contains every word of `text`.
     public func search(_ text: String, in category: EntryCategory, of system: GameSystem) throws -> Set<String> {
         guard let match = Self.match(text) else { return [] }
