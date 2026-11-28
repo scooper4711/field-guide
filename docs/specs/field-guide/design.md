@@ -240,8 +240,16 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   folder, for trying pages out from a script.
 - Mac menus: `FieldGuideCommands` adds the Go menu and Sourcebooks… to File. The store is the app's, so
   the system commands set it directly; Back and Search Everything reach the window through focused scene
-  values (`entryPath`, the detail column's navigation path, and `searchEverything`, `RootView`'s action), and
+  values (`goBack`, the navigator's Back, and `searchEverything`, `RootView`'s action), and
   `SidebarView` shows Sourcebooks for `isShowingSourcebooks`.
+- Links and Back: a page's web view runs `LinkPeek`'s click script, which posts an in-app link and its rect;
+  `PageView` shows the page in a `.popover` at that rect (`PeekView`, sized by the page's height from the height
+  script). Open calls the `openEntry` environment action, `EntryNavigator.open`: `CatalogStore.reveal` picks the
+  entry's category (and clears a search that hides it), the current entry goes into the history as a `Visit`
+  (entry, the link it was opened at, its followed pages), and the selection moves. A selection made in the list
+  is recorded the same way, through `selection`'s `didSet`. `goBack` pops the path, then the history; a switch
+  of system forgets the history. macOS shows the stack's own Back on followed pages, so `EntryDetailView` adds
+  a Back button to the entry's page only.
 - About: Tabletop Kit's `AppNotices`, with `AboutInfo.fieldGuide` (`About.swift`): `AboutCommands` on the Mac and
   an `AboutSheet` from the sidebar's toolbar on the iPad.
 

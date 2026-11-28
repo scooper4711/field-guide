@@ -129,14 +129,6 @@ struct PageView: View {
     /// A stored value from before the Lore tab ("statBlock") reads as the default, the card.
     @AppStorage("creatureView") private var creatureView = CreatureView.card
     @State private var entryTab: EntryTab
-    /// Whether in-app links open in a popover: on the Mac. In iPadOS 26 a web view in a popover stays blank, so the
-    /// iPad follows them as before (issue #118).
-    #if os(macOS)
-    static let peeksLinks = true
-    #else
-    static let peeksLinks = false
-    #endif
-
     /// The in-app link shown in a popover, and where it was tapped.
     @State private var peek: Peek?
 
@@ -210,9 +202,10 @@ struct PageView: View {
     }
 
     private func webView(_ html: String, system: GameSystem) -> some View {
-        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor, onPeek: Self.peeksLinks ? { url, rect in
-            if case let .page(next) = Self.destination(for: url, system: system) { peek = Peek(link: next, rect: rect) }
-        } : nil, onLink: { url in
+        EntryWebView(html: html, data: store.data, pdfArt: pdfArt, anchor: anchor, onPeek: { url, rect in
+            guard case let .page(next) = Self.destination(for: url, system: system) else { return }
+            peek = Peek(link: next, rect: rect)
+        }, onLink: { url in
             switch Self.destination(for: url, system: system) {
             case let .page(next): follow(next)
             case let .browser(web): openURL(web)

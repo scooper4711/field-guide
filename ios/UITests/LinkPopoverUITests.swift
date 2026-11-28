@@ -35,11 +35,9 @@ final class LinkPopoverUITests: XCTestCase {
         link.tap()
         let open = app.buttons["Open"].firstMatch
         XCTAssertTrue(open.waitForExistence(timeout: 10), app.debugDescription)
-        sleep(2)
-        let shot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        shot.name = "DEBUGSHOT"
-        shot.lifetime = .keepAlways
-        add(shot)
+        // The popover shows the condition's page, not just an empty bubble.
+        let condition = app.webViews.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "gripped by fear"))
+        XCTAssertTrue(condition.firstMatch.waitForExistence(timeout: 20), app.debugDescription)
         // The spell's page stays under the popover.
         XCTAssertTrue(app.webViews.links["Fleeing"].firstMatch.exists, app.debugDescription)
         open.tap()

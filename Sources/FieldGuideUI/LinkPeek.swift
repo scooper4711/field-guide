@@ -29,7 +29,8 @@ struct LinkPeek {
         """
 
     private static let heightScript = """
-        const report = () => webkit.messageHandlers.height.postMessage(Math.ceil(document.body.getBoundingClientRect().height));
+        const report = () => webkit.messageHandlers.height.postMessage(
+          Math.ceil(document.body.getBoundingClientRect().height));
         addEventListener("load", report);
         """
 
