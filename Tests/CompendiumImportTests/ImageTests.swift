@@ -1,3 +1,4 @@
+import FieldGuideKit
 import Foundation
 import Testing
 @testable import CompendiumImport
@@ -47,6 +48,22 @@ import Testing
         #expect(ArtScaler.pixelSize(of: output.appendingPathComponent("rexard/Weapons/sword.webp"))?.width == 96)
         #expect(images.icon(of: other).isEmpty && images.icon(of: gone).isEmpty)
         #expect(ImageCollector(icons: map, packs: nil, output: output).icon(of: sword).isEmpty)
+    }
+
+    @Test func showsTheCategorysIconOnRowsWithoutAnImage() throws {
+        let fixture = try IconFixture()
+        defer { fixture.remove() }
+        let sources = fixture.sources(overrides: ["category:gmScreen": "Weapons/sword.png"])
+        let images = ImageCollector(icons: IconMap(documents: [], sources: sources), packs: fixture.packs,
+                                    output: fixture.root.appendingPathComponent("Images"))
+        func row(_ id: String, _ category: EntryCategory, image: String = "") -> EntryRow {
+            EntryRow(id: id, system: .pathfinder, category: category, name: id, level: nil, subtitle: "", image: image,
+                     facets: [:], html: "", text: "", traitSlugs: [], sortKey: "")
+        }
+        let rows = CompendiumImporter.showingCategoryIcons(
+            [row("page", .gmScreen), row("kept", .gmScreen, image: "rexard/own.webp"), row("domain", .domains)],
+            images: images)
+        #expect(rows.map(\.image) == ["rexard/Weapons/sword.webp", "rexard/own.webp", ""])
     }
 
     @Test func copiesDeitiesSymbolsOnceAsWebP() throws {

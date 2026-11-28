@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   heading they point at
 
 ### Changed
+- Entries without an icon of their own show a fitting one instead of their category's symbol: an item takes the
+  icon of items like it, by its traits too, so a potion shows a bottle, and each category has an icon for the rest
 - The GM Screen list is grouped under its sections: Playing the Game, Running the Game and the others
 
 ### Fixed

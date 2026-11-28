@@ -6,7 +6,9 @@ public struct IconSources: Sendable {
     public var paths: FoundryPaths
     /// The user's Rexard packs; nil for no icons.
     public var rexard: RexardIcons?
-    /// Rexard files (paths in the packs) by Foundry path or entry id, for icons the rules pick badly.
+    /// Rexard files (paths in the packs) for icons the rules pick badly: by Foundry path or entry id, by a key the
+    /// icons are learned by (`pf2e.equipment.consumable:potion`, see `LearnedIcons.keys(of:)`), or by category
+    /// (`category:deities`).
     public var overrides: [String: String]
     /// The matches of an earlier import, by Foundry path, used for Foundry icons not on this machine, such as
     /// the Foundry app's on GitHub.
@@ -56,10 +58,11 @@ public struct IconMatch: Equatable, Sendable {
 }
 
 /// Which of the user's Rexard icons each entry shows: the Rexard original of its Foundry icon, else its base
-/// item's icon, else the icon most entries like it show.
+/// item's icon, else the icon most entries like it show; for an item, else the one most items nearest it show;
+/// else the one most of its category show.
 final class IconMap {
     enum Rule: String, CaseIterable, Sendable {
-        case override, match, baseItem = "base item", learned
+        case override, match, baseItem = "base item", learned, similar = "similar item", category
     }
 
     struct Choice: Sendable {
@@ -74,12 +77,15 @@ final class IconMap {
     /// picks (thin bars) come at 16 to 26; pf2e's own icons within 12 are Rexard pictures recolored.
     static let maximumDistance = 12
 
-    /// The choice for each entry id; entries without one show their category's symbol.
+    /// The choice for each entry id; entries without one (in a category with no matched icons) show their
+    /// category's symbol.
     private(set) var choices: [String: Choice] = [:]
     /// The Foundry icons of entries left without one, with how many entries use each.
     private(set) var unresolved: [String: Int] = [:]
     /// The Rexard picture each Foundry icon matched, compared here or saved by an earlier import.
     private(set) var matches: [String: IconMatch] = [:]
+    /// The icon of each category, for its entries nothing closer fits and for its journal pages.
+    private(set) var categories = CategoryIcons(documents: [], choices: [:])
 
     init(documents: [SourceDocument], sources: IconSources) {
         guard let rexard = sources.rexard else { return }
@@ -95,14 +101,22 @@ final class IconMap {
         }
         let resolved = documents.filter { choices[$0.uuid] != nil }
         let baseItems = Self.baseItems(in: resolved, choices: choices)
-        let learned = LearnedIcons(documents: resolved, choices: choices)
+        let learned = LearnedIcons(documents: resolved, choices: choices, overrides: sources.overrides)
+        // Items only: their keys say what they look like, while one shared trait says little about an action.
+        let similar = LearnedIcons(documents: resolved.filter { $0.category == .equipment }, choices: choices,
+                                   agreement: .any)
+        categories = CategoryIcons(documents: resolved, choices: choices, overrides: sources.overrides)
         for document in documents where choices[document.uuid] == nil {
             choices[document.uuid] = baseItems.choice(for: document) ?? learned.choice(for: document)
+                ?? similar.choice(for: document) ?? categories.choice(for: document)
             if choices[document.uuid] == nil { unresolved[document.json["img"].string, default: 0] += 1 }
         }
     }
 
     func choice(for document: SourceDocument) -> Choice? { choices[document.uuid] }
+
+    /// The Rexard file standing for a category; nil when it has neither an override nor matched entries.
+    func file(for category: EntryCategory) -> String? { categories.file(for: category) }
 
     /// How many entries got their icon by each rule.
     var counts: [Rule: Int] {

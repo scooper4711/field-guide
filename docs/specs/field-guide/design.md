@@ -85,9 +85,14 @@ A SwiftPM package with an Xcode project for the iPad, in the style of Turnkeeper
   over black and over white) within 12 bits, then its base item's (`system.baseItem` equal to an item's
   slug), then `LearnedIcons`: the most common icon among matched entries of the category sharing its
   weapon/armor group, consumable category or type for items, a trait (traditions count for spells) for
-  the rest, each needing 3 entries of which more than a third show the icon; never the whole category, which would
-  give every action or deity one icon, and never an item's traits, which say little about its looks. The import writes `icon-map.tsv` there (entry, Foundry icon, Rexard
-  file, rule, distance) and counts per rule in `import-report.md`.
+  the rest, each needing 3 entries of which more than a third show the icon. Items also learn by trait (rarity
+  left out), between consumable category and type; of several traits, the one whose items agree most decides.
+  Overrides by learned key win over the counts. Then, for items only, the same keys with no agreement needed
+  (`similar item`: a potion whose potions show different bottles still gets a bottle); then `CategoryIcons`:
+  the `category:<category>` override, else the category's most common matched icon over both systems (a tie
+  goes to the first path). Journal pages and area diagrams have no Foundry icon, so the importer gives them
+  their category's icon (`showingCategoryIcons`). The import writes `icon-map.tsv` there (entry, Foundry icon,
+  Rexard file, rule, distance) and counts per rule in `import-report.md`.
 - `ImageCollector` writes each chosen Rexard file once as a WebP of at most 256 pixels to
   `Generated/Images/rexard/<path in the packs>`. No Foundry or pf2e icon file is copied. A creature's or
   hazard's image is `creature/<system>.<pack link name>.<id>`, the bestiary key, drawn by the app; its

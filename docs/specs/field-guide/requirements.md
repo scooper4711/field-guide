@@ -86,12 +86,17 @@ Foundry VTT's compendium browser.
   Classes journal, when it has one; a link to that journal page opens the entry on its Details.
 
 ## R6 Images
-- R6.1 Items, spells, feats and actions show icons from the user's own Rexard packs, never Foundry's or
-  Paizo's: the Rexard original of the entry's Foundry icon; else its base item's icon (a +1 longsword gets
-  the longsword's); else the icon most entries like it clearly share (items: same weapon or armor group,
-  consumable category or item type; others: same trait); else none, and the list shows the category's symbol.
-  `icon-overrides.json` (Foundry path or entry id → Rexard file) corrects bad picks. `icon-matches.tsv` keeps
-  each Foundry icon's match, so an import without the Foundry app (on GitHub) picks the same icons.
+- R6.1 Items, spells, feats, actions and the other entries without art of their own show icons from the user's
+  own Rexard packs, never Foundry's or Paizo's: the Rexard original of the entry's Foundry icon; else its base
+  item's icon (a +1 longsword gets the longsword's); else the icon most entries like it clearly share (items:
+  same weapon or armor group, consumable category, trait other than rarity, or item type; others: same trait);
+  for items, else the most common icon of the items nearest it, even when they don't agree (a potion shows a
+  bottle); else its category's icon, so no entry shows the category's symbol while the packs are there.
+  `icon-overrides.json` corrects bad picks and picks icons by hand: by Foundry path or entry id, by a learned key
+  (`pf2e.equipment.consumable:potion`) and by category (`category:deities`). A category without one shows the
+  icon most of its matched entries show. Journal-page categories (GM Screen, archetypes, domains) show their
+  category's icon. `icon-matches.tsv` keeps each Foundry icon's match, so an import without the Foundry app (on
+  GitHub) picks the same icons.
 - R6.2 Creatures and hazards show their art, read on the device from the user's own Paizo pawn, token and
   Battle Cards PDFs (Tabletop Kit's `CreatureArt`); without art the page shows none and the list shows the
   category's symbol. No Paizo or Foundry module art is imported or bundled.
