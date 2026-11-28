@@ -38,9 +38,10 @@ appstore:
 	swift package resolve
 	CHANNEL=appstore scripts/build-app.sh
 
-# Runs the Mac build against Generated/.
-run:
-	swift run FieldGuide
+# Builds the app and opens it, so it gets its own menu bar, windows and keyboard focus. FIELD_GUIDE_SELECT=<entry id>
+# opens that entry at launch.
+run: app
+	open "build/Field Guide.app" $(if $(FIELD_GUIDE_SELECT),--env FIELD_GUIDE_SELECT=$(FIELD_GUIDE_SELECT))
 
 # Moves the built app into /Applications, replacing an earlier copy. The build copy is unregistered and
 # removed so Finder and Spotlight launch the installed one.
