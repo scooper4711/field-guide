@@ -58,12 +58,9 @@ public struct CompendiumImporter {
         images.symbols = options.religiousSymbols
         let context = PageContext(enricher: enricher, links: links, glossary: glossary, images: images)
         let builder = PageBuilder(context: context)
-        let diagrams = AreaDiagrams().rows()
-        let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
-        let journalRows = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
         try FileManager.default.createDirectory(at: options.output, withIntermediateDirectories: true)
-        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context) + journalRows + diagrams
-            + (try organizedPlayRows(images: images))
+        let rows = details.attaching(to: documents.map(builder.row(for:)), context: context)
+            + Self.journalRows(details: details, context: context) + (try organizedPlayRows(images: images))
         let traits = traitRows(rows, glossary: glossary, enricher: enricher)
         try CatalogWriter.write(rows, traits: traits, to: options.output.appendingPathComponent("catalog.sqlite"))
         try copyFonts()
@@ -90,6 +87,24 @@ public struct CompendiumImporter {
                                              atomically: true, encoding: .utf8)
         if let url = options.iconMatchesFile, options.rexardPacks != nil {
             try IconMatch.table(icons.matches).write(to: url, atomically: true, encoding: .utf8)
+        }
+    }
+
+    /// The journal pages that are entries of their own, and the area diagrams, which the GM Screen links to.
+    private static func journalRows(details: JournalDetails, context: PageContext) -> [EntryRow] {
+        let diagrams = AreaDiagrams().rows()
+        let areas = Dictionary(diagrams.map { ($0.system, $0.id) }, uniquingKeysWith: { first, _ in first })
+        let pages = details.entries.map { GMScreen.row($0, context: context, areasEntry: areas[$0.system]) }
+        return showingCategoryIcons(pages + diagrams, images: context.images)
+    }
+
+    /// The rows, those without an image showing their category's icon: journal pages have no icon of their own.
+    static func showingCategoryIcons(_ rows: [EntryRow], images: ImageCollector) -> [EntryRow] {
+        rows.map { row in
+            guard row.image.isEmpty else { return row }
+            var shown = row
+            shown.image = images.icon(of: row.category)
+            return shown
         }
     }
 

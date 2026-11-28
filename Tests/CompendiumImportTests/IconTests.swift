@@ -92,6 +92,71 @@ import Testing
         let sword = IconFixture.document("ls", "Longsword", type: "weapon", system: ["group": "sword"])
         #expect(LearnedIcons.keys(of: sword) == [["pf2e.equipment.group:weapon.sword"],
                                                  ["pf2e.equipment.type:weapon"]])
+        let draft = IconFixture.document("dr", "Draft of Stellar Radiance", type: "consumable", system: [
+            "category": "potion", "traits": ["value": ["consumable", "potion", "uncommon"], "rarity": "uncommon"]
+        ])
+        #expect(LearnedIcons.keys(of: draft) == [["pf2e.equipment.consumable:potion"],
+                                                 ["pf2e.equipment.trait:consumable", "pf2e.equipment.trait:potion"],
+                                                 ["pf2e.equipment.type:consumable"]])
+    }
+
+    @Test func learnsAnItemsIconFromTheTraitItsItemsAgreeOnMost() {
+        func item(_ id: String, _ traits: [String]) -> SourceDocument {
+            IconFixture.document(id, id, type: "consumable", system: ["traits": ["value": traits]])
+        }
+        let known = [item("a", ["magical", "potion"]), item("b", ["magical", "potion"]), item("c", ["magical"]),
+                     item("d", ["magical"]), item("e", ["magical", "potion"])]
+        let files = ["bottle", "bottle", "wand", "wand", "bottle"]
+        let learned = LearnedIcons(documents: known, choices: Self.matched(known, files))
+            .choice(for: item("f", ["magical", "potion"]))
+        #expect(learned?.file == "bottle" && learned?.detail == "pf2e.equipment.trait:potion")
+    }
+
+    @Test func givesAnItemTheNearestItemsIconWhenTheyDontAgree() {
+        func potion(_ id: String) -> SourceDocument {
+            IconFixture.document(id, id, type: "consumable", system: ["category": "potion"])
+        }
+        let known = ["a", "b", "c", "d", "e", "f"].map(potion)
+        let choices = Self.matched(known, ["red", "blue", "green", "blue", "gold", "black"])
+        #expect(LearnedIcons(documents: known, choices: choices).choice(for: potion("g")) == nil)
+        let similar = LearnedIcons(documents: known, choices: choices, agreement: .any).choice(for: potion("g"))
+        #expect(similar?.file == "blue" && similar?.rule == .similar
+                && similar?.detail == "pf2e.equipment.consumable:potion")
+    }
+
+    @Test func fallsBackToTheIconMostOfTheCategoryShows() {
+        func action(_ id: String) -> SourceDocument {
+            IconFixture.document(id, id, type: "action", category: .actions)
+        }
+        let known = ["a", "b", "c", "d"].map(action)
+        let icons = CategoryIcons(documents: known, choices: Self.matched(known, ["zap", "run", "zap", "run"]))
+        let choice = icons.choice(for: action("e"))
+        // A tie goes to the first file by path.
+        #expect(choice?.file == "run" && choice?.rule == .category && choice?.detail == "actions")
+        let feat = IconFixture.document("ft", "Power Attack", type: "feat", category: .feats)
+        #expect(icons.choice(for: feat) == nil)
+    }
+
+    @Test func takesIconsChosenByHandForAKeyOrACategory() {
+        func potion(_ id: String) -> SourceDocument {
+            IconFixture.document(id, id, type: "consumable", system: ["category": "potion"])
+        }
+        let known = ["a", "b", "c"].map(potion)
+        let choices = Self.matched(known, ["herbs", "herbs", "herbs"])
+        let overrides = ["pf2e.equipment.consumable:potion": "bottle", "category:actions": "boot"]
+        let learned = LearnedIcons(documents: known, choices: choices, overrides: overrides).choice(for: potion("d"))
+        #expect(learned?.file == "bottle" && learned?.rule == .override
+                && learned?.detail == "pf2e.equipment.consumable:potion")
+        let icons = CategoryIcons(documents: known, choices: choices, overrides: overrides)
+        #expect(icons.file(for: .actions) == "boot" && icons.file(for: .equipment) == "herbs")
+        #expect(icons.file(for: .deities) == nil)
+    }
+
+    /// The documents, each matched to the file at its index.
+    private static func matched(_ documents: [SourceDocument], _ files: [String]) -> [String: IconMap.Choice] {
+        Dictionary(uniqueKeysWithValues: zip(documents, files).map {
+            ($0.uuid, IconMap.Choice(file: $1, rule: .match))
+        })
     }
 
     @Test func learnsOnlyIconsTheEntriesShare() {

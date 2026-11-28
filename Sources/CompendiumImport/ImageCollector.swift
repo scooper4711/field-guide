@@ -1,3 +1,4 @@
+import FieldGuideKit
 import Foundation
 import ImageIO
 
@@ -53,6 +54,11 @@ public final class ImageCollector {
     /// The stored path of an entry's icon, or "" for none.
     func icon(of document: SourceDocument) -> String {
         icons.choice(for: document).map { rexardIcon($0.file) } ?? ""
+    }
+
+    /// The stored path of the icon standing for a category, or "" for none.
+    func icon(of category: EntryCategory) -> String {
+        icons.file(for: category).map(rexardIcon) ?? ""
     }
 
     /// The stored path of a Rexard picture, by its path in the packs, or "" without the packs.

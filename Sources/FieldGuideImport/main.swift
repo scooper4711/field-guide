@@ -11,7 +11,8 @@ import Foundation
 /// `build/lorespire` (the Organized Play guides, downloaded by `FieldGuideLorespire`; left out when missing),
 /// `Generated` and
 /// `.build/field-guide-import`, which keeps the Rexard hash cache and `icon-map.tsv` (each entry's icon and why)
-/// out of the app. Entries show the user's Rexard icons in place of Foundry's; `icon-overrides.json` corrects them,
+/// out of the app. Entries show the user's Rexard icons in place of Foundry's; `icon-overrides.json` corrects them and
+/// picks icons for the learned keys and categories that need one by hand (`IconSources.overrides`),
 /// `lorespire-icons.json` picks the Organized Play guides', and `icon-matches.tsv` keeps the matches for machines
 /// without the Foundry app. Also writes the creatures for the battle cards to
 /// `<out>/Creatures` (Tabletop Kit's `CreatureImport`). Creature art isn't imported: the app reads it from the
